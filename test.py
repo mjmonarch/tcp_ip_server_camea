@@ -101,7 +101,7 @@ if __name__ == "__main__":
         # schedule.every(10).minutes.do(__shutdown, server)
         # logger.info("Terminate scheduler set for 10 minutes:" + server_thread.name)
 
-        client(ip, port, "Hello World 1")
-        client(ip, port, "Hello World 2")
-        client(ip, port, "Hello World 3")
+        # client(ip, port, "Hello World 1")
+        # client(ip, port, "Hello World 2")
+        # client(ip, port, "Hello World 3")
 

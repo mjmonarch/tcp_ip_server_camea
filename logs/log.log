@@ -107,3 +107,6 @@
 18.09.2023 12:55:58 - __main__ - INFO - b'Thread-4: Hello World 2'
 18.09.2023 12:55:58 - __main__ - INFO - b'Thread-5: Hello World 3'
 18.09.2023 13:05:58 - __main__ - INFO - Server was shutdown because running time expired
+18.09.2023 13:23:50 - __main__ - INFO - b'Thread-2: Hello World 1'
+18.09.2023 13:23:50 - __main__ - INFO - b'Thread-3: Hello World 2'
+18.09.2023 13:23:50 - __main__ - INFO - b'Thread-4: Hello World 3'
