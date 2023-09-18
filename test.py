@@ -104,3 +104,5 @@ if __name__ == "__main__":
         client(ip, port, "Hello World 1")
         client(ip, port, "Hello World 2")
         client(ip, port, "Hello World 3")
+
+        server.shutdown()
