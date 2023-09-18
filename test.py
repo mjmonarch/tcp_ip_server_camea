@@ -10,28 +10,28 @@ import atexit
 import sys
 
 
-# LOG_FILE = "logs/log.log"
-# LOGGING_SETTINGS = {
-#     "handlers": [],
-#     "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-#     "datefmt": "%d.%m.%Y %H:%M:%S",
-#     "level": logging.DEBUG,
-# }
-# file_handler = logging.handlers.RotatingFileHandler(
-#     filename=os.path.join(os.getcwd(), LOG_FILE),
-#     encoding="utf-8",
-#     mode="a",
-#     maxBytes=1_000_000,
-#     backupCount=5,
-# )
-# file_handler.setLevel(logging.INFO)
-# LOGGING_SETTINGS["handlers"].append(file_handler)
+LOG_FILE = "logs/log.log"
+LOGGING_SETTINGS = {
+    "handlers": [],
+    "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    "datefmt": "%d.%m.%Y %H:%M:%S",
+    "level": logging.DEBUG,
+}
+file_handler = logging.handlers.RotatingFileHandler(
+    filename=os.path.join(os.getcwd(), LOG_FILE),
+    encoding="utf-8",
+    mode="a",
+    maxBytes=1_000_000,
+    backupCount=5,
+)
+file_handler.setLevel(logging.INFO)
+LOGGING_SETTINGS["handlers"].append(file_handler)
 
-# stream_handler = logging.StreamHandler(stream=sys.stdout)
-# LOGGING_SETTINGS["handlers"].append(stream_handler)
+stream_handler = logging.StreamHandler(stream=sys.stdout)
+LOGGING_SETTINGS["handlers"].append(stream_handler)
 
-# logging.basicConfig(**LOGGING_SETTINGS)
-# logger = logging.getLogger(__name__)
+logging.basicConfig(**LOGGING_SETTINGS)
+logger = logging.getLogger(__name__)
 
 
 class ThreadedTCPRequestHandler(socketserver.BaseRequestHandler):
@@ -40,8 +40,8 @@ class ThreadedTCPRequestHandler(socketserver.BaseRequestHandler):
         data = str(self.request.recv(1024), 'ascii')
         cur_thread = threading.current_thread()
         response = bytes("{}: {}".format(cur_thread.name, data), 'ascii')
-        self.request.sendall(response)
-        # logger.info(response)
+        # self.request.sendall(response)
+        logger.info(response)
 
 
 class ThreadedTCPServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
@@ -105,4 +105,3 @@ if __name__ == "__main__":
         client(ip, port, "Hello World 2")
         client(ip, port, "Hello World 3")
 
-        server.shutdown()
