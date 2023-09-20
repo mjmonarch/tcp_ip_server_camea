@@ -79,7 +79,7 @@ if __name__ == "__main__":
         server_thread = threading.current_thread()
         logger.info("Server loop running in thread:" + server_thread.name)
 
-        schedule.every(1).minutes.do(__shutdown, server)
-        logger.info("Terminate scheduler set for 1 minutes:" + server_thread.name)
+        schedule.every(60).minutes.do(__shutdown, server)
+        logger.info("Terminate scheduler set for 60 minutes:" + server_thread.name)
 
         server.serve_forever()
