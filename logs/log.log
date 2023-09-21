@@ -142,3 +142,38 @@
 20.09.2023 18:50:03 - __main__ - INFO - Server was shutdown because running time expired
 20.09.2023 18:51:03 - __main__ - INFO - Server was shutdown because running time expired
 20.09.2023 18:52:04 - __main__ - INFO - Server was shutdown because running time expired
+20.09.2023 19:20:57 - __main__ - INFO - Server loop running in thread:MainThread
+20.09.2023 19:20:57 - __main__ - INFO - Terminate scheduler set for 180 minutes:MainThread
+20.09.2023 19:21:08 - __main__ - INFO - Server loop running in thread:MainThread
+20.09.2023 19:21:08 - __main__ - INFO - Terminate scheduler set for 1 minutes:MainThread
+20.09.2023 19:22:08 - __main__ - INFO - Server was shutdown because running time expired
+20.09.2023 19:23:09 - __main__ - INFO - Server was shutdown because running time expired
+20.09.2023 19:23:58 - __main__ - INFO - Server loop running in thread:MainThread
+20.09.2023 19:23:58 - __main__ - INFO - Terminate scheduler set for 1 minutes:MainThread
+20.09.2023 19:24:59 - __main__ - INFO - Server was shutdown because running time expired
+21.09.2023 20:56:08 - __main__ - INFO - Server loop running in thread:MainThread
+21.09.2023 20:56:08 - __main__ - INFO - Terminate scheduler set for 1 minutes:MainThread
+21.09.2023 20:57:08 - __main__ - INFO - Server was shutdown because running time expired
+21.09.2023 20:57:38 - __main__ - INFO - Server loop running in thread:MainThread
+21.09.2023 20:57:38 - __main__ - INFO - Terminate scheduler set for 1 minutes:MainThread
+21.09.2023 20:58:32 - __main__ - INFO - b"MainThread: b'Hello World 1'"
+21.09.2023 20:58:32 - __main__ - INFO - b"MainThread: b'Hello World 2'"
+21.09.2023 20:58:32 - __main__ - INFO - b"MainThread: b'Hello World 3'"
+21.09.2023 20:58:38 - __main__ - INFO - Server was shutdown because running time expired
+21.09.2023 21:00:44 - __main__ - INFO - Server loop running in thread:MainThread
+21.09.2023 21:00:44 - __main__ - INFO - Terminate scheduler set for 1 minutes:MainThread
+21.09.2023 21:00:48 - __main__ - INFO - b'Hello World 1'
+21.09.2023 21:00:48 - __main__ - INFO - b"MainThread: b'Hello World 1'"
+21.09.2023 21:00:48 - __main__ - INFO - b'Hello World 2'
+21.09.2023 21:00:48 - __main__ - INFO - b"MainThread: b'Hello World 2'"
+21.09.2023 21:00:48 - __main__ - INFO - b'Hello World 3'
+21.09.2023 21:00:48 - __main__ - INFO - b"MainThread: b'Hello World 3'"
+21.09.2023 21:01:44 - __main__ - INFO - Server was shutdown because running time expired
+21.09.2023 21:03:09 - __main__ - INFO - Server loop running in thread:MainThread
+21.09.2023 21:03:09 - __main__ - INFO - Terminate scheduler set for 1 minutes:MainThread
+21.09.2023 21:03:13 - __main__ - INFO - 48656c6c6f20576f726c642031
+21.09.2023 21:03:13 - __main__ - INFO - b"MainThread: b'Hello World 1'"
+21.09.2023 21:03:13 - __main__ - INFO - 48656c6c6f20576f726c642032
+21.09.2023 21:03:13 - __main__ - INFO - b"MainThread: b'Hello World 2'"
+21.09.2023 21:03:13 - __main__ - INFO - 48656c6c6f20576f726c642033
+21.09.2023 21:03:13 - __main__ - INFO - b"MainThread: b'Hello World 3'"

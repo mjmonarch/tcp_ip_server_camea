@@ -36,7 +36,9 @@ logger = logging.getLogger(__name__)
 class mTCPHandler(socketserver.BaseRequestHandler):
 
     def handle(self):
-        data = str(self.request.recv(1024), 'ascii')
+        # data = str(self.request.recv(1024), 'ascii')
+        data = self.request.recv(1024)
+        logger.info(data.hex())
         cur_thread = threading.current_thread()
         response = bytes("{}: {}".format(cur_thread.name, data), 'ascii')
         # self.request.sendall(response)
@@ -67,6 +69,7 @@ if __name__ == "__main__":
     def __shutdown(server):
         logger.info("Server was shutdown because running time expired")
         server.shutdown()
+        stop_scheduler.set()
 
     # Start the background thread
     stop_scheduler = __run_scheduler()
@@ -80,6 +83,6 @@ if __name__ == "__main__":
         logger.info("Server loop running in thread:" + server_thread.name)
 
         schedule.every(180).minutes.do(__shutdown, server)
-        logger.info("Terminate scheduler set for 180 minutes:" + server_thread.name)
+        logger.info("Terminate scheduler set for 1 minutes:" + server_thread.name)
 
         server.serve_forever()
