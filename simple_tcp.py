@@ -37,13 +37,15 @@ class mTCPHandler(socketserver.StreamRequestHandler):
 
     def handle(self):
         # data = str(self.request.recv(1024), 'ascii')
-        # data = self.request.recv(1024)
-        data = self.rfile.readline().strip()
+        data = self.request.recv(1024)
+        # data = self.rfile.readline().strip()
         logger.info(data.hex())
         cur_thread = threading.current_thread()
         response = bytes("{}: {}".format(cur_thread.name, data), 'ascii')
         # self.request.sendall(response)
         logger.info(response)
+        # self.wfile.write(bytes.fromhex("48537878"))
+        self.request.sendall(bytes.fromhex("45837878"))
 
 
 if __name__ == "__main__":
@@ -86,4 +88,7 @@ if __name__ == "__main__":
         schedule.every(180).minutes.do(__shutdown, server)
         logger.info("Terminate scheduler set for 180 minutes:" + server_thread.name)
 
-        server.serve_forever()
+        try:
+            server.serve_forever()
+        except KeyboardInterrupt:
+            __atexit()

@@ -179,3 +179,56 @@
 21.09.2023 21:03:13 - __main__ - INFO - b"MainThread: b'Hello World 3'"
 21.09.2023 21:09:55 - __main__ - INFO - Server loop running in thread:MainThread
 21.09.2023 21:09:55 - __main__ - INFO - Terminate scheduler set for 1 minutes:MainThread
+27.09.2023 17:46:19 - __main__ - INFO - Server loop running in thread:MainThread
+27.09.2023 17:46:19 - __main__ - INFO - Terminate scheduler set for 180 minutes:MainThread
+27.09.2023 17:46:28 - __main__ - INFO - Server loop running in thread:MainThread
+27.09.2023 17:46:28 - __main__ - INFO - Terminate scheduler set for 180 minutes:MainThread
+27.09.2023 17:48:56 - __main__ - INFO - Server loop running in thread:MainThread
+27.09.2023 17:48:56 - __main__ - INFO - Terminate scheduler set for 180 minutes:MainThread
+27.09.2023 17:52:15 - __main__ - INFO - Server loop running in thread:MainThread
+27.09.2023 17:52:15 - __main__ - INFO - Terminate scheduler set for 180 minutes:MainThread
+27.09.2023 17:53:57 - __main__ - INFO - 48656c6c6f20576f726c642031
+27.09.2023 17:53:57 - __main__ - INFO - b"MainThread: b'Hello World 1'"
+27.09.2023 17:53:57 - __main__ - INFO - 48656c6c6f20576f726c642032
+27.09.2023 17:53:57 - __main__ - INFO - b"MainThread: b'Hello World 2'"
+27.09.2023 17:53:57 - __main__ - INFO - 48656c6c6f20576f726c642033
+27.09.2023 17:53:57 - __main__ - INFO - b"MainThread: b'Hello World 3'"
+27.09.2023 18:09:53 - __main__ - INFO - Server loop running in thread:MainThread
+27.09.2023 18:09:53 - __main__ - INFO - Terminate scheduler set for 180 minutes:MainThread
+27.09.2023 18:09:59 - __main__ - INFO - 48656c6c6f20576f726c642031
+27.09.2023 18:09:59 - __main__ - INFO - b"MainThread: b'Hello World 1'"
+27.09.2023 18:09:59 - __main__ - INFO - 48656c6c6f20576f726c642032
+27.09.2023 18:09:59 - __main__ - INFO - b"MainThread: b'Hello World 2'"
+27.09.2023 18:09:59 - __main__ - INFO - 48656c6c6f20576f726c642033
+27.09.2023 18:09:59 - __main__ - INFO - b"MainThread: b'Hello World 3'"
+27.09.2023 18:11:15 - __main__ - INFO - 48656c6c6f20576f726c642031
+27.09.2023 18:11:15 - __main__ - INFO - b"MainThread: b'Hello World 1'"
+27.09.2023 18:11:58 - __main__ - INFO - 
+27.09.2023 18:11:58 - __main__ - INFO - b"MainThread: b''"
+27.09.2023 18:12:27 - __main__ - INFO - Server loop running in thread:MainThread
+27.09.2023 18:12:27 - __main__ - INFO - Terminate scheduler set for 180 minutes:MainThread
+27.09.2023 18:14:31 - __main__ - INFO - Server loop running in thread:Thread-2
+27.09.2023 18:14:31 - __main__ - INFO - Terminate scheduler set for 10 minutes:Thread-2
+27.09.2023 18:14:31 - __main__ - INFO - b'Thread-3: Hello World 1'
+27.09.2023 18:14:31 - __main__ - INFO - b'Thread-4: Hello World 2'
+27.09.2023 18:14:31 - __main__ - INFO - b'Thread-5: Hello World 3'
+27.09.2023 18:14:42 - __main__ - INFO - Server loop running in thread:MainThread
+27.09.2023 18:14:42 - __main__ - INFO - Terminate scheduler set for 180 minutes:MainThread
+27.09.2023 18:15:46 - __main__ - INFO - 
+27.09.2023 18:15:46 - __main__ - INFO - b"MainThread: b''"
+27.09.2023 18:16:09 - __main__ - INFO - 48656c6c6f20576f726c642031
+27.09.2023 18:16:09 - __main__ - INFO - b"MainThread: b'Hello World 1'"
+27.09.2023 18:16:37 - __main__ - INFO - Server loop running in thread:MainThread
+27.09.2023 18:16:37 - __main__ - INFO - Terminate scheduler set for 180 minutes:MainThread
+27.09.2023 18:18:47 - __main__ - INFO - Server loop running in thread:MainThread
+27.09.2023 18:18:47 - __main__ - INFO - Terminate scheduler set for 180 minutes:MainThread
+27.09.2023 18:18:53 - __main__ - INFO - 48656c6c6f20576f726c642031
+27.09.2023 18:18:53 - __main__ - INFO - b"MainThread: b'Hello World 1'"
+27.09.2023 18:18:53 - __main__ - INFO - 48656c6c6f20576f726c642032
+27.09.2023 18:18:53 - __main__ - INFO - b"MainThread: b'Hello World 2'"
+27.09.2023 18:18:53 - __main__ - INFO - 48656c6c6f20576f726c642033
+27.09.2023 18:18:53 - __main__ - INFO - b"MainThread: b'Hello World 3'"
+27.09.2023 18:20:55 - __main__ - INFO - Server loop running in thread:MainThread
+27.09.2023 18:20:55 - __main__ - INFO - Terminate scheduler set for 180 minutes:MainThread
+27.09.2023 18:21:00 - __main__ - INFO - 48656c6c6f20576f726c642031
+27.09.2023 18:21:00 - __main__ - INFO - b"MainThread: b'Hello World 1'"
