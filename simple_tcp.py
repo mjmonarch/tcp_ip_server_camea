@@ -47,7 +47,7 @@ class mTCPHandler(socketserver.BaseRequestHandler):
 
 if __name__ == "__main__":
     # Port 0 means to select an arbitrary unused port
-    HOST, PORT = "localhost", 7_777
+    HOST, PORT = "", 7_777
 
     def __run_scheduler(interval=1):
         scheduler_event = threading.Event()
