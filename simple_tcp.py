@@ -75,7 +75,7 @@ if __name__ == "__main__":
     stop_scheduler = __run_scheduler()
     atexit.register(__atexit)
 
-    server = socketserver.TCPServer((HOST, PORT), mTCPHandler)
+    server = socketserver.TCPServer((HOST, PORT), mTCPHandler, bind_and_activate=True)
     with server:
         ip, port = server.server_address
 
@@ -83,6 +83,6 @@ if __name__ == "__main__":
         logger.info("Server loop running in thread:" + server_thread.name)
 
         schedule.every(180).minutes.do(__shutdown, server)
-        logger.info("Terminate scheduler set for 1 minutes:" + server_thread.name)
+        logger.info("Terminate scheduler set for 180 minutes:" + server_thread.name)
 
         server.serve_forever()
