@@ -33,11 +33,12 @@ logging.basicConfig(**LOGGING_SETTINGS)
 logger = logging.getLogger(__name__)
 
 
-class mTCPHandler(socketserver.BaseRequestHandler):
+class mTCPHandler(socketserver.StreamRequestHandler):
 
     def handle(self):
         # data = str(self.request.recv(1024), 'ascii')
-        data = self.request.recv(1024)
+        # data = self.request.recv(1024)
+        data = self.rfile.readline().strip()
         logger.info(data.hex())
         cur_thread = threading.current_thread()
         response = bytes("{}: {}".format(cur_thread.name, data), 'ascii')
