@@ -45,7 +45,7 @@ class mTCPHandler(socketserver.StreamRequestHandler):
         # self.request.sendall(response)
         logger.info(response)
         # self.wfile.write(bytes.fromhex("48537878"))
-        self.request.sendall(bytes("48537878", 'ascii'))
+        self.request.sendall(bytearray(b'\x48\x53\x78\x78'))
 
 
 if __name__ == "__main__":

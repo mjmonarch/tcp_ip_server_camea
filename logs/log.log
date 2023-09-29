@@ -11,3 +11,9 @@
 29.09.2023 23:28:41 - __main__ - INFO - Received data: 'b'Hello World!'' from ('127.0.0.1', 57867)
 29.09.2023 23:28:41 - __main__ - INFO - Received data: 'b''' from ('127.0.0.1', 57867)
 29.09.2023 23:28:41 - __main__ - INFO - Received data: 'b''' from ('127.0.0.1', 57867)
+29.09.2023 23:34:46 - __main__ - INFO - Server loop running in thread:MainThread
+29.09.2023 23:34:46 - __main__ - INFO - Terminate scheduler set for 180 minutes:MainThread
+29.09.2023 23:34:49 - __main__ - INFO - 48656c6c6f20576f726c6421
+29.09.2023 23:34:49 - __main__ - INFO - b"MainThread: b'Hello World!'"
+29.09.2023 23:34:53 - __main__ - INFO - 48656c6c6f20576f726c6421
+29.09.2023 23:34:53 - __main__ - INFO - b"MainThread: b'Hello World!'"
