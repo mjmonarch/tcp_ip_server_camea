@@ -86,10 +86,11 @@ if __name__ == "__main__":
                 # sending handhsake
                 conn.sendall(bytearray(b'\x48\x53\x78\x78'))
                 logger.info("Connection established with: " + str(addr))
-                while True:
-                    schedule.every(3).seconds.do(__send_keep_alive, conn)
-                    logger.debug("Keep alive message send")
 
+                schedule.every(3).seconds.do(__send_keep_alive, conn)
+                logger.debug("Keep alive message send")
+                
+                while True:
                     data = conn.recv(1024)
                     logger.info(f"Received data: '{data}' from {str(addr)}")
                     # conn.sendall(bytearray(b'\x48\x53\x78\x78'))
