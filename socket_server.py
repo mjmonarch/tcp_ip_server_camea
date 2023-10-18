@@ -77,8 +77,8 @@ if __name__ == "__main__":
         socket_thread = threading.current_thread()
         logger.info("Start socket listening in thread:" + socket_thread.name)
 
-        schedule.every(2).hours.do(__shutdown, s)
-        logger.info("Terminate scheduler set for 2 hours:" + socket_thread.name)
+        schedule.every(2).minutes.do(__shutdown, s)
+        logger.info("Terminate scheduler set for 2 minutes:" + socket_thread.name)
 
         try:
             conn, addr = s.accept()
