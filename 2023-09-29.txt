@@ -1,0 +1,231 @@
+CONSOLE:
+
+(venv_tcp) C:\Users\CRU_ZZ_NNN\tcp_server_vit\tcp_ip_server_camea>python socket_server.py
+29.09.2023 23:51:41 - __main__ - INFO - Start socket listening in thread:MainThread
+29.09.2023 23:51:41 - __main__ - INFO - Terminate scheduler set for 2 minutes:MainThread
+29.09.2023 23:51:41 - __main__ - INFO - Connection established with: ('127.0.0.1', 59371)
+29.09.2023 23:51:41 - __main__ - INFO - Received data: 'b'DAtP\x01\x00\xea\x00\\\x00\x00\x00'' from ('127.0.0.1', 59371)
+29.09.2023 23:51:41 - __main__ - INFO - Received data: 'b'msg:ClientInfo|AppType:Wimer|AppInstance:C:\\Unicam\\Wimer\\|Module:KY-DV-S1|Computer:KY-DV-PC\x00'' from ('127.0.0.1', 59371)
+29.09.2023 23:51:41 - __main__ - INFO - Received data: 'b'DAtP\x02\x00\x19\x00\x8f\x01\x00\x00'' from ('127.0.0.1', 59371)
+29.09.2023 23:51:41 - __main__ - INFO - Received data: 'b'msg:DetectionRequest|RequestID:KY-DV-S1_20230929T235009853+0300_RD0|ImageTime:20230929T235009872+0300|ToleranceMS:300|WantLPimg:0|EventID:KY-DV-S1_20230929T235009853+0300|WIMVehSpeed:93|WIMVehLength:1930|WIMVehDirection:0|WIMVehFLETime:20230929T235009853+0300|WIMVehSLETime:20230929T235010006+0300|WIMVehFLDTime:20230929T235010620+0300|WIMVehSLDTime:20230929T235010774+0300|RequestedSensor:KY-DV-D1\x00'' from ('127.0.0.1', 59371)
+29.09.2023 23:51:41 - __main__ - INFO - Received data: 'b'DAtP\x03\x00\x19\x00\x8e\x01\x00\x00'' from ('127.0.0.1', 59371)
+29.09.2023 23:51:41 - __main__ - INFO - Received data: 'b'msg:DetectionRequest|RequestID:KY-DV-S1_20230929T235049379+0300_RD0|ImageTime:20230929T235049403+0300|ToleranceMS:300|WantLPimg:0|EventID:KY-DV-S1_20230929T235049379+0300|WIMVehSpeed:76|WIMVehLength:410|WIMVehDirection:0|WIMVehFLETime:20230929T235049379+0300|WIMVehSLETime:20230929T235049639+0300|WIMVehFLDTime:20230929T235049639+0300|WIMVehSLDTime:20230929T235049840+0300|RequestedSensor:KY-DV-D1\x00'' from ('127.0.0.1', 59371)
+29.09.2023 23:51:43 - __main__ - INFO - Received data: 'b'DAtP\x04\x00\x19\x00\x8e\x01\x00\x00'' from ('127.0.0.1', 59371)
+29.09.2023 23:51:43 - __main__ - INFO - Received data: 'b'msg:DetectionRequest|RequestID:KY-DV-S1_20230929T235141861+0300_RD0|ImageTime:20230929T235141886+0300|ToleranceMS:300|WantLPimg:0|EventID:KY-DV-S1_20230929T235141861+0300|WIMVehSpeed:72|WIMVehLength:430|WIMVehDirection:0|WIMVehFLETime:20230929T235141861+0300|WIMVehSLETime:20230929T235142066+0300|WIMVehFLDTime:20230929T235142117+0300|WIMVehSLDTime:20230929T235142322+0300|RequestedSensor:KY-DV-D1\x00'' from ('127.0.0.1', 59371)
+29.09.2023 23:51:46 - __main__ - INFO - Received data: 'b'KAxx\x00\x00Tw\x00\x00\x00\x00'' from ('127.0.0.1', 59371)
+29.09.2023 23:51:48 - __main__ - INFO - Received data: 'b''' from ('127.0.0.1', 59371)
+Traceback (most recent call last):
+  File "C:\Users\CRU_ZZ_NNN\tcp_server_vit\tcp_ip_server_camea\socket_server.py", line 81, in <module>
+    data = conn.recv(1024)
+           ^^^^^^^^^^^^^^^
+ConnectionAbortedError: [WinError 10053] An established connection was aborted by the software in your host machine
+
+
+LOG FILE:
+29.09.2023 23:51:41 - __main__ - INFO - Start socket listening in thread:MainThread
+29.09.2023 23:51:41 - __main__ - INFO - Terminate scheduler set for 2 minutes:MainThread
+29.09.2023 23:51:41 - __main__ - INFO - Connection established with: ('127.0.0.1', 59371)
+29.09.2023 23:51:41 - __main__ - INFO - Received data: 'b'DAtP\x01\x00\xea\x00\\\x00\x00\x00'' from ('127.0.0.1', 59371)
+29.09.2023 23:51:41 - __main__ - INFO - Received data: 'b'msg:ClientInfo|AppType:Wimer|AppInstance:C:\\Unicam\\Wimer\\|Module:KY-DV-S1|Computer:KY-DV-PC\x00'' from ('127.0.0.1', 59371)
+29.09.2023 23:51:41 - __main__ - INFO - Received data: 'b'DAtP\x02\x00\x19\x00\x8f\x01\x00\x00'' from ('127.0.0.1', 59371)
+29.09.2023 23:51:41 - __main__ - INFO - Received data: 'b'msg:DetectionRequest|RequestID:KY-DV-S1_20230929T235009853+0300_RD0|ImageTime:20230929T235009872+0300|ToleranceMS:300|WantLPimg:0|EventID:KY-DV-S1_20230929T235009853+0300|WIMVehSpeed:93|WIMVehLength:1930|WIMVehDirection:0|WIMVehFLETime:20230929T235009853+0300|WIMVehSLETime:20230929T235010006+0300|WIMVehFLDTime:20230929T235010620+0300|WIMVehSLDTime:20230929T235010774+0300|RequestedSensor:KY-DV-D1\x00'' from ('127.0.0.1', 59371)
+29.09.2023 23:51:41 - __main__ - INFO - Received data: 'b'DAtP\x03\x00\x19\x00\x8e\x01\x00\x00'' from ('127.0.0.1', 59371)
+29.09.2023 23:51:41 - __main__ - INFO - Received data: 'b'msg:DetectionRequest|RequestID:KY-DV-S1_20230929T235049379+0300_RD0|ImageTime:20230929T235049403+0300|ToleranceMS:300|WantLPimg:0|EventID:KY-DV-S1_20230929T235049379+0300|WIMVehSpeed:76|WIMVehLength:410|WIMVehDirection:0|WIMVehFLETime:20230929T235049379+0300|WIMVehSLETime:20230929T235049639+0300|WIMVehFLDTime:20230929T235049639+0300|WIMVehSLDTime:20230929T235049840+0300|RequestedSensor:KY-DV-D1\x00'' from ('127.0.0.1', 59371)
+29.09.2023 23:51:43 - __main__ - INFO - Received data: 'b'DAtP\x04\x00\x19\x00\x8e\x01\x00\x00'' from ('127.0.0.1', 59371)
+29.09.2023 23:51:43 - __main__ - INFO - Received data: 'b'msg:DetectionRequest|RequestID:KY-DV-S1_20230929T235141861+0300_RD0|ImageTime:20230929T235141886+0300|ToleranceMS:300|WantLPimg:0|EventID:KY-DV-S1_20230929T235141861+0300|WIMVehSpeed:72|WIMVehLength:430|WIMVehDirection:0|WIMVehFLETime:20230929T235141861+0300|WIMVehSLETime:20230929T235142066+0300|WIMVehFLDTime:20230929T235142117+0300|WIMVehSLDTime:20230929T235142322+0300|RequestedSensor:KY-DV-D1\x00'' from ('127.0.0.1', 59371)
+29.09.2023 23:51:46 - __main__ - INFO - Received data: 'b'KAxx\x00\x00Tw\x00\x00\x00\x00'' from ('127.0.0.1', 59371)
+29.09.2023 23:51:48 - __main__ - INFO - Received data: 'b''' from ('127.0.0.1', 59371)
+
+SIMPLE_TCP.PY - added sending hansshake before receiving data 
+29.09.2023 23:55:46 - __main__ - INFO - Server loop running in thread:MainThread
+29.09.2023 23:55:46 - __main__ - INFO - Terminate scheduler set for 180 minutes:MainThread
+29.09.2023 23:55:46 - __main__ - INFO - 444174500100ea005c000000
+29.09.2023 23:55:46 - __main__ - INFO - b"MainThread: b'DAtP\\x01\\x00\\xea\\x00\\\\\\x00\\x00\\x00'"
+29.09.2023 23:55:46 - __main__ - INFO - 444174500100ea005c000000
+29.09.2023 23:55:46 - __main__ - INFO - b"MainThread: b'DAtP\\x01\\x00\\xea\\x00\\\\\\x00\\x00\\x00'"
+29.09.2023 23:55:46 - __main__ - INFO - 444174500100ea005c000000
+29.09.2023 23:55:46 - __main__ - INFO - b"MainThread: b'DAtP\\x01\\x00\\xea\\x00\\\\\\x00\\x00\\x00'"
+29.09.2023 23:55:46 - __main__ - INFO - 444174500100ea005c000000
+29.09.2023 23:55:46 - __main__ - INFO - b"MainThread: b'DAtP\\x01\\x00\\xea\\x00\\\\\\x00\\x00\\x00'"
+29.09.2023 23:55:46 - __main__ - INFO - 444174500100ea005c000000
+29.09.2023 23:55:46 - __main__ - INFO - b"MainThread: b'DAtP\\x01\\x00\\xea\\x00\\\\\\x00\\x00\\x00'"
+29.09.2023 23:55:46 - __main__ - INFO - 444174500100ea005c000000
+29.09.2023 23:55:46 - __main__ - INFO - b"MainThread: b'DAtP\\x01\\x00\\xea\\x00\\\\\\x00\\x00\\x00'"
+29.09.2023 23:55:46 - __main__ - INFO - 444174500100ea005c000000
+29.09.2023 23:55:46 - __main__ - INFO - b"MainThread: b'DAtP\\x01\\x00\\xea\\x00\\\\\\x00\\x00\\x00'"
+29.09.2023 23:55:47 - __main__ - INFO - 444174500100ea005c000000
+29.09.2023 23:55:47 - __main__ - INFO - b"MainThread: b'DAtP\\x01\\x00\\xea\\x00\\\\\\x00\\x00\\x00'"
+29.09.2023 23:55:47 - __main__ - INFO - 444174500100ea005c000000
+29.09.2023 23:55:47 - __main__ - INFO - b"MainThread: b'DAtP\\x01\\x00\\xea\\x00\\\\\\x00\\x00\\x00'"
+29.09.2023 23:55:47 - __main__ - INFO - 444174500100ea005c000000
+29.09.2023 23:55:47 - __main__ - INFO - b"MainThread: b'DAtP\\x01\\x00\\xea\\x00\\\\\\x00\\x00\\x00'"
+29.09.2023 23:55:47 - __main__ - INFO - 444174500100ea005c000000
+29.09.2023 23:55:47 - __main__ - INFO - b"MainThread: b'DAtP\\x01\\x00\\xea\\x00\\\\\\x00\\x00\\x00'"
+29.09.2023 23:55:47 - __main__ - INFO - 444174500100ea005c000000
+29.09.2023 23:55:47 - __main__ - INFO - b"MainThread: b'DAtP\\x01\\x00\\xea\\x00\\\\\\x00\\x00\\x00'"
+29.09.2023 23:55:47 - __main__ - INFO - 444174500100ea005c000000
+29.09.2023 23:55:47 - __main__ - INFO - b"MainThread: b'DAtP\\x01\\x00\\xea\\x00\\\\\\x00\\x00\\x00'"
+29.09.2023 23:55:47 - __main__ - INFO - 444174500100ea005c000000
+29.09.2023 23:55:47 - __main__ - INFO - b"MainThread: b'DAtP\\x01\\x00\\xea\\x00\\\\\\x00\\x00\\x00'"
+29.09.2023 23:55:47 - __main__ - INFO - 444174500100ea005c000000
+29.09.2023 23:55:47 - __main__ - INFO - b"MainThread: b'DAtP\\x01\\x00\\xea\\x00\\\\\\x00\\x00\\x00'"
+29.09.2023 23:55:47 - __main__ - INFO - 444174500100ea005c000000
+29.09.2023 23:55:47 - __main__ - INFO - b"MainThread: b'DAtP\\x01\\x00\\xea\\x00\\\\\\x00\\x00\\x00'"
+29.09.2023 23:55:47 - __main__ - INFO - 444174500100ea005c000000
+29.09.2023 23:55:47 - __main__ - INFO - b"MainThread: b'DAtP\\x01\\x00\\xea\\x00\\\\\\x00\\x00\\x00'"
+29.09.2023 23:55:47 - __main__ - INFO - 444174500100ea005c000000
+29.09.2023 23:55:47 - __main__ - INFO - b"MainThread: b'DAtP\\x01\\x00\\xea\\x00\\\\\\x00\\x00\\x00'"
+29.09.2023 23:55:47 - __main__ - INFO - 444174500100ea005c000000
+29.09.2023 23:55:47 - __main__ - INFO - b"MainThread: b'DAtP\\x01\\x00\\xea\\x00\\\\\\x00\\x00\\x00'"
+29.09.2023 23:55:47 - __main__ - INFO - 444174500100ea005c000000
+29.09.2023 23:55:47 - __main__ - INFO - b"MainThread: b'DAtP\\x01\\x00\\xea\\x00\\\\\\x00\\x00\\x00'"
+29.09.2023 23:55:47 - __main__ - INFO - 444174500100ea005c000000
+29.09.2023 23:55:47 - __main__ - INFO - b"MainThread: b'DAtP\\x01\\x00\\xea\\x00\\\\\\x00\\x00\\x00'"
+29.09.2023 23:55:47 - __main__ - INFO - 444174500100ea005c000000
+29.09.2023 23:55:47 - __main__ - INFO - b"MainThread: b'DAtP\\x01\\x00\\xea\\x00\\\\\\x00\\x00\\x00'"
+29.09.2023 23:55:47 - __main__ - INFO - 444174500100ea005c000000
+29.09.2023 23:55:47 - __main__ - INFO - b"MainThread: b'DAtP\\x01\\x00\\xea\\x00\\\\\\x00\\x00\\x00'"
+29.09.2023 23:55:47 - __main__ - INFO - 444174500100ea005c000000
+29.09.2023 23:55:47 - __main__ - INFO - b"MainThread: b'DAtP\\x01\\x00\\xea\\x00\\\\\\x00\\x00\\x00'"
+29.09.2023 23:55:47 - __main__ - INFO - 444174500100ea005c000000
+29.09.2023 23:55:47 - __main__ - INFO - b"MainThread: b'DAtP\\x01\\x00\\xea\\x00\\\\\\x00\\x00\\x00'"
+29.09.2023 23:55:47 - __main__ - INFO - 444174500100ea005c000000
+29.09.2023 23:55:47 - __main__ - INFO - b"MainThread: b'DAtP\\x01\\x00\\xea\\x00\\\\\\x00\\x00\\x00'"
+29.09.2023 23:55:47 - __main__ - INFO - 444174500100ea005c000000
+29.09.2023 23:55:47 - __main__ - INFO - b"MainThread: b'DAtP\\x01\\x00\\xea\\x00\\\\\\x00\\x00\\x00'"
+29.09.2023 23:55:48 - __main__ - INFO - 444174500100ea005c000000
+29.09.2023 23:55:48 - __main__ - INFO - b"MainThread: b'DAtP\\x01\\x00\\xea\\x00\\\\\\x00\\x00\\x00'"
+29.09.2023 23:55:48 - __main__ - INFO - 444174500100ea005c000000
+29.09.2023 23:55:48 - __main__ - INFO - b"MainThread: b'DAtP\\x01\\x00\\xea\\x00\\\\\\x00\\x00\\x00'"
+29.09.2023 23:55:48 - __main__ - INFO - 444174500100ea005c000000
+29.09.2023 23:55:48 - __main__ - INFO - b"MainThread: b'DAtP\\x01\\x00\\xea\\x00\\\\\\x00\\x00\\x00'"
+29.09.2023 23:55:48 - __main__ - INFO - 444174500100ea005c000000
+29.09.2023 23:55:48 - __main__ - INFO - b"MainThread: b'DAtP\\x01\\x00\\xea\\x00\\\\\\x00\\x00\\x00'"
+29.09.2023 23:55:48 - __main__ - INFO - 444174500100ea005c000000
+29.09.2023 23:55:48 - __main__ - INFO - b"MainThread: b'DAtP\\x01\\x00\\xea\\x00\\\\\\x00\\x00\\x00'"
+29.09.2023 23:55:48 - __main__ - INFO - 444174500100ea005c000000
+29.09.2023 23:55:48 - __main__ - INFO - b"MainThread: b'DAtP\\x01\\x00\\xea\\x00\\\\\\x00\\x00\\x00'"
+29.09.2023 23:55:48 - __main__ - INFO - 444174500100ea005c000000
+29.09.2023 23:55:48 - __main__ - INFO - b"MainThread: b'DAtP\\x01\\x00\\xea\\x00\\\\\\x00\\x00\\x00'"
+29.09.2023 23:55:48 - __main__ - INFO - 444174500100ea005c000000
+29.09.2023 23:55:48 - __main__ - INFO - b"MainThread: b'DAtP\\x01\\x00\\xea\\x00\\\\\\x00\\x00\\x00'"
+29.09.2023 23:55:48 - __main__ - INFO - 444174500100ea005c000000
+29.09.2023 23:55:48 - __main__ - INFO - b"MainThread: b'DAtP\\x01\\x00\\xea\\x00\\\\\\x00\\x00\\x00'"
+29.09.2023 23:55:48 - __main__ - INFO - 444174500100ea005c000000
+29.09.2023 23:55:48 - __main__ - INFO - b"MainThread: b'DAtP\\x01\\x00\\xea\\x00\\\\\\x00\\x00\\x00'"
+29.09.2023 23:55:48 - __main__ - INFO - 444174500100ea005c000000
+29.09.2023 23:55:48 - __main__ - INFO - b"MainThread: b'DAtP\\x01\\x00\\xea\\x00\\\\\\x00\\x00\\x00'"
+29.09.2023 23:55:48 - __main__ - INFO - 444174500100ea005c000000
+29.09.2023 23:55:48 - __main__ - INFO - b"MainThread: b'DAtP\\x01\\x00\\xea\\x00\\\\\\x00\\x00\\x00'"
+29.09.2023 23:55:48 - __main__ - INFO - 444174500100ea005c000000
+29.09.2023 23:55:48 - __main__ - INFO - b"MainThread: b'DAtP\\x01\\x00\\xea\\x00\\\\\\x00\\x00\\x00'"
+29.09.2023 23:55:48 - __main__ - INFO - 444174500100ea005c000000
+29.09.2023 23:55:48 - __main__ - INFO - b"MainThread: b'DAtP\\x01\\x00\\xea\\x00\\\\\\x00\\x00\\x00'"
+29.09.2023 23:55:48 - __main__ - INFO - 444174500100ea005c000000
+29.09.2023 23:55:48 - __main__ - INFO - b"MainThread: b'DAtP\\x01\\x00\\xea\\x00\\\\\\x00\\x00\\x00'"
+29.09.2023 23:55:48 - __main__ - INFO - 444174500100ea005c000000
+29.09.2023 23:55:48 - __main__ - INFO - b"MainThread: b'DAtP\\x01\\x00\\xea\\x00\\\\\\x00\\x00\\x00'"
+29.09.2023 23:55:48 - __main__ - INFO - 444174500100ea005c000000
+29.09.2023 23:55:48 - __main__ - INFO - b"MainThread: b'DAtP\\x01\\x00\\xea\\x00\\\\\\x00\\x00\\x00'"
+29.09.2023 23:55:48 - __main__ - INFO - 444174500100ea005c000000
+29.09.2023 23:55:48 - __main__ - INFO - b"MainThread: b'DAtP\\x01\\x00\\xea\\x00\\\\\\x00\\x00\\x00'"
+29.09.2023 23:55:48 - __main__ - INFO - 444174500100ea005c000000
+29.09.2023 23:55:48 - __main__ - INFO - b"MainThread: b'DAtP\\x01\\x00\\xea\\x00\\\\\\x00\\x00\\x00'"
+29.09.2023 23:55:48 - __main__ - INFO - 444174500100ea005c000000
+29.09.2023 23:55:48 - __main__ - INFO - b"MainThread: b'DAtP\\x01\\x00\\xea\\x00\\\\\\x00\\x00\\x00'"
+29.09.2023 23:55:49 - __main__ - INFO - 444174500100ea005c000000
+29.09.2023 23:55:49 - __main__ - INFO - b"MainThread: b'DAtP\\x01\\x00\\xea\\x00\\\\\\x00\\x00\\x00'"
+29.09.2023 23:55:49 - __main__ - INFO - 444174500100ea005c000000
+29.09.2023 23:55:49 - __main__ - INFO - b"MainThread: b'DAtP\\x01\\x00\\xea\\x00\\\\\\x00\\x00\\x00'"
+29.09.2023 23:55:49 - __main__ - INFO - 444174500100ea005c000000
+29.09.2023 23:55:49 - __main__ - INFO - b"MainThread: b'DAtP\\x01\\x00\\xea\\x00\\\\\\x00\\x00\\x00'"
+29.09.2023 23:55:49 - __main__ - INFO - 444174500100ea005c000000
+29.09.2023 23:55:49 - __main__ - INFO - b"MainThread: b'DAtP\\x01\\x00\\xea\\x00\\\\\\x00\\x00\\x00'"
+29.09.2023 23:55:49 - __main__ - INFO - 444174500100ea005c000000
+29.09.2023 23:55:49 - __main__ - INFO - b"MainThread: b'DAtP\\x01\\x00\\xea\\x00\\\\\\x00\\x00\\x00'"
+29.09.2023 23:55:49 - __main__ - INFO - 444174500100ea005c000000
+29.09.2023 23:55:49 - __main__ - INFO - b"MainThread: b'DAtP\\x01\\x00\\xea\\x00\\\\\\x00\\x00\\x00'"
+29.09.2023 23:55:49 - __main__ - INFO - 444174500100ea005c000000
+29.09.2023 23:55:49 - __main__ - INFO - b"MainThread: b'DAtP\\x01\\x00\\xea\\x00\\\\\\x00\\x00\\x00'"
+29.09.2023 23:55:49 - __main__ - INFO - 444174500100ea005c000000
+29.09.2023 23:55:49 - __main__ - INFO - b"MainThread: b'DAtP\\x01\\x00\\xea\\x00\\\\\\x00\\x00\\x00'"
+29.09.2023 23:55:49 - __main__ - INFO - 444174500100ea005c000000
+29.09.2023 23:55:49 - __main__ - INFO - b"MainThread: b'DAtP\\x01\\x00\\xea\\x00\\\\\\x00\\x00\\x00'"
+29.09.2023 23:55:49 - __main__ - INFO - 444174500100ea005c000000
+29.09.2023 23:55:49 - __main__ - INFO - b"MainThread: b'DAtP\\x01\\x00\\xea\\x00\\\\\\x00\\x00\\x00'"
+29.09.2023 23:55:49 - __main__ - INFO - 444174500100ea005c000000
+29.09.2023 23:55:49 - __main__ - INFO - b"MainThread: b'DAtP\\x01\\x00\\xea\\x00\\\\\\x00\\x00\\x00'"
+29.09.2023 23:55:49 - __main__ - INFO - 444174500100ea005c000000
+29.09.2023 23:55:49 - __main__ - INFO - b"MainThread: b'DAtP\\x01\\x00\\xea\\x00\\\\\\x00\\x00\\x00'"
+29.09.2023 23:55:49 - __main__ - INFO - 444174500100ea005c000000
+29.09.2023 23:55:49 - __main__ - INFO - b"MainThread: b'DAtP\\x01\\x00\\xea\\x00\\\\\\x00\\x00\\x00'"
+29.09.2023 23:55:49 - __main__ - INFO - 444174500100ea005c000000
+29.09.2023 23:55:49 - __main__ - INFO - b"MainThread: b'DAtP\\x01\\x00\\xea\\x00\\\\\\x00\\x00\\x00'"
+29.09.2023 23:55:49 - __main__ - INFO - 444174500100ea005c000000
+29.09.2023 23:55:49 - __main__ - INFO - b"MainThread: b'DAtP\\x01\\x00\\xea\\x00\\\\\\x00\\x00\\x00'"
+29.09.2023 23:55:49 - __main__ - INFO - 444174500100ea005c000000
+29.09.2023 23:55:49 - __main__ - INFO - b"MainThread: b'DAtP\\x01\\x00\\xea\\x00\\\\\\x00\\x00\\x00'"
+29.09.2023 23:55:49 - __main__ - INFO - 444174500100ea005c000000
+29.09.2023 23:55:49 - __main__ - INFO - b"MainThread: b'DAtP\\x01\\x00\\xea\\x00\\\\\\x00\\x00\\x00'"
+29.09.2023 23:55:49 - __main__ - INFO - 444174500100ea005c000000
+29.09.2023 23:55:49 - __main__ - INFO - b"MainThread: b'DAtP\\x01\\x00\\xea\\x00\\\\\\x00\\x00\\x00'"
+29.09.2023 23:55:49 - __main__ - INFO - 444174500100ea005c000000
+29.09.2023 23:55:49 - __main__ - INFO - b"MainThread: b'DAtP\\x01\\x00\\xea\\x00\\\\\\x00\\x00\\x00'"
+29.09.2023 23:55:49 - __main__ - INFO - 444174500100ea005c000000
+29.09.2023 23:55:50 - __main__ - INFO - b"MainThread: b'DAtP\\x01\\x00\\xea\\x00\\\\\\x00\\x00\\x00'"
+29.09.2023 23:55:50 - __main__ - INFO - 444174500100ea005c000000
+29.09.2023 23:55:50 - __main__ - INFO - b"MainThread: b'DAtP\\x01\\x00\\xea\\x00\\\\\\x00\\x00\\x00'"
+29.09.2023 23:55:50 - __main__ - INFO - 444174500100ea005c000000
+29.09.2023 23:55:50 - __main__ - INFO - b"MainThread: b'DAtP\\x01\\x00\\xea\\x00\\\\\\x00\\x00\\x00'"
+29.09.2023 23:55:50 - __main__ - INFO - 444174500100ea005c000000
+29.09.2023 23:55:50 - __main__ - INFO - b"MainThread: b'DAtP\\x01\\x00\\xea\\x00\\\\\\x00\\x00\\x00'"
+29.09.2023 23:55:50 - __main__ - INFO - 444174500100ea005c000000
+29.09.2023 23:55:50 - __main__ - INFO - b"MainThread: b'DAtP\\x01\\x00\\xea\\x00\\\\\\x00\\x00\\x00'"
+29.09.2023 23:55:50 - __main__ - INFO - 444174500100ea005c000000
+29.09.2023 23:55:50 - __main__ - INFO - b"MainThread: b'DAtP\\x01\\x00\\xea\\x00\\\\\\x00\\x00\\x00'"
+29.09.2023 23:55:51 - __main__ - INFO - 444174500100ea005c000000
+29.09.2023 23:55:51 - __main__ - INFO - b"MainThread: b'DAtP\\x01\\x00\\xea\\x00\\\\\\x00\\x00\\x00'"
+29.09.2023 23:55:51 - __main__ - INFO - 444174500100ea005c000000
+29.09.2023 23:55:51 - __main__ - INFO - b"MainThread: b'DAtP\\x01\\x00\\xea\\x00\\\\\\x00\\x00\\x00'"
+29.09.2023 23:55:51 - __main__ - INFO - 444174500100ea005c000000
+29.09.2023 23:55:51 - __main__ - INFO - b"MainThread: b'DAtP\\x01\\x00\\xea\\x00\\\\\\x00\\x00\\x00'"
+29.09.2023 23:55:51 - __main__ - INFO - 444174500100ea005c000000
+29.09.2023 23:55:51 - __main__ - INFO - b"MainThread: b'DAtP\\x01\\x00\\xea\\x00\\\\\\x00\\x00\\x00'"
+29.09.2023 23:55:51 - __main__ - INFO - 444174500100ea005c000000
+29.09.2023 23:55:51 - __main__ - INFO - b"MainThread: b'DAtP\\x01\\x00\\xea\\x00\\\\\\x00\\x00\\x00'"
+29.09.2023 23:55:51 - __main__ - INFO - 444174500100ea005c000000
+29.09.2023 23:55:51 - __main__ - INFO - b"MainThread: b'DAtP\\x01\\x00\\xea\\x00\\\\\\x00\\x00\\x00'"
+29.09.2023 23:55:51 - __main__ - INFO - 444174500100ea005c000000
+29.09.2023 23:55:51 - __main__ - INFO - b"MainThread: b'DAtP\\x01\\x00\\xea\\x00\\\\\\x00\\x00\\x00'"
+29.09.2023 23:55:51 - __main__ - INFO - 444174500100ea005c000000
+29.09.2023 23:55:51 - __main__ - INFO - b"MainThread: b'DAtP\\x01\\x00\\xea\\x00\\\\\\x00\\x00\\x00'"
+29.09.2023 23:55:51 - __main__ - INFO - 444174500100ea005c000000
+29.09.2023 23:55:51 - __main__ - INFO - b"MainThread: b'DAtP\\x01\\x00\\xea\\x00\\\\\\x00\\x00\\x00'"
+29.09.2023 23:55:51 - __main__ - INFO - 444174500100ea005c000000
+29.09.2023 23:55:51 - __main__ - INFO - b"MainThread: b'DAtP\\x01\\x00\\xea\\x00\\\\\\x00\\x00\\x00'"
+29.09.2023 23:55:51 - __main__ - INFO - 444174500100ea005c000000
+29.09.2023 23:55:51 - __main__ - INFO - b"MainThread: b'DAtP\\x01\\x00\\xea\\x00\\\\\\x00\\x00\\x00'"
+29.09.2023 23:55:51 - __main__ - INFO - 444174500100ea005c000000
+29.09.2023 23:55:51 - __main__ - INFO - b"MainThread: b'DAtP\\x01\\x00\\xea\\x00\\\\\\x00\\x00\\x00'"
+29.09.2023 23:55:51 - __main__ - INFO - 444174500100ea005c000000
+29.09.2023 23:55:51 - __main__ - INFO - b"MainThread: b'DAtP\\x01\\x00\\xea\\x00\\\\\\x00\\x00\\x00'"
+
+ONE MORE TIME SOCKET_SERVER.py
+(venv_tcp) C:\Users\CRU_ZZ_NNN\tcp_server_vit\tcp_ip_server_camea>python socket_server.py
+29.09.2023 23:57:11 - __main__ - INFO - Start socket listening in thread:MainThread
+29.09.2023 23:57:11 - __main__ - INFO - Terminate scheduler set for 2 minutes:MainThread
+29.09.2023 23:57:12 - __main__ - INFO - Connection established with: ('127.0.0.1', 59854)
+29.09.2023 23:57:12 - __main__ - INFO - Received data: 'b'DAtP\x01\x00\xea\x00\\\x00\x00\x00'' from ('127.0.0.1', 59854)
+29.09.2023 23:57:12 - __main__ - INFO - Received data: 'b'msg:ClientInfo|AppType:Wimer|AppInstance:C:\\Unicam\\Wimer\\|Module:KY-DV-S1|Computer:KY-DV-PC\x00'' from ('127.0.0.1', 59854)
+29.09.2023 23:57:12 - __main__ - INFO - Received data: 'b'DAtP\x02\x00\x19\x00\x8f\x01\x00\x00'' from ('127.0.0.1', 59854)
+29.09.2023 23:57:12 - __main__ - INFO - Received data: 'b'msg:DetectionRequest|RequestID:KY-DV-S1_20230929T235628995+0300_RD0|ImageTime:20230929T235629017+0300|ToleranceMS:300|WantLPimg:0|EventID:KY-DV-S1_20230929T235628995+0300|WIMVehSpeed:83|WIMVehLength:1380|WIMVehDirection:0|WIMVehFLETime:20230929T235628995+0300|WIMVehSLETime:20230929T235629200+0300|WIMVehFLDTime:20230929T235629609+0300|WIMVehSLDTime:20230929T235629814+0300|RequestedSensor:KY-DV-D1\x00'' from ('127.0.0.1', 59854)
+29.09.2023 23:57:12 - __main__ - INFO - Received data: 'b'DAtP\x03\x00\x19\x00\x8f\x01\x00\x00'' from ('127.0.0.1', 59854)
+29.09.2023 23:57:12 - __main__ - INFO - Received data: 'b'msg:DetectionRequest|RequestID:KY-DV-S1_20230929T235707139+0300_RD0|ImageTime:20230929T235707160+0300|ToleranceMS:300|WantLPimg:0|EventID:KY-DV-S1_20230929T235707139+0300|WIMVehSpeed:87|WIMVehLength:1750|WIMVehDirection:0|WIMVehFLETime:20230929T235707139+0300|WIMVehSLETime:20230929T235707293+0300|WIMVehFLDTime:20230929T235707856+0300|WIMVehSLDTime:20230929T235708061+0300|RequestedSensor:KY-DV-D1\x00'' from ('127.0.0.1', 59854)
+29.09.2023 23:57:15 - __main__ - INFO - Received data: 'b'KAxx\x00\x00Tw\x00\x00\x00\x00'' from ('127.0.0.1', 59854)
+29.09.2023 23:57:18 - __main__ - INFO - Received data: 'b'KAxx\x00\x00Tw\x00\x00\x00\x00'' from ('127.0.0.1', 59854)
+29.09.2023 23:57:19 - __main__ - INFO - Received data: 'b''' from ('127.0.0.1', 59854)
+Traceback (most recent call last):
+  File "C:\Users\CRU_ZZ_NNN\tcp_server_vit\tcp_ip_server_camea\socket_server.py", line 81, in <module>
+    data = conn.recv(1024)
+           ^^^^^^^^^^^^^^^
+ConnectionAbortedError: [WinError 10053] An established connection was aborted by the software in your host machine

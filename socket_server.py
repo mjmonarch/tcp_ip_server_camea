@@ -9,6 +9,10 @@ import atexit
 import sys
 
 
+# CONSTANTS
+SERVER_TIMEOUT = 5
+
+
 LOG_FILE = "logs/log.log"
 LOGGING_SETTINGS = {
     "handlers": [],
@@ -58,6 +62,9 @@ if __name__ == "__main__":
         s.close()
         stop_scheduler.set()
 
+    def __send_keep_alive(conn):
+        conn.sendall(bytearray(b'\x4b\x41\x78\x78\x00\x00\x00\x00\x00\x00\x00\x00'))
+
     # Start the background thread
     stop_scheduler = __run_scheduler()
     atexit.register(__atexit)
@@ -65,20 +72,26 @@ if __name__ == "__main__":
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.bind((HOST, PORT))
         s.listen()
+        s.setdefaulttimeout(SERVER_TIMEOUT)
 
         socket_thread = threading.current_thread()
         logger.info("Start socket listening in thread:" + socket_thread.name)
 
-        schedule.every(1).minutes.do(__shutdown, s)
+        schedule.every(2).minutes.do(__shutdown, s)
         logger.info("Terminate scheduler set for 1 minutes:" + socket_thread.name)
 
         try:
             conn, addr = s.accept()
             with conn:
+                # sending handhsake
+                conn.sendall(bytearray(b'\x48\x53\x78\x78'))
                 logger.info("Connection established with: " + str(addr))
                 while True:
+                    schedule.every(3).seconds.do(__send_keep_alive, conn)
+                    logger.debug("Keep alive message send")
+
                     data = conn.recv(1024)
                     logger.info(f"Received data: '{data}' from {str(addr)}")
-                    conn.sendall(bytearray(b'\x48\x53\x78\x78'))
+                    # conn.sendall(bytearray(b'\x48\x53\x78\x78'))
         except KeyboardInterrupt:
             __atexit()
