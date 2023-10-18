@@ -59,7 +59,7 @@ if __name__ == "__main__":
 
     def __shutdown(s):
         logger.info("Server was shutdown because running time expired")
-        s.close()
+        conn.close()
         stop_scheduler.set()
 
     def __send_keep_alive(conn):
@@ -90,7 +90,7 @@ if __name__ == "__main__":
                 schedule.every(3).seconds.do(__send_keep_alive, conn)
                 logger.debug("Keep alive message send")
 
-                while s:
+                while conn:
                     data = conn.recv(1024)
                     logger.info(f"Received data: '{data}' from {str(addr)}")
                     # conn.sendall(bytearray(b'\x48\x53\x78\x78'))
