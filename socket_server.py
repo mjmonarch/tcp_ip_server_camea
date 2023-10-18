@@ -72,13 +72,13 @@ if __name__ == "__main__":
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.bind((HOST, PORT))
         s.listen()
-        s.setdefaulttimeout(SERVER_TIMEOUT)
+        s.settimeout(SERVER_TIMEOUT)
 
         socket_thread = threading.current_thread()
         logger.info("Start socket listening in thread:" + socket_thread.name)
 
         schedule.every(2).minutes.do(__shutdown, s)
-        logger.info("Terminate scheduler set for 1 minutes:" + socket_thread.name)
+        logger.info("Terminate scheduler set for 2 minutes:" + socket_thread.name)
 
         try:
             conn, addr = s.accept()
