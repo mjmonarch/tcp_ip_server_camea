@@ -162,14 +162,16 @@ if __name__ == "__main__":
                 logger.debug("Keep alive message send")
 
                 while conn:
-                    # data = conn.recv(1024)
-                    data = str(conn.recv(1024), 'ascii')
+                    data = conn.recv(1024)
                     logger.info(f"Received data: '{data}' from {str(addr)}")
 
                     # check if it is request for camera images
-                    data = data.decode()
-                    if "msg:DetectionRequest" in data:
-                        __process_DetectionRequest(data, conn)
+                    try:
+                        data = data.decode()
+                        if "msg:DetectionRequest" in data:
+                            __process_DetectionRequest(data, conn)
+                    except Exception as e:
+                        logger.error(f"Failed to decode: '{data}'")
 
         except KeyboardInterrupt:
             __atexit()
