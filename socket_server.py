@@ -174,7 +174,7 @@ if __name__ == "__main__":
                         if "msg:DetectionRequest" in data:
                             __process_DetectionRequest(data, conn)
                     except Exception as e:
-                        logger.error(f"Failed search for income message type")
+                        logger.error(e)
 
         except KeyboardInterrupt:
             __atexit()
