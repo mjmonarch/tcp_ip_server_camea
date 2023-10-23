@@ -115,7 +115,22 @@ if __name__ == "__main__":
             response2_data['ILPC'] = 'UA'
             response2_data['LpJpeg'] = generate_lpr_image_base64('AA 1234 AA')
             response2_data['FullImage64'] = generate_image_base64(f'stub image for {response_data["RequestID"]}, TimeDet: {response2_data["TimeDet"]}')
+            response2_data_str = '|'.join([f'{key}:{value}' for key, value in response2_data.items()])
 
+            ip = 'localhost'
+            port = 5050
+            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s2:
+                s2.connect((ip, port))
+                s2.sendall(bytearray(b'\x4b\x41\x78\x78\x00\x00\x00\x00\x00\x00\x00\x00'))
+                s2_response = str(s2.recv(1024), 'ascii')
+                logger.info(f"Received data: '{s2_response}' from {ip}:{port}")
+                img_response = (bytearray(b'\x44\x41\x74\x50')
+                                + msg_id.to_bytes(2, 'little')
+                                + bytearray(b'\x00\x00')
+                                + len(response2_data_str).to_bytes(4, 'little')
+                                + response2_data_str.encode('UTF-8'))
+                s2.sendall(img_response)
+                s2.close()
 
         except Exception as e:
             logger.exception(e)
