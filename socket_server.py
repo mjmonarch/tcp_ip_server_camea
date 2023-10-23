@@ -169,13 +169,16 @@ if __name__ == "__main__":
 
                     # check if it is request for camera images
                     try:
-                        if type(data) != 'str':
+                        if not isinstance(data, str):
                             data = data.decode()
                     except Exception as e:
                         logger.error(f"Failed to decode: '{data}' - " + str(e))
                     try:
                         if "msg:DetectionRequest" in data:
+                            logger.debug('DetectionRequest catched')
                             __process_DetectionRequest(data, conn)
+                        else:
+                            logger.debug('not a DetectionRequest')
                     except Exception as e:
                         logger.error(e)
 
