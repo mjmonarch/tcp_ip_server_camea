@@ -7,10 +7,17 @@ import schedule
 import time
 import atexit
 import sys
+import zoneinfo
+from datetime import datetime
+from image_generator import generate_image_base64, generate_lpr_image_base64
 
 
 # CONSTANTS
 SERVER_TIMEOUT = 5
+MODULE_ID = 'Test_module_1'  # move to settings file
+START_MSG_ID = 1  # move to settings file
+Camera_Unit_ID = 'CAMERA_1'
+TIMEZONE = 'Europe/Kyiv'
 
 
 LOG_FILE = "logs/log.log"
@@ -65,10 +72,59 @@ if __name__ == "__main__":
     def __send_keep_alive(conn):
         conn.sendall(bytearray(b'\x4b\x41\x78\x78\x00\x00\x00\x00\x00\x00\x00\x00'))
 
+    def __process_DetectionRequest(data, conn):
+        global msg_id
+
+        data = data.decode()
+        data = data.rstrip('\x00')
+        try:
+            request_data = {item.split(':')[0]: ''.join(item.split(':')[1:]) for item in data.split('|')}
+
+            # send response to CAMEA
+            response_data = dict()
+            response_data['msg'] = 'DetectionRequestRepeat'
+            response_data['ModuleID'] = request_data['RequestedSensor'] if 'RequestedSensor' in request_data else MODULE_ID
+            response_data['RequestID'] = request_data['RequestID'] if 'RequestID' in request_data else 'no_request_ID_in_the_request'
+            response_data['ImageID'] = (Camera_Unit_ID + '_' + datetime.now(tz=zoneinfo.ZoneInfo(TIMEZONE)).strftime('%Y%m%dT%H%M%s%f')[:-3]
+                                                             + datetime.now(tz=zoneinfo.ZoneInfo(TIMEZONE)).strftime('%z'))
+            response_data['TimeDet'] = (datetime.now(tz=zoneinfo.ZoneInfo(TIMEZONE)).strftime('%Y%m%dT%H%M%s%f')[:-3]
+                                        + datetime.now(tz=zoneinfo.ZoneInfo(TIMEZONE)).strftime('%z'))
+            response_data['LP'] = 'AA1234AA'
+            response_data['ILPC'] = 'UA'
+            response_data['IsDetection'] = 1
+
+            response_data_str = '|'.join([f'{key}:{value}' for key, value in response_data.items()])
+
+            response = (bytearray(b'\x44\x41\x74\x50')
+                        + msg_id.to_bytes(2, 'little')
+                        + bytearray(b'\x00\x00')
+                        + len(response_data_str).to_bytes(4, 'little')
+                        + response_data_str.encode('UTF-8'))
+            conn.sendall(response)
+
+            # send picture to CAMEA
+            response2_data = dict()
+            response2_data['msg'] = 'LargeDetection'
+            response2_data['ModuleID'] = response_data['ModuleID']
+            response2_data['ImageID'] = response_data['ImageID']
+            response2_data['TimeDet'] = (datetime.now(tz=zoneinfo.ZoneInfo(TIMEZONE)).strftime('%Y%m%dT%H%M%s%f')[:-3]
+                                         + datetime.now(tz=zoneinfo.ZoneInfo(TIMEZONE)).strftime('%z'))
+            response2_data['UT'] = datetime.now(tz=zoneinfo.ZoneInfo(TIMEZONE)).isoformat(timespec="milliseconds")
+            response2_data['ExtraCount'] = 0
+            response2_data['LPText'] = 'AA1234AA'
+            response2_data['ILPC'] = 'UA'
+            response2_data['LpJpeg'] = generate_lpr_image_base64('AA 1234 AA')
+            response2_data['FullImage64'] = generate_image_base64(f'stub image for {response_data["RequestID"]}, TimeDet: {response2_data["TimeDet"]}')
+
+
+        except Exception as e:
+            logger.exception(e)
+
     # Start the background thread
     stop_scheduler = __run_scheduler()
     atexit.register(__atexit)
 
+    msg_id = START_MSG_ID
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.bind((HOST, PORT))
         s.listen()
@@ -93,6 +149,11 @@ if __name__ == "__main__":
                 while conn:
                     data = conn.recv(1024)
                     logger.info(f"Received data: '{data}' from {str(addr)}")
-                    # conn.sendall(bytearray(b'\x48\x53\x78\x78'))
+
+                    # check if it is request for camera images
+                    data = data.decode()
+                    if "msg:DetectionRequest" in data:
+                        __process_DetectionRequest(data, conn)
+
         except KeyboardInterrupt:
             __atexit()
