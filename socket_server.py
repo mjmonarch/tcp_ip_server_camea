@@ -162,7 +162,8 @@ if __name__ == "__main__":
                 logger.debug("Keep alive message send")
 
                 while conn:
-                    data = conn.recv(1024)
+                    # data = conn.recv(1024)
+                    data = str(conn.recv(1024), 'ascii')
                     logger.info(f"Received data: '{data}' from {str(addr)}")
 
                     # check if it is request for camera images
