@@ -168,10 +168,13 @@ if __name__ == "__main__":
                     # check if it is request for camera images
                     try:
                         data = data.decode()
+                    except Exception as e:
+                        logger.error(f"Failed to decode: '{data}' - " + str(e))
+                    try:
                         if "msg:DetectionRequest" in data:
                             __process_DetectionRequest(data, conn)
                     except Exception as e:
-                        logger.error(f"Failed to decode: '{data}'")
+                        logger.error(f"Failed search for income message type")
 
         except KeyboardInterrupt:
             __atexit()
