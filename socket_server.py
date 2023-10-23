@@ -170,7 +170,7 @@ if __name__ == "__main__":
                     # check if it is request for camera images
                     try:
                         if not isinstance(data, str):
-                            data = data.decode()
+                            data = data.decode('ISO-8859-1')
                     except Exception as e:
                         logger.error(f"Failed to decode: '{data}' - " + str(e))
                     try:
