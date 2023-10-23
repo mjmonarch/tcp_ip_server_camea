@@ -75,7 +75,7 @@ if __name__ == "__main__":
     def __process_DetectionRequest(data, conn):
         global msg_id
 
-        data = data.decode()
+        # data = data.decode()
         data = data.rstrip('\x00')
         try:
             request_data = {item.split(':')[0]: ''.join(item.split(':')[1:]) for item in data.split('|')}
