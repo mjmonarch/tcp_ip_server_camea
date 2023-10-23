@@ -101,6 +101,7 @@ if __name__ == "__main__":
                         + len(response_data_str).to_bytes(4, 'little')
                         + response_data_str.encode('UTF-8'))
             conn.sendall(response)
+            logger.info(f"Send response: '{response}'")
 
             # send picture to CAMEA
             response2_data = dict()
@@ -130,6 +131,7 @@ if __name__ == "__main__":
                                 + len(response2_data_str).to_bytes(4, 'little')
                                 + response2_data_str.encode('UTF-8'))
                 s2.sendall(img_response)
+                logger.info("Send images to 'localhost':5050")
                 s2.close()
 
         except Exception as e:
@@ -167,7 +169,8 @@ if __name__ == "__main__":
 
                     # check if it is request for camera images
                     try:
-                        data = data.decode()
+                        if type(data) != 'str':
+                            data = data.decode()
                     except Exception as e:
                         logger.error(f"Failed to decode: '{data}' - " + str(e))
                     try:
