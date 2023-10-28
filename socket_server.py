@@ -85,9 +85,9 @@ if __name__ == "__main__":
             response_data['msg'] = 'DetectionRequestRepeat'
             response_data['ModuleID'] = request_data['RequestedSensor'] if 'RequestedSensor' in request_data else MODULE_ID
             response_data['RequestID'] = request_data['RequestID'] if 'RequestID' in request_data else 'no_request_ID_in_the_request'
-            response_data['ImageID'] = (Camera_Unit_ID + '_' + datetime.now(tz=zoneinfo.ZoneInfo(TIMEZONE)).strftime('%Y%m%dT%H%M%s%f')[:-3]
+            response_data['ImageID'] = (Camera_Unit_ID + '_' + datetime.now(tz=zoneinfo.ZoneInfo(TIMEZONE)).strftime('%Y%m%dT%H%M%S%f')[:-3]
                                                              + datetime.now(tz=zoneinfo.ZoneInfo(TIMEZONE)).strftime('%z'))
-            response_data['TimeDet'] = (datetime.now(tz=zoneinfo.ZoneInfo(TIMEZONE)).strftime('%Y%m%dT%H%M%s%f')[:-3]
+            response_data['TimeDet'] = (datetime.now(tz=zoneinfo.ZoneInfo(TIMEZONE)).strftime('%Y%m%dT%H%M%S%f')[:-3]
                                         + datetime.now(tz=zoneinfo.ZoneInfo(TIMEZONE)).strftime('%z'))
             response_data['LP'] = 'AA1234AA'
             response_data['ILPC'] = 'UA'
@@ -108,7 +108,7 @@ if __name__ == "__main__":
             response2_data['msg'] = 'LargeDetection'
             response2_data['ModuleID'] = response_data['ModuleID']
             response2_data['ImageID'] = response_data['ImageID']
-            response2_data['TimeDet'] = (datetime.now(tz=zoneinfo.ZoneInfo(TIMEZONE)).strftime('%Y%m%dT%H%M%s%f')[:-3]
+            response2_data['TimeDet'] = (datetime.now(tz=zoneinfo.ZoneInfo(TIMEZONE)).strftime('%Y%m%dT%H%M%S%f')[:-3]
                                          + datetime.now(tz=zoneinfo.ZoneInfo(TIMEZONE)).strftime('%z'))
             response2_data['UT'] = datetime.now(tz=zoneinfo.ZoneInfo(TIMEZONE)).isoformat(timespec="milliseconds")
             response2_data['ExtraCount'] = 0
