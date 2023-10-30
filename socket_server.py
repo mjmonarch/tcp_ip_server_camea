@@ -172,8 +172,9 @@ if __name__ == "__main__":
                 while conn:
                     data = conn.recv(BUFFER)
                     try:
-                        if not isinstance(data, str):
-                            data = data.decode('ISO-8859-1')
+                    #     if not isinstance(data, str):
+                    #         data = data.decode('ISO-8859-1')
+                        data = data.decode('ISO-8859-1')
                     except Exception as e:
                         logger.error(f"Failed to decode: '{data}' - " + str(e))
                     buffer = buffer + data
