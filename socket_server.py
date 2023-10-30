@@ -1,22 +1,25 @@
-import threading
-import socket
+import atexit
 import logging
 import logging.config
 import os
+import queue
+import re
 import schedule
-import time
-import atexit
+import socket
 import sys
+import time
+import threading
 import zoneinfo
 from datetime import datetime
 from image_generator import generate_image_base64, generate_lpr_image_base64
 
 
 # CONSTANTS
-SERVER_TIMEOUT = 5
-MODULE_ID = 'Test_module_1'  # move to settings file
+SERVER_TIMEOUT = 11
+BUFFER = 1024
+MODULE_ID = 'KY-DV-D2'  # move to settings file
 START_MSG_ID = 1  # move to settings file
-Camera_Unit_ID = 'CAMERA_1'
+Camera_Unit_ID = 'KY-DV-D2' # NOT USED
 TIMEZONE = 'Europe/Kyiv'
 
 
@@ -123,7 +126,7 @@ if __name__ == "__main__":
             with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s2:
                 s2.connect((ip, port))
                 s2.sendall(bytearray(b'\x4b\x41\x78\x78\x00\x00\x00\x00\x00\x00\x00\x00'))
-                s2_response = str(s2.recv(1024), 'ascii')
+                s2_response = str(s2.recv(BUFFER), 'ascii')
                 logger.info(f"Received data: '{s2_response}' from {ip}:{port}")
                 img_response = (bytearray(b'\x44\x41\x74\x50')
                                 + msg_id.to_bytes(2, 'little')
@@ -155,8 +158,11 @@ if __name__ == "__main__":
 
         try:
             conn, addr = s.accept()
+            buffer = str()
+            queries = queue.Queue()
+
             with conn:
-                # sending handhsake
+                # sending handshake
                 conn.sendall(bytearray(b'\x48\x53\x78\x78'))
                 logger.info("Connection established with: " + str(addr))
 
@@ -164,23 +170,34 @@ if __name__ == "__main__":
                 logger.debug("Keep alive message send")
 
                 while conn:
-                    data = conn.recv(1024)
-                    logger.info(f"Received data: '{data}' from {str(addr)}")
-
-                    # check if it is request for camera images
+                    data = conn.recv(BUFFER)
                     try:
                         if not isinstance(data, str):
                             data = data.decode('ISO-8859-1')
                     except Exception as e:
                         logger.error(f"Failed to decode: '{data}' - " + str(e))
-                    try:
-                        if "msg:DetectionRequest" in data:
-                            logger.debug('DetectionRequest catched')
-                            __process_DetectionRequest(data, conn)
-                        else:
-                            logger.debug('not a DetectionRequest')
-                    except Exception as e:
-                        logger.error(e)
+                    buffer = buffer + data
+                    data = ''
+
+                    splitted_buffer = re.findall(r'.+?(?=DAtP|Hsxx|$)', buffer, flags=re.DOTALL)
+                    if len(splitted_buffer) > 1:
+                        for i in range(len(splitted_buffer) - 1):
+                            queries.put(splitted_buffer[i])
+                        buffer = splitted_buffer[-1]
+
+                    while not queries.empty():
+                        query = queries.get()
+                        logger.info(f"Received data: '{query}' from {str(addr)}")
+
+                        # check if it is request for camera images
+                        try:
+                            if "msg:DetectionRequest" in query:
+                                logger.debug('DetectionRequest catched')
+                                __process_DetectionRequest(query, conn)
+                            else:
+                                logger.debug('not a DetectionRequest')
+                        except Exception as e:
+                            logger.error(e)
 
         except KeyboardInterrupt:
             __atexit()
