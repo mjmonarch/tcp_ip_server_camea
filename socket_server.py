@@ -196,7 +196,7 @@ if __name__ == "__main__":
                     buffer = buffer + data
                     data = ''
 
-                    splitted_buffer = re.findall(r'.+?(?=DAtP|Hsxx|$)', buffer, flags=re.DOTALL)
+                    splitted_buffer = re.findall(r'.+?(?=DAtP|Hsxx|Kaxx|$)', buffer, flags=re.DOTALL)
                     if len(splitted_buffer) > 1:
                         for i in range(len(splitted_buffer) - 1):
                             queries.put(splitted_buffer[i])
