@@ -2,7 +2,7 @@ import atexit
 import logging
 import logging.config
 import os
-import queue
+import random
 import re
 import schedule
 import socket
@@ -10,7 +10,7 @@ import sys
 import time
 import threading
 import zoneinfo
-from datetime import datetime
+from datetime import datetime, timedelta
 from image_generator import generate_image_base64, generate_lpr_image_base64
 
 
@@ -88,10 +88,23 @@ if __name__ == "__main__":
             response_data['msg'] = 'DetectionRequestRepeat'
             response_data['ModuleID'] = request_data['RequestedSensor'] if 'RequestedSensor' in request_data else MODULE_ID
             response_data['RequestID'] = request_data['RequestID'] if 'RequestID' in request_data else 'no_request_ID_in_the_request'
-            response_data['ImageID'] = (Camera_Unit_ID + '_' + datetime.now(tz=zoneinfo.ZoneInfo(TIMEZONE)).strftime('%Y%m%dT%H%M%S%f')[:-3]
-                                                             + datetime.now(tz=zoneinfo.ZoneInfo(TIMEZONE)).strftime('%z'))
-            response_data['TimeDet'] = (datetime.now(tz=zoneinfo.ZoneInfo(TIMEZONE)).strftime('%Y%m%dT%H%M%S%f')[:-3]
-                                        + datetime.now(tz=zoneinfo.ZoneInfo(TIMEZONE)).strftime('%z'))
+
+            try:
+                dt = datetime.strptime(request_data['ImageTime'], '%Y%m%dT%H%M%S%f%z')
+                # generate random response time with tolerance 250
+                dt_response = dt + timedelta(milliseconds=random.randomint(-250, 250))
+            except Exception:
+                logger.error(f"Incorrect datetime in the DetectionRequest: {response_data['RequestID']}")
+                dt_response = datetime.now(tz=zoneinfo.ZoneInfo(TIMEZONE))
+
+            response_data['ImageID'] = (Camera_Unit_ID + '_' + datetime.strftime(dt_response, '%Y%m%dT%H%M%S%f')[:-3]
+                                                             + datetime.strftime(dt_response, '%z'))
+            response_data['TimeDet'] = (datetime.strftime(dt_response, '%Y%m%dT%H%M%S%f')[:-3]
+                                        + datetime.strftime(dt_response, '%z'))
+            # response_data['ImageID'] = (Camera_Unit_ID + '_' + datetime.now(tz=zoneinfo.ZoneInfo(TIMEZONE)).strftime('%Y%m%dT%H%M%S%f')[:-3]
+            #                                                  + datetime.now(tz=zoneinfo.ZoneInfo(TIMEZONE)).strftime('%z'))
+            # response_data['TimeDet'] = (datetime.now(tz=zoneinfo.ZoneInfo(TIMEZONE)).strftime('%Y%m%dT%H%M%S%f')[:-3]
+            #                             + datetime.now(tz=zoneinfo.ZoneInfo(TIMEZONE)).strftime('%z'))
             response_data['LP'] = 'AA1234AA'
             response_data['ILPC'] = 'UA'
             response_data['IsDetection'] = 1
