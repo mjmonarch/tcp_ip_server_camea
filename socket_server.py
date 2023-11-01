@@ -92,7 +92,7 @@ if __name__ == "__main__":
             try:
                 dt = datetime.strptime(request_data['ImageTime'], '%Y%m%dT%H%M%S%f%z')
                 # generate random response time with tolerance 250
-                dt_response = dt + timedelta(milliseconds=random.randomint(-250, 250))
+                dt_response = dt + timedelta(milliseconds=random.randint(-250, 250))
             except Exception:
                 logger.error(f"Incorrect datetime in the DetectionRequest: {response_data['RequestID']}")
                 dt_response = datetime.now(tz=zoneinfo.ZoneInfo(TIMEZONE))
@@ -124,9 +124,11 @@ if __name__ == "__main__":
             response2_data['msg'] = 'LargeDetection'
             response2_data['ModuleID'] = response_data['ModuleID']
             response2_data['ImageID'] = response_data['ImageID']
-            response2_data['TimeDet'] = (datetime.now(tz=zoneinfo.ZoneInfo(TIMEZONE)).strftime('%Y%m%dT%H%M%S%f')[:-3]
-                                         + datetime.now(tz=zoneinfo.ZoneInfo(TIMEZONE)).strftime('%z'))
-            response2_data['UT'] = datetime.now(tz=zoneinfo.ZoneInfo(TIMEZONE)).isoformat(timespec="milliseconds")
+            response2_data['TimeDet'] = response_data['TimeDet']
+            response2_data['UT'] = dt_response.isoformat(timespec="milliseconds")
+            # response2_data['TimeDet'] = (datetime.now(tz=zoneinfo.ZoneInfo(TIMEZONE)).strftime('%Y%m%dT%H%M%S%f')[:-3]
+            #                              + datetime.now(tz=zoneinfo.ZoneInfo(TIMEZONE)).strftime('%z'))
+            # response2_data['UT'] = datetime.now(tz=zoneinfo.ZoneInfo(TIMEZONE)).isoformat(timespec="milliseconds")
             response2_data['ExtraCount'] = 0
             response2_data['LPText'] = 'AA1234AA'
             response2_data['ILPC'] = 'UA'
