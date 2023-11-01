@@ -20,7 +20,7 @@ SERVER_TIMEOUT = 11
 BUFFER = 1024
 MODULE_ID = 'KY-DV-D2'  # move to settings file
 START_MSG_ID = 1  # move to settings file
-Camera_Unit_ID = 'KY-DV-D2' # NOT USED
+Camera_Unit_ID = 'CAMERA_1'  # NOT USED
 TIMEZONE = 'Europe/Kyiv'
 
 
