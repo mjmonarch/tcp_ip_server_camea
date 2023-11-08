@@ -22,7 +22,7 @@ def generate_image_base64(text=''):
     buffered = BytesIO()
     img.save(buffered, format="PNG")
     img_str = base64.b64encode(buffered.getvalue())
-    return img_str
+    return img_str.decode()
 
 
 def generate_lpr_image_base64(text=''):
@@ -30,7 +30,7 @@ def generate_lpr_image_base64(text=''):
     buffered = BytesIO()
     img.save(buffered, format="PNG")
     img_str = base64.b64encode(buffered.getvalue())
-    return img_str
+    return img_str.decode()
 
 
 if __name__ == '__main__':
@@ -42,6 +42,10 @@ if __name__ == '__main__':
 
     generate_lpr_image("AA 1234 AA").save('test_img_LPR.png')
     img_str = generate_lpr_image_base64('AA 1234 AA')
+    # print(img_str)
+    # a = img_str.decode()
+    # print(a)
+    # print(type(a))
 
     img = Image.open(BytesIO(base64.b64decode(img_str)))
     img.save('test_img_LPR_2.png', 'PNG')

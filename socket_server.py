@@ -204,11 +204,12 @@ if __name__ == "__main__":
 
                     while not queries.empty():
                         query = queries.get()
-                        logger.info(f"Received data: '{query}' from {str(addr)}")
+                        logger.debug(f"Received data: '{query}' from {str(addr)}")
 
                         # check if it is request for camera images
                         try:
                             if "msg:DetectionRequest" in query:
+                                logger.info(f"Received data: '{query}' from {str(addr)}")
                                 logger.debug('DetectionRequest catched')
                                 __process_DetectionRequest(query, conn)
                             else:
