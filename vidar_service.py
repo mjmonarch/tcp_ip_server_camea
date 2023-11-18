@@ -83,8 +83,6 @@ class VidarService:
             return None
 
 
-# http://192.168.6.161/lpr/cff?cmd=getdata&id=
-
 if __name__ == '__main__':
     if len(sys.argv) != 4:
         print("Invalid arguments quantity - provide IP, timestamp in format '2023-11-18 09:54:45.000' and tolerance in ms")
@@ -99,5 +97,6 @@ if __name__ == '__main__':
     ids = vidar_service.get_ids(transit_timestamp, tolerance)
     for id in ids.values():
         result = vidar_service.get_data
-        print(*result.items(), sep='\n')
-        print()
+        if result:
+            print(*result.items(), sep='\n')
+            print()
