@@ -43,7 +43,7 @@ class VidarService:
         Dict of timestamp along with IDs that fit the interval
         transit_timestamp ± tolerance
         """
-        result = list()
+        result = dict()
         t1 = int(transit_timestamp.timestamp()*1_000) - tolerance
         t2 = int(transit_timestamp.timestamp()*1_000) + tolerance
         url = 'http://' + self.IP + f'/lpr/cff?cmd=querydb&sql=select%20*%20from%20cffresult%20where%20frametimems%20%3E%{t1}%20and%20frametimems%20%3C%{t2}'
