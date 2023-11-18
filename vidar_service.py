@@ -70,6 +70,7 @@ class VidarService:
         """
         result = dict()
         url = 'http://' + self.IP + f'/lpr/cff?cmd=getdata&id={id}'
+        print(url)
         r = requests.get(url)
         root = ET.fromstring(r.content)
         if root.find('ID'):
