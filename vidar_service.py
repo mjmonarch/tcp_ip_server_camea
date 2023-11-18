@@ -51,7 +51,7 @@ class VidarService:
         r = requests.get(url)
         root = ET.fromstring(r.content)
         for row in root.findall('row'):
-            result[row.find('FRAMETIMEMS').get('value')] = result[row.find('ID').get('value')]
+            result[row.find('FRAMETIMEMS').get('value')] = row.find('ID').get('value')
         return result
 
     def get_data(id: int) -> dict:
