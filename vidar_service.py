@@ -74,7 +74,7 @@ class VidarService:
         r = requests.get(url)
         root = ET.fromstring(r.content)
         print(root.find('ID').get('value'))
-        if root.find('ID'):
+        if root.find('ID').get('value'):
             print('aaa')
             result['timestamp'] = root.find('frametimems').get('value')
             print(result)
