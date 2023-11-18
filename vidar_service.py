@@ -41,20 +41,19 @@ class VidarService:
         Output:
         -----------
         Dict of timestamp along with IDs that fit the interval
-        transit_timestamp ± tolerance
+        transit_timestamp ± tolerance or None if not found
         """
         result = dict()
         t1 = int(transit_timestamp.timestamp()*1_000) - tolerance
         t2 = int(transit_timestamp.timestamp()*1_000) + tolerance
         url = 'http://' + self.IP + f'/lpr/cff?cmd=querydb&sql=select%20*%20from%20cffresult%20where%20frametimems%20%3E%20{t1}%20and%20frametimems%20%3C%20{t2}'
-        print(url)
         r = requests.get(url)
         root = ET.fromstring(r.content)
         for row in root.findall('row'):
             result[row.find('FRAMETIMEMS').get('value')] = row.find('ID').get('value')
         return result
 
-    def get_data(id: int) -> dict:
+    def get_data(self, id: int) -> dict:
         """
         Returns dictionary with vehicle image in base64 format,
         license plate image in base64 format and license plate text
@@ -69,8 +68,22 @@ class VidarService:
         Dictionary with vehicle image in base64 format,
         license plate image in base64 format and license plate text
         """
-        pass
+        result = dict()
+        url = 'http://' + self.IP + f'/lpr/cff?cmd=getdata&id=/{id}'
+        r = requests.get(url)
+        root = ET.fromstring(r.content)
+        if root.find('ID'):
+            result['timestamp'] = root.find('frametimems').get('value')
+            result['LP'] = root.find('anpr').find('text').get('value')
+            result['ILPC'] = root.find('anpr').find('country').get('value')
+            result['LpJpeg'] = root.find('images').find('lp_img').get('value')
+            result['FullImage64'] = root.find('images').find('normal_img').get('value')
+            return result
+        else:
+            return None
 
+
+# http://192.168.6.161/lpr/cff?cmd=getdata&id=
 
 if __name__ == '__main__':
     if len(sys.argv) != 4:
@@ -83,11 +96,8 @@ if __name__ == '__main__':
     tolerance = int(sys.argv[3])
 
     vidar_service = VidarService(IP)
-    result = vidar_service.get_ids(transit_timestamp, tolerance)
-    # print(*result.items(), sep='\n')
-    print(result)
-
-
-
-# http://192.168.6.161/lpr/cff?cmd=querydb&sql=select%20*%20from%20cffresult%20where%20frametimems%20%3E%201700301890391%20and%20frametimems%20%3C%201700301896391
-# http://192.168.6.161/lpr/cff?cmd=querydb&sql=select%20*%20from%20cffresult%20where%20frametimems%20%3E%1700314500500%20and%20frametimems%20%3C%1700315700500
+    ids = vidar_service.get_ids(transit_timestamp, tolerance)
+    for id in ids.values():
+        result = vidar_service.get_data
+        print(*result.items(), sep='\n')
+        print()
