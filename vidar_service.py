@@ -46,7 +46,7 @@ class VidarService:
         result = dict()
         t1 = int(transit_timestamp.timestamp()*1_000) - tolerance
         t2 = int(transit_timestamp.timestamp()*1_000) + tolerance
-        url = 'http://' + self.IP + f'/lpr/cff?cmd=querydb&sql=select%20*%20from%20cffresult%20where%20frametimems%20%3E%{t1}%20and%20frametimems%20%3C%{t2}'
+        url = 'http://' + self.IP + f'/lpr/cff?cmd=querydb&sql=select%20*%20from%20cffresult%20where%20frametimems%20%3E%20{t1}%20and%20frametimems%20%3C%20{t2}'
         print(url)
         r = requests.get(url)
         root = ET.fromstring(r.content)
@@ -85,3 +85,8 @@ if __name__ == '__main__':
     vidar_service = VidarService(IP)
     result = vidar_service.get_ids(transit_timestamp, tolerance)
     print(*result.items(), sep='\n')
+
+
+
+# http://192.168.6.161/lpr/cff?cmd=querydb&sql=select%20*%20from%20cffresult%20where%20frametimems%20%3E%201700301890391%20and%20frametimems%20%3C%201700301896391
+# http://192.168.6.161/lpr/cff?cmd=querydb&sql=select%20*%20from%20cffresult%20where%20frametimems%20%3E%1700314500500%20and%20frametimems%20%3C%1700315700500
