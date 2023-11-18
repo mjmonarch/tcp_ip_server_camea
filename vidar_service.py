@@ -47,6 +47,7 @@ class VidarService:
         t1 = int(transit_timestamp.timestamp()*1_000) - tolerance
         t2 = int(transit_timestamp.timestamp()*1_000) + tolerance
         url = 'https://' + self.IP + f'/lpr/cff?cmd=querydb&sql=select%20*%20from%20cffresult%20where%20frametimems%20%3E%{t1}%20and%20frametimems%20%3C%{t2}'
+        print(url)
         r = requests.get(url)
         root = ET.fromstring(r.content)
         for row in root.findall('row'):
