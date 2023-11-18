@@ -106,6 +106,7 @@ if __name__ == '__main__':
     for id in ids.values():
         result = vidar_service.get_data(id)
         if result:
-            # print(*result.items(), sep='\n')
-            print(result)
+            result['LpJpeg'] = result['LpJpeg'][:20] + '...'
+            result['FullImage64'] = result['FullImage64'] + '...'
+            print(*result.items(), sep='\n')
             print()
