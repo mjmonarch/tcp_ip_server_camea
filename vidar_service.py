@@ -74,17 +74,11 @@ class VidarService:
         r = requests.get(url)
         root = ET.fromstring(r.content)
         if root.find('ID').get('value'):
-            print('aaa')
             result['timestamp'] = root.find('capture').find('frametimems').get('value')
-            print(result)
             result['LP'] = root.find('anpr').find('text').get('value')
-            print(result)
             result['ILPC'] = root.find('anpr').find('country').get('value')
-            print(result)
             result['LpJpeg'] = root.find('images').find('lp_img').get('value')
-            print(result)
             result['FullImage64'] = root.find('images').find('normal_img').get('value')
-            print(result)
             return result
         else:
             return None
@@ -102,11 +96,10 @@ if __name__ == '__main__':
 
     vidar_service = VidarService(IP)
     ids = vidar_service.get_ids(transit_timestamp, tolerance)
-    print(ids)
     for id in ids.values():
         result = vidar_service.get_data(id)
         if result:
             result['LpJpeg'] = result['LpJpeg'][:20] + '...'
-            result['FullImage64'] = result['FullImage64'] + '...'
+            result['FullImage64'] = result['FullImage64'][:20] + '...'
             print(*result.items(), sep='\n')
             print()
