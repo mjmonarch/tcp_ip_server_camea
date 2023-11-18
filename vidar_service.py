@@ -69,7 +69,7 @@ class VidarService:
         license plate image in base64 format and license plate text
         """
         result = dict()
-        url = 'http://' + self.IP + f'/lpr/cff?cmd=getdata&id=/{id}'
+        url = 'http://' + self.IP + f'/lpr/cff?cmd=getdata&id={id}'
         r = requests.get(url)
         root = ET.fromstring(r.content)
         if root.find('ID'):
