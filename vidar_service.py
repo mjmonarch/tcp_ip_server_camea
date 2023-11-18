@@ -16,8 +16,9 @@ class VidarService:
 
     Methods:
     get_ids(transit_timestamp: datetime string, tolerance: ms) --> dict
-        Returns dict of image timestamps in int format (since 1970) along with IDs
-        from the range (transit_timestamp - tolerance; transit_timestamp + tolerance)
+        Returns dict of image timestamps in int format (since 1970) along
+        with IDs from the range
+        (transit_timestamp - tolerance; transit_timestamp + tolerance)
     get_data(id: str) --> dict
         Returns dictionary with vehicle image in base64 format,
         license plate image in base64 format and license plate text
@@ -39,8 +40,8 @@ class VidarService:
 
         Output:
         -----------
-        List of IDs inside interval (transit_timestamp - tolerance; timestamp + tolerance)
-        along with image time in int format (since 1970)
+        Dict of timestamp along with IDs that fit the interval
+        transit_timestamp ± tolerance
         """
         result = list()
         t1 = int(transit_timestamp.timestamp()*1_000) - tolerance
@@ -54,20 +55,18 @@ class VidarService:
 
     def get_data(id: int) -> dict:
         """
-        Returns list of IDs along with image time in int format (since 1970)
-        from the range (transit_timestamp - tolerance; timestamp + tolerance)
+        Returns dictionary with vehicle image in base64 format,
+        license plate image in base64 format and license plate text
 
         Parameters:
         -----------
-        transit_timestamp: str
-            Datetime in ISO 8601 format
-        tolerance: int
-            Tolerance in ms to define the search range
+        ID: int
+            Image ID
 
         Output:
         -----------
-        List of IDs inside interval (transit_timestamp - tolerance; timestamp + tolerance)
-        along with image time in int format (since 1970)
+        Dictionary with vehicle image in base64 format,
+        license plate image in base64 format and license plate text
         """
         pass
 
