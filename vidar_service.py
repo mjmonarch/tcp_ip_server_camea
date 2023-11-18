@@ -79,7 +79,7 @@ if __name__ == '__main__':
     # set up query parameters
     IP = sys.argv[1]
     transit_timestamp = datetime.strptime(sys.argv[2], '%Y-%m-%d %H:%M:%S.%f')
-    tolerance = sys.argv[3]
+    tolerance = int(sys.argv[3])
 
     vidar_service = VidarService(IP)
     result = vidar_service.get_ids(transit_timestamp, tolerance)
