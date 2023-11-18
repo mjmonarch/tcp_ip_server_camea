@@ -75,10 +75,15 @@ class VidarService:
         root = ET.fromstring(r.content)
         if root.find('ID'):
             result['timestamp'] = root.find('frametimems').get('value')
+            print(result)
             result['LP'] = root.find('anpr').find('text').get('value')
+            print(result)
             result['ILPC'] = root.find('anpr').find('country').get('value')
+            print(result)
             result['LpJpeg'] = root.find('images').find('lp_img').get('value')
+            print(result)
             result['FullImage64'] = root.find('images').find('normal_img').get('value')
+            print(result)
             return result
         else:
             return None
