@@ -96,7 +96,7 @@ if __name__ == '__main__':
     vidar_service = VidarService(IP)
     ids = vidar_service.get_ids(transit_timestamp, tolerance)
     for id in ids.values():
-        result = vidar_service.get_data()
+        result = vidar_service.get_data(id)
         if result:
             print(*result.items(), sep='\n')
             # print(result)
