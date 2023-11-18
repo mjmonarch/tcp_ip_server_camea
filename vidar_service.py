@@ -84,7 +84,8 @@ if __name__ == '__main__':
 
     vidar_service = VidarService(IP)
     result = vidar_service.get_ids(transit_timestamp, tolerance)
-    print(*result.items(), sep='\n')
+    # print(*result.items(), sep='\n')
+    print(result)
 
 
 
