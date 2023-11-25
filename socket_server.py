@@ -89,8 +89,8 @@ class QUERY_PROCESSOR:
 
         self.msg_id = self.SETTINGS['INITIAL_MSG_ID'] # TODO: change!!!
         self.vidar_service = VidarService(ip=self.SETTINGS['VIDAR_IP'])
-        self.camea_service = CameaService(ip=self.SETTINGS['CAMEA_DB_IP'],
-                                          port=self.SETTINGS['CAMEA_DB_PORT'])
+        self.camea_service = CameaService(db_ip=self.SETTINGS['CAMEA_DB_IP'],
+                                          db_port=self.SETTINGS['CAMEA_DB_PORT'])
 
     def __send_keep_alive(self, conn):
         conn.sendall(bytearray(b'\x4b\x41\x78\x78\x00\x00\x00\x00\x00\x00\x00\x00'))
