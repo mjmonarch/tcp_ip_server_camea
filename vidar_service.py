@@ -4,6 +4,8 @@ import xml.etree.ElementTree as ET
 from datetime import datetime
 
 
+# TODO: add try ... except blocks!!!!
+
 class VidarService:
     """
     Class represented service for quering the vidar database
@@ -24,8 +26,8 @@ class VidarService:
         license plate image in base64 format and license plate text
     """
 
-    def __init__(self, IP):
-        self.IP = IP
+    def __init__(self, ip):
+        self.IP = ip
 
     def get_ids(self, transit_timestamp, tolerance: int) -> list:
         """
@@ -40,13 +42,14 @@ class VidarService:
 
         Output:
         -----------
-        Dict of timestamp along with IDs that fit the interval
-        transit_timestamp ± tolerance or None if not found
+        Dictionary:
+            'timestamp': image ID
         """
         result = dict()
         t1 = int(transit_timestamp.timestamp()*1_000) - tolerance
         t2 = int(transit_timestamp.timestamp()*1_000) + tolerance
-        url = 'http://' + self.IP + f'/lpr/cff?cmd=querydb&sql=select%20*%20from%20cffresult%20where%20frametimems%20%3E%20{t1}%20and%20frametimems%20%3C%20{t2}'
+        url = ('http://' + self.IP + '/lpr/cff?cmd=querydb&sql=select%20*%20from%20cffresult%20'
+                         + f'where%20frametimems%20%3E%20{t1}%20and%20frametimems%20%3C%20{t2}')
         r = requests.get(url)
         root = ET.fromstring(r.content)
         for row in root.findall('row'):
@@ -65,12 +68,16 @@ class VidarService:
 
         Output:
         -----------
-        Dictionary with vehicle image in base64 format,
-        license plate image in base64 format and license plate text
+        Dictionary:
+            'timestamp': image timestamp
+            'LP': vehicle license plate number
+            'ILPC': vehile country code
+            'LpJpeg':  license plate image in base64 format
+            'FullImage64': vehicle image in base64 format
         """
         result = dict()
         url = 'http://' + self.IP + f'/lpr/cff?cmd=getdata&id={id}'
-        print(url)
+        # print(url)
         r = requests.get(url)
         root = ET.fromstring(r.content)
         if root.find('ID').get('value'):
@@ -79,14 +86,14 @@ class VidarService:
             result['ILPC'] = root.find('anpr').find('country').get('value')
             result['LpJpeg'] = root.find('images').find('lp_img').get('value')
             result['FullImage64'] = root.find('images').find('normal_img').get('value')
-            return result
-        else:
-            return None
+        return result
 
 
 if __name__ == '__main__':
     if len(sys.argv) != 4:
-        print("Invalid arguments quantity - provide IP, timestamp in format '2023-11-18 09:54:45.000' and tolerance in ms")
+        msg = ("Invalid arguments quantity - provide IP, "
+               + "timestamp in format '2023-11-18 09:54:45.000' and tolerance in ms")
+        print(msg)
         exit(1)
 
     # set up query parameters

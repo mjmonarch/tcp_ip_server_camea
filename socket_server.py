@@ -3,7 +3,6 @@ import logging
 import logging.config
 import os
 import queue
-import random
 import re
 import schedule
 import socket
@@ -11,19 +10,13 @@ import sys
 import time
 import threading
 import zoneinfo
-from datetime import datetime, timedelta
-from image_generator import generate_image_base64, generate_lpr_image_base64
+from datetime import datetime
+from camea_service import CameaService
+from vidar_service import VidarService
+from errors import IncorrectCameaQuery
 
 
-# CONSTANTS
-SERVER_TIMEOUT = 11
-BUFFER = 1024
-MODULE_ID = 'KY-DV-D2'  # move to settings file
-START_MSG_ID = 1  # move to settings file
-Camera_Unit_ID = 'CAMERA_1'  # NOT USED
-TIMEZONE = 'Europe/Kyiv'
-
-
+# Logger settings
 LOG_FILE = "logs/log.log"
 LOGGING_SETTINGS = {
     "handlers": [],
@@ -47,175 +40,249 @@ LOGGING_SETTINGS["handlers"].append(stream_handler)
 logging.basicConfig(**LOGGING_SETTINGS)
 logger = logging.getLogger(__name__)
 
-if __name__ == "__main__":
-    # Port 0 means to select an arbitrary unused port
-    HOST, PORT = "127.0.0.1", 7_777
 
-    def __run_scheduler(interval=1):
-        scheduler_event = threading.Event()
+class QUERY_PROCESSOR:
+    """
+    Class represented Processor to operate with CAMEA DB Management Software
+    that is connected via TCP/IP.
+    Received and parsed queries form the CAMEA DB Management Software,
+    afterwars queries the Vidar database for appropriate photos.
+    Program's entry point.
 
-        class ScheduleThread(threading.Thread):
-            @classmethod
-            def run(cls):
-                while not scheduler_event.is_set():
-                    schedule.run_pending()
-                    time.sleep(interval)
+    Constants:
+    -----------
+    AVAILABLE_COMMANDS - dict with available commands to receive via TCP/IP.
+    Now only "DetectionRequest" command is supported
 
-        continuous_thread = ScheduleThread()
-        continuous_thread.start()
-        return scheduler_event
+    Parameters:
+    -----------
+    # TODO: add descripton of the parameters and where they are stored
 
-    def __atexit():
-        stop_scheduler.set()
+    Methods:
+    -----------
+    process_DetectionRequest(data, conn) --> None
+        Tries to process Detection request: get the appropriate photos
+        from Vidar database and send it to the CAMEA DB Management Software
+    main() --> None
+        Main program loop.
+    """
 
-    def __shutdown(s):
-        logger.info("Server was shutdown because running time expired")
-        conn.close()
-        stop_scheduler.set()
+    def __init__(self):
+        # TODO: move to file
+        # Socket server settings
+        self.SETTINGS = dict()
+        self.SETTINGS['SERVER_TIMEOUT'] = 11
+        self.SETTINGS['BUFFER'] = 1024
+        self.SETTINGS['HOST'] = '127.0.0.1'
+        self.SETTINGS['PORT'] = 7_777  # Port 0 means to select an arbitrary unused port
+        self.SETTINGS['INITIAL_MSG_ID'] = 1  # move to settings file # get start_message_id from the temp file, save to temp file after
+        self.SETTINGS['Camera_Unit_ID'] = 'CAMERA_1'  # NOT USED
+        self.SETTINGS['MODULE_ID'] = 'KY-DV-D2'  # move to settings file
+        self.SETTINGS['TIMEZONE'] = 'Europe/Kyiv'
+        self.SETTINGS['MODE'] = 'VIDAR'  # also 'TEST' mode is available when the stub pictures are generated automatically
+        # check for appropriate values
+        self.SETTINGS['WORKING_TIME'] = 60  # set service working time in minutes, 0 means working infinite time
+        self.SETTINGS['VIDAR_IP'] = '192.168.6.161'
+        self.SETTINGS['TOLERANCE'] = 300  # tolerance (in ms) for querying the vidar database
+        self.SETTINGS['CAMEA_DB_IP'] = '127.0.0.1'
+        self.SETTINGS['CAMEA_DB_PORT'] = 5_050
 
-    def __send_keep_alive(conn):
+        self.msg_id = self.SETTINGS['INITIAL_MSG_ID'] # TODO: change!!!
+        self.vidar_service = VidarService(ip=self.SETTINGS['VIDAR_IP'])
+        self.camea_service = CameaService(ip=self.SETTINGS['CAMEA_DB_IP'],
+                                          port=self.SETTINGS['CAMEA_DB_PORT'])
+
+    def __send_keep_alive(self, conn):
         conn.sendall(bytearray(b'\x4b\x41\x78\x78\x00\x00\x00\x00\x00\x00\x00\x00'))
 
-    def __process_DetectionRequest(data, conn):
-        global msg_id
+    def __send_handshake(self, conn):
+        conn.sendall(bytearray(b'\x48\x53\x78\x78'))
 
-        # data = data.decode()
+    def process_DetectionRequest(self, data, conn):
+        """
+        Tries to process Detection request:
+        1: VIDAR mode - gets the appropriate photos from Vidar database
+        and send it to the CAMEA DB Management Software
+        2: TEST mode - autogenerates images stubs
+        and send it to the CAMEA DB Management Software
+
+        Parameters:
+        -----------
+        data: string
+            TCP/IP CAMEA DetectionRequest query decoded in ISO-8859-1 format
+        conn: socket object
+            Established connection with CAMEA DB Management Software
+
+        Output:
+        -----------
+        """
+
         data = data.rstrip('\x00')
         try:
-            request_data = {item.split(':')[0]: ''.join(item.split(':')[1:]) for item in data.split('|')}
-
-            # send response to CAMEA
-            response_data = dict()
-            response_data['msg'] = 'DetectionRequestRepeat'
-            response_data['ModuleID'] = request_data['RequestedSensor'] if 'RequestedSensor' in request_data else MODULE_ID
-            response_data['RequestID'] = request_data['RequestID'] if 'RequestID' in request_data else 'no_request_ID_in_the_request'
-
+            request_data = {item.split(':')[0]: ''.join(item.split(':')[1:])
+                            for item in data.split('|')}
             try:
                 dt = datetime.strptime(request_data['ImageTime'], '%Y%m%dT%H%M%S%f%z')
-                # generate random response time with tolerance 250
-                dt_response = dt + timedelta(milliseconds=random.randint(-250, 250))
             except Exception:
-                logger.error(f"Incorrect datetime in the DetectionRequest: {response_data['RequestID']}")
-                dt_response = datetime.now(tz=zoneinfo.ZoneInfo(TIMEZONE))
+                msg = f"Incorrect datetime in the DetectionRequest: {request_data['ImageTime']}"
+                raise IncorrectCameaQuery(msg)
 
-            response_data['ImageID'] = (Camera_Unit_ID + '_' + datetime.strftime(dt_response, '%Y%m%dT%H%M%S%f')[:-3]
-                                                             + datetime.strftime(dt_response, '%z'))
-            response_data['TimeDet'] = (datetime.strftime(dt_response, '%Y%m%dT%H%M%S%f')[:-3]
-                                        + datetime.strftime(dt_response, '%z'))
-            # response_data['ImageID'] = (Camera_Unit_ID + '_' + datetime.now(tz=zoneinfo.ZoneInfo(TIMEZONE)).strftime('%Y%m%dT%H%M%S%f')[:-3]
-            #                                                  + datetime.now(tz=zoneinfo.ZoneInfo(TIMEZONE)).strftime('%z'))
-            # response_data['TimeDet'] = (datetime.now(tz=zoneinfo.ZoneInfo(TIMEZONE)).strftime('%Y%m%dT%H%M%S%f')[:-3]
-            #                             + datetime.now(tz=zoneinfo.ZoneInfo(TIMEZONE)).strftime('%z'))
-            response_data['LP'] = 'AA1234AA'
-            response_data['ILPC'] = 'UA'
-            response_data['IsDetection'] = 1
+            if 'RequestID' not in request_data:
+                msg = "Missing ID in the DetectionRequest"
+                raise IncorrectCameaQuery(msg)
 
-            response_data_str = '|'.join([f'{key}:{value}' for key, value in response_data.items()])
+            # get transit images
+            if self.SETTINGS['MODE'] == 'VIDAR':
+                # search for IDs in vidar database with given datetime ± tolerance
+                vidar_ids = self.vidar_service.get_ids(transit_timestamp=dt,
+                                                       tolerance=self.SETTINGS['TOLERANCE'])
+                if vidar_ids:
+                    # search for the image that is the closest to requested timestamp
+                    dt_ts = int(dt.timestamp()*1_000)
+                    vidar_ids_deviation = [abs(dt_ts - ts) for ts in vidar_ids.keys()]
+                    best_fit = vidar_ids_deviation.index(min(vidar_ids_deviation))
+                    id = vidar_ids[best_fit]
+                    # get the image with given ID from the Vidar database
+                    img = self.vidar_service.get_data(id)
+                    # transfer best_fit from timestamp into datetime
+                    timezone = zoneinfo.ZoneInfo(self.SETTINGS['TIMEZONE'])
+                    dt_vidar = datetime.fromtimestamp(best_fit, tz=timezone)
+                    # send response to the CAMEA DB Management Software
+                    self.camea_service.send_image_found_response(conn=conn,
+                                                                 id=self.msg_id,
+                                                                 dt_response=dt_vidar,
+                                                                 request=request_data,
+                                                                 settings=self.SETTINGS,
+                                                                 lp=img['LP'],
+                                                                 country=img['ILPC'])
+                    self.camea_service.send_image_data(id=self.msg_id,
+                                                       dt_response=dt_vidar,
+                                                       request=request_data,
+                                                       settings=self.SETTINGS,
+                                                       img=img)
+                else:
+                    # send response to the CAMEA DB Management Software
+                    # self.camea_service.send_no_image_found_response(conn, request_data, self.SETTINGS)
+                    # TODO: figure out is it needed to send answer to CAMEA DB Management Software
+                    # if no image found
+                    pass
+                self.msg_id += 1
+            elif self.SETTINGS['MODE'] == 'TEST':
+                # send response to the CAMEA DB Management Software
+                self.camea_service.send_image_found_response(conn=conn,
+                                                             id=self.msg_id,
+                                                             dt_response=dt,
+                                                             request=request_data,
+                                                             settings=self.SETTINGS)
+                self.camea_service.send_stab_image_data(id=self.msg_id,
+                                                        dt_response=dt,
+                                                        request=request_data,
+                                                        settings=self.SETTINGS)
+                self.msg_id += 1
 
-            response = (bytearray(b'\x44\x41\x74\x50')
-                        + msg_id.to_bytes(2, 'little')
-                        + bytearray(b'\x00\x00')
-                        + len(response_data_str).to_bytes(4, 'little')
-                        + response_data_str.encode('UTF-8'))
-            conn.sendall(response)
-            logger.info(f"Send response: '{response}'")
-
-            # send picture to CAMEA
-            response2_data = dict()
-            response2_data['msg'] = 'LargeDetection'
-            response2_data['ModuleID'] = response_data['ModuleID']
-            response2_data['ImageID'] = response_data['ImageID']
-            response2_data['TimeDet'] = response_data['TimeDet']
-            response2_data['UT'] = dt_response.isoformat(timespec="milliseconds")
-            # response2_data['TimeDet'] = (datetime.now(tz=zoneinfo.ZoneInfo(TIMEZONE)).strftime('%Y%m%dT%H%M%S%f')[:-3]
-            #                              + datetime.now(tz=zoneinfo.ZoneInfo(TIMEZONE)).strftime('%z'))
-            # response2_data['UT'] = datetime.now(tz=zoneinfo.ZoneInfo(TIMEZONE)).isoformat(timespec="milliseconds")
-            response2_data['ExtraCount'] = 0
-            response2_data['LPText'] = 'AA1234AA'
-            response2_data['ILPC'] = 'UA'
-            response2_data['LpJpeg'] = generate_lpr_image_base64('AA 1234 AA')
-            response2_data['FullImage64'] = generate_image_base64(f'stub image for {response_data["RequestID"]}, TimeDet: {response2_data["TimeDet"]}')
-            response2_data_str = '|'.join([f'{key}:{value}' for key, value in response2_data.items()])
-
-            ip = 'localhost'
-            port = 5050
-            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s2:
-                s2.connect((ip, port))
-                s2.sendall(bytearray(b'\x4b\x41\x78\x78\x00\x00\x00\x00\x00\x00\x00\x00'))
-                s2_response = str(s2.recv(BUFFER), 'ascii')
-                logger.info(f"Received data: '{s2_response}' from {ip}:{port}")
-                img_response = (bytearray(b'\x44\x41\x74\x50')
-                                + msg_id.to_bytes(2, 'little')
-                                + bytearray(b'\x00\x00')
-                                + len(response2_data_str).to_bytes(4, 'little')
-                                + response2_data_str.encode('UTF-8'))
-                s2.sendall(img_response)
-                logger.info("Send images to 'localhost':5050")
-                s2.close()
-
+        # detalize exceptions!!!
         except Exception as e:
             logger.exception(e)
 
-    # Start the background thread
-    stop_scheduler = __run_scheduler()
-    atexit.register(__atexit)
+    def main(self):
+        """
+        Runs the programs main loop
 
-    msg_id = START_MSG_ID
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-        s.bind((HOST, PORT))
-        s.listen()
-        s.settimeout(SERVER_TIMEOUT)
+        Parameters:
+        -----------
 
-        socket_thread = threading.current_thread()
-        logger.info("Start socket listening in thread:" + socket_thread.name)
+        Output:
+        -----------
+        """
 
-        schedule.every(12).hours.do(__shutdown, s)
-        logger.info("Terminate scheduler set for 12 hours:" + socket_thread.name)
+        def __run_scheduler(interval=1):
+            scheduler_event = threading.Event()
 
-        try:
-            conn, addr = s.accept()
-            buffer = str()
-            queries = queue.Queue()
+            class ScheduleThread(threading.Thread):
+                @classmethod
+                def run(cls):
+                    while not scheduler_event.is_set():
+                        schedule.run_pending()
+                        time.sleep(interval)
 
-            with conn:
-                # sending handshake
-                conn.sendall(bytearray(b'\x48\x53\x78\x78'))
-                logger.info("Connection established with: " + str(addr))
+            continuous_thread = ScheduleThread()
+            continuous_thread.start()
+            return scheduler_event
 
-                schedule.every(3).seconds.do(__send_keep_alive, conn)
-                logger.debug("Keep alive message send")
+        def __atexit():
+            stop_scheduler.set()
 
-                while conn:
-                    data = conn.recv(BUFFER)
-                    try:
-                    #     if not isinstance(data, str):
-                    #         data = data.decode('ISO-8859-1')
-                        data = data.decode('ISO-8859-1')
-                    except Exception as e:
-                        logger.error(f"Failed to decode: '{data}' - " + str(e))
-                    buffer = buffer + data
-                    data = ''
+        def __shutdown(s):
+            logger.info("Server was shutdown because running time expired")
+            conn.close()
+            stop_scheduler.set()
 
-                    splitted_buffer = re.findall(r'.+?(?=DAtP|Hsxx|KAxx|$)', buffer, flags=re.DOTALL)
-                    if len(splitted_buffer) > 1:
-                        for i in range(len(splitted_buffer) - 1):
-                            queries.put(splitted_buffer[i])
-                        buffer = splitted_buffer[-1]
+        # Start the background thread
+        stop_scheduler = __run_scheduler()
+        atexit.register(__atexit)
 
-                    while not queries.empty():
-                        query = queries.get()
-                        logger.debug(f"Received data: '{query}' from {str(addr)}")
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            s.bind((self.HOST, self.PORT))
+            s.listen()
+            s.settimeout(self.SERVER_TIMEOUT)
 
-                        # check if it is request for camera images
+            socket_thread = threading.current_thread()
+            logger.info(f"Service started at {self.HOST}:{self.PORT}")
+            logger.info("Start socket listening in thread:" + socket_thread.name)
+
+            if self.WORKING_TIME > 0:
+                schedule.every(self.WORKING_TIME).minutes.do(__shutdown, s)
+                logger.info("Terminate scheduler set for 12 hours:" + socket_thread.name)
+
+            try:
+                conn, addr = s.accept()
+                buffer = str()
+                queries = queue.Queue()
+
+                with conn:
+                    # sending handshake
+                    self.__send_handshake(conn)
+                    logger.info("Connection established with: " + str(addr))
+
+                    # sending keep alive messages every 3 seconds
+                    schedule.every(3).seconds.do(self.__send_keep_alive, conn)
+                    logger.debug("Keep alive message send")
+
+                    while conn:
+                        data = conn.recv(self.BUFFER)
                         try:
-                            if "msg:DetectionRequest" in query:
-                                logger.info(f"Received data: '{query}' from {str(addr)}")
-                                logger.debug('DetectionRequest catched')
-                                __process_DetectionRequest(query, conn)
-                            else:
-                                logger.debug('not a DetectionRequest')
+                            data = data.decode('ISO-8859-1')
                         except Exception as e:
-                            logger.error(e)
+                            logger.error(f"Failed to decode: '{data}' - " + str(e))
+                        buffer = buffer + data
+                        data = ''
 
-        except KeyboardInterrupt:
-            __atexit()
+                        splitted_buffer = re.findall(r'.+?(?=DAtP|Hsxx|KAxx|$)',
+                                                     buffer, flags=re.DOTALL)
+                        if len(splitted_buffer) > 1:
+                            for i in range(len(splitted_buffer) - 1):
+                                queries.put(splitted_buffer[i])
+                            buffer = splitted_buffer[-1]
+
+                        while not queries.empty():
+                            query = queries.get()
+                            logger.debug(f"Received data: '{query}' from {str(addr)}")
+
+                            # check if it is request for camera images
+                            try:
+                                if "msg:DetectionRequest" in query:
+                                    logger.info(f"Received data: '{query}' from {str(addr)}")
+                                    logger.debug('DetectionRequest catched')
+                                    self.process_DetectionRequest(query, conn)
+                                else:
+                                    logger.debug('not a DetectionRequest')
+                            except Exception as e:
+                                logger.error(e)
+
+            except KeyboardInterrupt:
+                __atexit()
+
+
+if __name__ == "__main__":
+    query_processor = QUERY_PROCESSOR()
+    query_processor.main()
