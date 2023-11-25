@@ -230,7 +230,7 @@ class QUERY_PROCESSOR:
             logger.info(f"Service started at {self.SETTINGS['HOST']}:{self.SETTINGS['PORT']}")
             logger.info("Start socket listening in thread:" + socket_thread.name)
 
-            if self.WORKING_TIME > 0:
+            if self.SETTINGS['WORKING_TIME'] > 0:
                 schedule.every(self.SETTINGS['WORKING_TIME']).minutes.do(__shutdown, s)
                 logger.info((f"Terminate scheduler set for {self.SETTINGS['WORKING_TIME']} "
                             + f"minutes: {socket_thread.name}"))
