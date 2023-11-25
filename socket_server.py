@@ -222,18 +222,18 @@ class QUERY_PROCESSOR:
         atexit.register(__atexit)
 
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-            s.bind((self.HOST, self.PORT))
+            s.bind((self.SETTINGS['HOST'], self.SETTINGS['PORT']))
             s.listen()
-            s.settimeout(self.SERVER_TIMEOUT)
+            s.settimeout(self.SETTINGS['SERVER_TIMEOUT'])
 
             socket_thread = threading.current_thread()
-            logger.info(f"Service started at {self.HOST}:{self.PORT}")
+            logger.info(f"Service started at {self.SETTINGS['HOST']}:{self.SETTINGS['PORT']}")
             logger.info("Start socket listening in thread:" + socket_thread.name)
 
             if self.WORKING_TIME > 0:
-                schedule.every(self.WORKING_TIME).minutes.do(__shutdown, s)
-                logger.info("Terminate scheduler set for 12 hours:" + socket_thread.name)
-
+                schedule.every(self.SETTINGS['WORKING_TIME']).minutes.do(__shutdown, s)
+                logger.info((f"Terminate scheduler set for {self.SETTINGS['WORKING_TIME']} "
+                            + f"minutes: {socket_thread.name}"))
             try:
                 conn, addr = s.accept()
                 buffer = str()
@@ -249,7 +249,7 @@ class QUERY_PROCESSOR:
                     logger.debug("Keep alive message send")
 
                     while conn:
-                        data = conn.recv(self.BUFFER)
+                        data = conn.recv(self.SETTINGS['BUFFER'])
                         try:
                             data = data.decode('ISO-8859-1')
                         except Exception as e:
