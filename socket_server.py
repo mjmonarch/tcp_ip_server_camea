@@ -273,7 +273,7 @@ class QUERY_PROCESSOR:
                                 if "msg:DetectionRequest" in query:
                                     logger.info(f"Received data: '{query}' from {str(addr)}")
                                     logger.debug('DetectionRequest catched')
-                                    self.process_DetectionRequest(query, conn)
+                                    # self.process_DetectionRequest(data=query, conn=conn)
                                 else:
                                     logger.debug('not a DetectionRequest')
                             except Exception as e:
