@@ -38,7 +38,7 @@ class CameaService:
         self.DB_IP = db_ip
         self.DB_PORT = db_port
 
-    def send_image_found_response(conn: socket, id: int, dt_response: datetime,
+    def send_image_found_response(self, conn: socket, id: int, dt_response: datetime,
                                   request: dict, settings: dict,
                                   lp: str = 'AA1234AA', country: str = 'UA') -> None:
         """
