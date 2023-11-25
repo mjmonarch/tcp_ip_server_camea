@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 class CameaService:
     """
-    Class represented service for sending responses to 
+    Class represented service for sending responses to
     CAMEA Database Management Software
 
     Constants:
