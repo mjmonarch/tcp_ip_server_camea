@@ -169,7 +169,7 @@ class QUERY_PROCESSOR:
                 self.msg_id += 1
             elif self.SETTINGS['MODE'] == 'TEST':
                 # send response to the CAMEA DB Management Software
-                self.camea_service.send_image_found_response(conn=conn,
+                self.camea_service.send_image_found_response(conn,
                                                              id=self.msg_id,
                                                              dt_response=dt,
                                                              request=request_data,
