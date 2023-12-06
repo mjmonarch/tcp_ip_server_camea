@@ -246,6 +246,7 @@ class QUERY_PROCESSOR:
             conn.close()
             stop_scheduler.set()
             #### DDDDDDDDDD
+            global TOTAL, S0, S1, S2
             with open("logs/statistic.log", "a") as writer:
                 writer.write("total: ".ljust(20), TOTAL, "\n")
                 writer.write("got without delay: ".ljust(20), S0, "\n")
