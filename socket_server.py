@@ -88,7 +88,7 @@ class QUERY_PROCESSOR:
         self.SETTINGS['TIMEZONE'] = 'Europe/Kyiv'
         self.SETTINGS['MODE'] = 'VIDAR'  # also 'TEST' mode is available when the stub pictures are generated automatically
         # check for appropriate values
-        self.SETTINGS['WORKING_TIME'] = 1  # set service working time in minutes, 0 means working infinite time
+        self.SETTINGS['WORKING_TIME'] = 60  # set service working time in minutes, 0 means working infinite time
         self.SETTINGS['VIDAR_IP'] = '192.168.6.161'
         self.SETTINGS['TOLERANCE'] = 300  # tolerance (in ms) for querying the vidar database
         self.SETTINGS['CAMEA_DB_IP'] = '127.0.0.1'
