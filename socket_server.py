@@ -139,7 +139,7 @@ class QUERY_PROCESSOR:
                 if vidar_ids:
                     # search for the image that is the closest to requested timestamp
                     dt_ts = int(dt.timestamp()*1_000)
-                    vidar_ids_deviation = [abs(dt_ts - ts) for ts in vidar_ids.keys()]
+                    vidar_ids_deviation = [abs(dt_ts - int(ts)) for ts in vidar_ids.keys()]
                     best_fit = vidar_ids_deviation.index(min(vidar_ids_deviation))
                     id = vidar_ids[best_fit]
                     # get the image with given ID from the Vidar database
