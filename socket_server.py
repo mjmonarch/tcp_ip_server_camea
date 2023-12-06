@@ -16,6 +16,13 @@ from vidar_service import VidarService
 from errors import IncorrectCameaQuery
 
 
+### DDD TEMP
+TOTAL = 0
+S0 = 0
+S1 = 0
+S2 = 0
+
+
 # Logger settings
 LOG_FILE = "logs/log.log"
 LOGGING_SETTINGS = {
@@ -81,7 +88,7 @@ class QUERY_PROCESSOR:
         self.SETTINGS['TIMEZONE'] = 'Europe/Kyiv'
         self.SETTINGS['MODE'] = 'VIDAR'  # also 'TEST' mode is available when the stub pictures are generated automatically
         # check for appropriate values
-        self.SETTINGS['WORKING_TIME'] = 60  # set service working time in minutes, 0 means working infinite time
+        self.SETTINGS['WORKING_TIME'] = 1  # set service working time in minutes, 0 means working infinite time
         self.SETTINGS['VIDAR_IP'] = '192.168.6.161'
         self.SETTINGS['TOLERANCE'] = 300  # tolerance (in ms) for querying the vidar database
         self.SETTINGS['CAMEA_DB_IP'] = '127.0.0.1'
@@ -136,6 +143,24 @@ class QUERY_PROCESSOR:
                 # search for IDs in vidar database with given datetime ± tolerance
                 vidar_ids = self.vidar_service.get_ids(transit_timestamp=dt,
                                                        tolerance=self.SETTINGS['TOLERANCE'])
+                
+                #### DDDDDDDDDD
+                TOTAL += 1
+                if vidar_ids:
+                    S0 += 1
+                if not vidar_ids:
+                    time.sleep(1)
+                    vidar_ids = self.vidar_service.get_ids(transit_timestamp=dt,
+                                                       tolerance=self.SETTINGS['TOLERANCE'])
+                if vidar_ids:
+                    S1 += 1
+                if not vidar_ids:
+                    time.sleep(1)
+                    vidar_ids = self.vidar_service.get_ids(transit_timestamp=dt,
+                                                       tolerance=self.SETTINGS['TOLERANCE'])
+                if vidar_ids:
+                    S2 += 1
+                  
                 if vidar_ids:
                     logger.debug(f"DDD: Received vidar ids keys: {vidar_ids.keys()} from {vidar_ids}")
                     # search for the image that is the closest to requested timestamp
@@ -219,6 +244,12 @@ class QUERY_PROCESSOR:
             logger.info("Server was shutdown because running time expired")
             conn.close()
             stop_scheduler.set()
+            #### DDDDDDDDDD
+            with open("logs/statistic.log", a) as writer:
+                writer.write("total: ".ljust(20), TOTAL, "\n")
+                writer.write("got without delay: ".ljust(20), S0, "\n")
+                writer.write("got with delay 1s: ".ljust(20), S1, "\n")
+                writer.write("got with delay 2s: ".ljust(20), S2, "\n")
 
         # Start the background thread
         stop_scheduler = __run_scheduler()
