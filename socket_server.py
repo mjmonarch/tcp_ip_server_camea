@@ -16,7 +16,7 @@ from vidar_service import VidarService
 from errors import IncorrectCameaQuery
 
 
-### DDD TEMP
+###  DDD TEMP
 TOTAL = 0
 S0 = 0
 S1 = 0
@@ -145,6 +145,7 @@ class QUERY_PROCESSOR:
                                                        tolerance=self.SETTINGS['TOLERANCE'])
                 
                 #### DDDDDDDDDD
+                global TOTAL, S0, S1, S2
                 TOTAL += 1
                 if vidar_ids:
                     S0 += 1
