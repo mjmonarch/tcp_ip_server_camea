@@ -245,11 +245,11 @@ class QUERY_PROCESSOR:
             logger.info("Server was shutdown because running time expired")
             conn.close()
             stop_scheduler.set()
-            
+
             #### DDDDDDDDDD
             global TOTAL, S0, S1, S2
 
-            logger.info(f"total: "{TOTAL})
+            logger.info(f"total: {TOTAL}")
             logger.info(f"got without delay: {S0}")
             logger.info(f"got with delay 1s: {S1}")
             logger.info(f"got with delay 2s: {S2}")
