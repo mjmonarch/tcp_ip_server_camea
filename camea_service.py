@@ -133,7 +133,7 @@ class CameaService:
             s2.sendall(bytearray(b'\x4b\x41\x78\x78\x00\x00\x00\x00\x00\x00\x00\x00'))
             s2_response = str(s2.recv(settings['BUFFER']), 'ascii')
             logger.info((f"Received data: '{s2_response}'"
-                         + "from {settings['CAMEA_DB_IP']}:{settings['CAMEA_DB_PORT']}"))
+                         + f"from {settings['CAMEA_DB_IP']}:{settings['CAMEA_DB_PORT']}"))
             img_response = (bytearray(b'\x44\x41\x74\x50')
                             + id.to_bytes(2, 'little')
                             + bytearray(b'\x00\x00')

@@ -90,6 +90,7 @@ class VidarService:
 
 
 if __name__ == '__main__':
+# python vidar_service.py 192.168.6.161 "2023-12-06 13:00:00.000" 60000
     if len(sys.argv) != 4:
         msg = ("Invalid arguments quantity - provide IP, "
                + "timestamp in format '2023-11-18 09:54:45.000' and tolerance in ms")
