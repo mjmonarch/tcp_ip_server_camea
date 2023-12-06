@@ -149,18 +149,18 @@ class QUERY_PROCESSOR:
                 TOTAL += 1
                 if vidar_ids:
                     S0 += 1
-                if not vidar_ids:
+                else:
                     time.sleep(1)
                     vidar_ids = self.vidar_service.get_ids(transit_timestamp=dt,
                                                        tolerance=self.SETTINGS['TOLERANCE'])
-                if vidar_ids:
-                    S1 += 1
-                if not vidar_ids:
-                    time.sleep(1)
-                    vidar_ids = self.vidar_service.get_ids(transit_timestamp=dt,
+                    if vidar_ids:
+                        S1 += 1
+                    else:
+                        time.sleep(1)
+                        vidar_ids = self.vidar_service.get_ids(transit_timestamp=dt,
                                                        tolerance=self.SETTINGS['TOLERANCE'])
-                if vidar_ids:
-                    S2 += 1
+                        if vidar_ids:
+                            S2 += 1
                   
                 if vidar_ids:
                     logger.debug(f"DDD: Received vidar ids keys: {vidar_ids.keys()} from {vidar_ids}")
