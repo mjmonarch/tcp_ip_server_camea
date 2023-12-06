@@ -144,7 +144,7 @@ class QUERY_PROCESSOR:
                     logger.debug(f"DDD: Vidar ids deviation: {vidar_ids_deviation}")
                     best_fit = vidar_ids_deviation.index(min(vidar_ids_deviation))
                     logger.debug(f"DDD: Vidar ids best fit index: {best_fit}")
-                    id = list(vidar_ids.keys())[best_fit]
+                    id = list(vidar_ids.values())[best_fit]
                     # get the image with given ID from the Vidar database
                     img = self.vidar_service.get_data(id)
                     # transfer best_fit from timestamp into datetime
