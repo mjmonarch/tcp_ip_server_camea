@@ -137,10 +137,13 @@ class QUERY_PROCESSOR:
                 vidar_ids = self.vidar_service.get_ids(transit_timestamp=dt,
                                                        tolerance=self.SETTINGS['TOLERANCE'])
                 if vidar_ids:
+                    logger.debug(f"DDD: Received vidar ids keys: {vidar_ids.keys()} from {vidar_ids}")
                     # search for the image that is the closest to requested timestamp
                     dt_ts = int(dt.timestamp()*1_000)
                     vidar_ids_deviation = [abs(dt_ts - int(ts)) for ts in vidar_ids.keys()]
+                    logger.debug(f"DDD: Vidar ids deviation: {vidar_ids_deviation}")
                     best_fit = vidar_ids_deviation.index(min(vidar_ids_deviation))
+                    logger.debug(f"DDD: Vidar ids best fit index: {best_fit}")
                     id = vidar_ids[best_fit]
                     # get the image with given ID from the Vidar database
                     img = self.vidar_service.get_data(id)
