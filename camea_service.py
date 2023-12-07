@@ -158,10 +158,10 @@ class CameaService:
                                     + datetime.strftime(dt_response, '%z'))
                 response['UT'] = dt_response.isoformat(timespec="milliseconds")
                 response['ExtraCount'] = 0
-                response['LPText'] = img['LP']
-                response['ILPC'] = img['ILPC']
-                response['LpJpeg'] = img['LpJpeg'][:20] + '...'
-                response['FullImage64'] = img['FullImage64'][:20] + '...'
+                response['LPText'] = 'AA1234AA'
+                response['ILPC'] = 'UA'
+                response['LpJpeg'] = 'xxx'
+                response['FullImage64'] = 'yyy'
 
                 response_str = '|'.join([f'{key}:{value}' for key, value in response.items()]) + '\n\n\n'
 
