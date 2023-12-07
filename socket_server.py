@@ -255,10 +255,10 @@ class QUERY_PROCESSOR:
             logger.info(f"got with delay 2s: {S2}")
 
             with open("logs/statistic.log", "a") as writer:
-                writer.write("total: ".ljust(20), TOTAL, "\n")
-                writer.write("got without delay: ".ljust(20), S0, "\n")
-                writer.write("got with delay 1s: ".ljust(20), S1, "\n")
-                writer.write("got with delay 2s: ".ljust(20), S2, "\n")
+                writer.write(f"total: {TOTAL}")
+                writer.write(f"got without delay: {S0}")
+                writer.write(f"got with delay 1s: {S1}")
+                writer.write(f"got with delay 2s: {S2}")
 
         # Start the background thread
         stop_scheduler = __run_scheduler()

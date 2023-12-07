@@ -199,3 +199,26 @@ class CameaService:
             logger.info(("Send images to CAMEA BD at "
                          + f"{settings['CAMEA_DB_IP']}:{settings['CAMEA_DB_PORT']}"))
             s2.close()
+
+            ### DDD
+            with open("logs/test_img.txt", "a") as writer:
+                response = dict()
+                response['msg'] = 'LargeDetection'
+                response['ModuleID'] = (request['RequestedSensor']
+                                        if 'RequestedSensor' in request
+                                        else settings['MODULE_ID'])
+                response['ImageID'] = (settings['Camera_Unit_ID'] + '_'
+                                    + datetime.strftime(dt_response, '%Y%m%dT%H%M%S%f')[:-3]
+                                    + datetime.strftime(dt_response, '%z'))
+                response['TimeDet'] = (datetime.strftime(dt_response, '%Y%m%dT%H%M%S%f')[:-3]
+                                    + datetime.strftime(dt_response, '%z'))
+                response['UT'] = dt_response.isoformat(timespec="milliseconds")
+                response['ExtraCount'] = 0
+                response['LPText'] = img['LP']
+                response['ILPC'] = img['ILPC']
+                response['LpJpeg'] = img['LpJpeg'][:20] + '...'
+                response['FullImage64'] = img['FullImage64'][:20] + '...'
+
+                response_str = '|'.join([f'{key}:{value}' for key, value in response.items()]) + '\n\n\n'
+
+                writer.write(response_str)
