@@ -115,7 +115,8 @@ class CameaService:
         response['ModuleID'] = (request['RequestedSensor']
                                 if 'RequestedSensor' in request
                                 else settings['MODULE_ID'])
-        response['ImageID'] = (settings['Camera_Unit_ID'] + '_'
+        # response['ImageID'] = (settings['Camera_Unit_ID'] + '_'
+        response['ImageID'] = (response['ModuleID'] + '_'
                                + datetime.strftime(dt_response, '%Y%m%dT%H%M%S%f')[:-3]
                                + datetime.strftime(dt_response, '%z'))
         response['TimeDet'] = (datetime.strftime(dt_response, '%Y%m%dT%H%M%S%f')[:-3]
