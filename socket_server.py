@@ -86,7 +86,7 @@ class QUERY_PROCESSOR:
         self.SETTINGS['Camera_Unit_ID'] = 'CAMERA_1'  # NOT USED
         self.SETTINGS['MODULE_ID'] = 'KY-DV-D2'  # move to settings file
         self.SETTINGS['TIMEZONE'] = 'Europe/Kyiv'
-        self.SETTINGS['MODE'] = 'VIDAR'  # also 'TEST' mode is available when the stub pictures are generated automatically
+        self.SETTINGS['MODE'] = 'TEST'  # also 'TEST' mode is available when the stub pictures are generated automatically
         # check for appropriate values
         self.SETTINGS['WORKING_TIME'] = 30  # set service working time in minutes, 0 means working infinite time
         self.SETTINGS['VIDAR_IP'] = '192.168.6.161'
