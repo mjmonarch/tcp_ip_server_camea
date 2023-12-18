@@ -81,6 +81,7 @@ class QUERY_PROCESSOR:
 
         self.initiated = QUERY_PROCESSOR.__check_config(self.config)
         if self.initiated:
+            self.msg_id = self.config.getint('current', 'msg_id')
             self.vidar_service = VidarService(ip=self.config['vidar']['ip'])
             self.camea_service = CameaService(db_ip=self.config['camea_db']['ip'],
                                               db_port=self.config['camea_db']['port'])
@@ -288,7 +289,8 @@ class QUERY_PROCESSOR:
 
         def __atexit():
             stop_scheduler.set()
-            with open('config.ini', 'wb') as configfile:
+            self.config('current', 'msg_id', str(self.id + 1))
+            with open('config.ini', 'w') as configfile:
                 self.config.write(configfile)
 
         def __shutdown(s):
