@@ -90,6 +90,7 @@ class QUERY_PROCESSOR:
         # check config structure
         if ('service', 'settings', 'current', 'vidar', 'camea_db') not in config.sections():
             logger.critical('Configuration file does have appropriate structure')
+            logger.critical(config.sections()) # DDD: REMOVE
             return False
 
         # check service section
