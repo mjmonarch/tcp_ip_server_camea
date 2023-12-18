@@ -88,13 +88,13 @@ class QUERY_PROCESSOR:
     @classmethod
     def __check_config(cls, config):
         # check config structure
-        if ('service', 'settings', 'current', 'vidar', 'camea_db') not in config.sections():
+        if not {'service', 'settings', 'current', 'vidar', 'camea_db'}.issubset(config.sections()):
             logger.critical('Configuration file does have appropriate structure')
             logger.critical(config.sections()) # DDD: REMOVE
             return False
 
         # check service section
-        if ('host', 'port', 'module_id', 'mode', 'operating_time') not in config['service']:
+        if not {'host', 'port', 'module_id', 'mode', 'operating_time'}.issubset(config['service']):
             logger.critical('Configuration file service section: missing values')
             return False
         try:
@@ -104,7 +104,7 @@ class QUERY_PROCESSOR:
             logger.critical('Invalid datatype for data in service section: ' + str(e))
 
         # check settings section
-        if ('buffer', 'timezone', 'timeout', 'camera_unit_id') not in config['settings']:
+        if not {'buffer', 'timezone', 'timeout', 'camera_unit_id'}.issubset(config['settings']):
             logger.critical('Configuration file settings section: missing values')
             return False
         try:
@@ -123,7 +123,7 @@ class QUERY_PROCESSOR:
             logger.critical('Invalid datatype for data in current section: ' + str(e))
 
         # check vidar section
-        if ('ip', 'tolerance') not in config['vidar']:
+        if not {'ip', 'tolerance'}.issubset(config['vidar']):
             logger.critical('Configuration file vidar section: missing values')
             return False
         try:
@@ -132,7 +132,7 @@ class QUERY_PROCESSOR:
             logger.critical('Invalid datatype for data in vidar section: ' + str(e))
 
         # check camea_db section
-        if ('ip', 'port') not in config['camea_db']:
+        if not {'ip', 'port'}.issubset(config['camea_db']):
             logger.critical('Configuration file camea_db section: missing values')
             return False
         try:
