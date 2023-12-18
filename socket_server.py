@@ -88,7 +88,7 @@ class QUERY_PROCESSOR:
     @classmethod
     def __check_config(cls, config):
         # check config structure
-        if ('service', 'settings', 'current', 'vidar', 'camea_db') not in config.sections:
+        if ('service', 'settings', 'current', 'vidar', 'camea_db') not in config.sections():
             logger.critical('Configuration file does have appropriate structure')
             return False
 
