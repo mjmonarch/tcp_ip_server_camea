@@ -295,8 +295,8 @@ class QUERY_PROCESSOR:
 
         def __shutdown(s):
             logger.info("Server was shutdown because running time expired")
-            # s.close()
-            # stop_scheduler.set()
+            conn.close()
+            stop_scheduler.set()
 
             # ### DDDDDDDDDD
             global TOTAL, S0, S1, S2
