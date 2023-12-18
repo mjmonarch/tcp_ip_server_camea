@@ -230,13 +230,13 @@ class QUERY_PROCESSOR:
                                                                  id=self.msg_id,
                                                                  dt_response=dt_vidar,
                                                                  request=request_data,
-                                                                 settings=self.config,
+                                                                 config=self.config,
                                                                  lp=img['LP'],
                                                                  country=img['ILPC'])
                     self.camea_service.send_image_data(id=self.msg_id,
                                                        dt_response=dt_vidar,
                                                        request=request_data,
-                                                       settings=self.config,
+                                                       config=self.config,
                                                        img=img)
                 else:
                     # send response to the CAMEA DB Management Software
@@ -251,11 +251,11 @@ class QUERY_PROCESSOR:
                                                              id=self.msg_id,
                                                              dt_response=dt,
                                                              request=request_data,
-                                                             settings=self.config)
+                                                             config=self.config)
                 self.camea_service.send_stab_image_data(id=self.msg_id,
                                                         dt_response=dt,
                                                         request=request_data,
-                                                        settings=self.config)
+                                                        config=self.config)
                 self.msg_id += 1
 
         # detalize exceptions!!!
@@ -289,7 +289,7 @@ class QUERY_PROCESSOR:
 
         def __atexit():
             stop_scheduler.set()
-            self.config('current', 'msg_id', str(self.id + 1))
+            self.config.set('current', 'msg_id', str(self.msg_id + 1))
             with open('config.ini', 'w') as configfile:
                 self.config.write(configfile)
 
