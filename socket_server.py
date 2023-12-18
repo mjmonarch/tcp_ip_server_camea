@@ -102,6 +102,7 @@ class QUERY_PROCESSOR:
             config.getint('service', 'operating_time')
         except Exception as e:
             logger.critical('Invalid datatype for data in service section: ' + str(e))
+            return False
 
         # check settings section
         if not {'buffer', 'timezone', 'timeout', 'camera_unit_id'}.issubset(config['settings']):
@@ -112,6 +113,7 @@ class QUERY_PROCESSOR:
             config.getint('settings', 'timeout')
         except Exception as e:
             logger.critical('Invalid datatype for data in settings section: ' + str(e))
+            return False
 
         # check current section
         if 'msg_id' not in config['current']:
@@ -121,6 +123,7 @@ class QUERY_PROCESSOR:
             config.getint('current', 'msg_id')
         except Exception as e:
             logger.critical('Invalid datatype for data in current section: ' + str(e))
+            return False
 
         # check vidar section
         if not {'ip', 'tolerance'}.issubset(config['vidar']):
@@ -130,6 +133,7 @@ class QUERY_PROCESSOR:
             config.getint('vidar', 'tolerance')
         except Exception as e:
             logger.critical('Invalid datatype for data in vidar section: ' + str(e))
+            return False
 
         # check camea_db section
         if not {'ip', 'port'}.issubset(config['camea_db']):
@@ -139,6 +143,7 @@ class QUERY_PROCESSOR:
             config.getint('camea_db', 'port')
         except Exception as e:
             logger.critical('Invalid datatype for data in camea_db section: ' + str(e))
+            return False
 
         return True
 
