@@ -1,4 +1,5 @@
 import atexit
+import configparser
 import logging
 import logging.config
 import os
@@ -16,7 +17,7 @@ from vidar_service import VidarService
 from errors import IncorrectCameaQuery
 
 
-###  DDD TEMP
+# ##  DDD TEMP
 TOTAL = 0
 S0 = 0
 S1 = 0
@@ -63,7 +64,7 @@ class QUERY_PROCESSOR:
 
     Parameters:
     -----------
-    # TODO: add descripton of the parameters and where they are stored
+    Parameters are stored in the 'config.ini' file
 
     Methods:
     -----------
@@ -75,29 +76,70 @@ class QUERY_PROCESSOR:
     """
 
     def __init__(self):
-        # TODO: move to file
-        # Socket server settings
-        self.SETTINGS = dict()
-        self.SETTINGS['SERVER_TIMEOUT'] = 11
-        self.SETTINGS['BUFFER'] = 1024
-        self.SETTINGS['HOST'] = '127.0.0.1'
-        self.SETTINGS['PORT'] = 7_777  # Port 0 means to select an arbitrary unused port
-        self.SETTINGS['INITIAL_MSG_ID'] = 1  # move to settings file # get start_message_id from the temp file, save to temp file after
-        self.SETTINGS['Camera_Unit_ID'] = 'CAMERA_1'  # NOT USED
-        self.SETTINGS['MODULE_ID'] = 'KY-DV-D2'  # move to settings file
-        self.SETTINGS['TIMEZONE'] = 'Europe/Kyiv'
-        self.SETTINGS['MODE'] = 'VIDAR'  # also 'TEST' mode is available when the stub pictures are generated automatically
-        # check for appropriate values
-        self.SETTINGS['WORKING_TIME'] = 30  # set service working time in minutes, 0 means working infinite time
-        self.SETTINGS['VIDAR_IP'] = '192.168.6.161'
-        self.SETTINGS['TOLERANCE'] = 300  # tolerance (in ms) for querying the vidar database
-        self.SETTINGS['CAMEA_DB_IP'] = '127.0.0.1'
-        self.SETTINGS['CAMEA_DB_PORT'] = 5_050
+        self.config = configparser.ConfigParser()
+        self.config.read('config.ini')
 
-        self.msg_id = self.SETTINGS['INITIAL_MSG_ID'] # TODO: change!!!
-        self.vidar_service = VidarService(ip=self.SETTINGS['VIDAR_IP'])
-        self.camea_service = CameaService(db_ip=self.SETTINGS['CAMEA_DB_IP'],
-                                          db_port=self.SETTINGS['CAMEA_DB_PORT'])
+        self.initiated = QUERY_PROCESSOR.__check_config(self.config)
+        if self.initiated:
+            self.vidar_service = VidarService(ip=self.config['vidar']['ip'])
+            self.camea_service = CameaService(db_ip=self.config['camea_db']['ip'],
+                                              db_port=self.config['camea_db']['port'])
+
+    @classmethod
+    def __check_config(cls, config):
+        # check config structure
+        if ('service', 'settings', 'current', 'vidar', 'camea_db') not in config.sections:
+            logger.critical('Configuration file does have appropriate structure')
+            return False
+
+        # check service section
+        if ('host', 'port', 'module_id', 'mode', 'operating_time') not in config['service']:
+            logger.critical('Configuration file service section: missing values')
+            return False
+        try:
+            config.getint('service', 'port')
+            config.getint('service', 'operating_time')
+        except Exception as e:
+            logger.critical('Invalid datatype for data in service section: ' + str(e))
+
+        # check settings section
+        if ('buffer', 'timezone', 'timeout', 'camera_unit_id') not in config['settings']:
+            logger.critical('Configuration file settings section: missing values')
+            return False
+        try:
+            config.getint('settings', 'buffer')
+            config.getint('settings', 'timeout')
+        except Exception as e:
+            logger.critical('Invalid datatype for data in settings section: ' + str(e))
+
+        # check current section
+        if 'msg_id' not in config['current']:
+            logger.critical('Configuration file current section: missing values')
+            return False
+        try:
+            config.getint('current', 'msg_id')
+        except Exception as e:
+            logger.critical('Invalid datatype for data in current section: ' + str(e))
+
+        # check vidar section
+        if ('ip', 'tolerance') not in config['vidar']:
+            logger.critical('Configuration file vidar section: missing values')
+            return False
+        try:
+            config.getint('vidar', 'tolerance')
+        except Exception as e:
+            logger.critical('Invalid datatype for data in vidar section: ' + str(e))
+
+        # check camea_db section
+        if ('ip', 'port') not in config['camea_db']:
+            logger.critical('Configuration file camea_db section: missing values')
+            return False
+        try:
+            config.getint('camea_db', 'port')
+        except Exception as e:
+            logger.critical('Invalid datatype for data in camea_db section: ' + str(e))
+
+        return True
 
     def __send_keep_alive(self, conn):
         conn.sendall(bytearray(b'\x4b\x41\x78\x78\x00\x00\x00\x00\x00\x00\x00\x00'))
@@ -139,11 +181,11 @@ class QUERY_PROCESSOR:
                 raise IncorrectCameaQuery(msg)
 
             # get transit images
-            if self.SETTINGS['MODE'] == 'VIDAR':
+            if self.config['service']['mode'] == 'VIDAR':
                 # search for IDs in vidar database with given datetime ± tolerance
                 vidar_ids = self.vidar_service.get_ids(transit_timestamp=dt,
-                                                       tolerance=self.SETTINGS['TOLERANCE'])
-                
+                                                       tolerance=self.config.getint('vidar', 'tolerance'))
+
                 #### DDDDDDDDDD
                 global TOTAL, S0, S1, S2
                 TOTAL += 1
@@ -152,16 +194,16 @@ class QUERY_PROCESSOR:
                 else:
                     time.sleep(1)
                     vidar_ids = self.vidar_service.get_ids(transit_timestamp=dt,
-                                                       tolerance=self.SETTINGS['TOLERANCE'])
+                                                           tolerance=self.config.getint('vidar', 'tolerance'))
                     if vidar_ids:
                         S1 += 1
                     else:
                         time.sleep(1)
                         vidar_ids = self.vidar_service.get_ids(transit_timestamp=dt,
-                                                       tolerance=self.SETTINGS['TOLERANCE'])
+                                                               tolerance=self.config.getint('vidar', 'tolerance'))
                         if vidar_ids:
                             S2 += 1
-                  
+
                 if vidar_ids:
                     logger.debug(f"DDD: Received vidar ids keys: {vidar_ids.keys()} from {vidar_ids}")
                     # search for the image that is the closest to requested timestamp
@@ -174,20 +216,20 @@ class QUERY_PROCESSOR:
                     # get the image with given ID from the Vidar database
                     img = self.vidar_service.get_data(id)
                     # transfer best_fit from timestamp into datetime
-                    timezone = zoneinfo.ZoneInfo(self.SETTINGS['TIMEZONE'])
+                    timezone = zoneinfo.ZoneInfo(self.config['settings']['timezone'])
                     dt_vidar = datetime.fromtimestamp(best_fit, tz=timezone)
                     # send response to the CAMEA DB Management Software
                     self.camea_service.send_image_found_response(conn=conn,
                                                                  id=self.msg_id,
                                                                  dt_response=dt_vidar,
                                                                  request=request_data,
-                                                                 settings=self.SETTINGS,
+                                                                 settings=self.config,
                                                                  lp=img['LP'],
                                                                  country=img['ILPC'])
                     self.camea_service.send_image_data(id=self.msg_id,
                                                        dt_response=dt_vidar,
                                                        request=request_data,
-                                                       settings=self.SETTINGS,
+                                                       settings=self.config,
                                                        img=img)
                 else:
                     # send response to the CAMEA DB Management Software
@@ -196,17 +238,17 @@ class QUERY_PROCESSOR:
                     # if no image found
                     pass
                 self.msg_id += 1
-            elif self.SETTINGS['MODE'] == 'TEST':
+            elif self.config['service']['mode'] == 'TEST':
                 # send response to the CAMEA DB Management Software
                 self.camea_service.send_image_found_response(conn,
                                                              id=self.msg_id,
                                                              dt_response=dt,
                                                              request=request_data,
-                                                             settings=self.SETTINGS)
+                                                             settings=self.config)
                 self.camea_service.send_stab_image_data(id=self.msg_id,
                                                         dt_response=dt,
                                                         request=request_data,
-                                                        settings=self.SETTINGS)
+                                                        settings=self.config)
                 self.msg_id += 1
 
         # detalize exceptions!!!
@@ -240,13 +282,15 @@ class QUERY_PROCESSOR:
 
         def __atexit():
             stop_scheduler.set()
+            with open('config.ini', 'wb') as configfile:
+                self.config.write(configfile)
 
         def __shutdown(s):
             logger.info("Server was shutdown because running time expired")
-            conn.close()
+            s.close()
             stop_scheduler.set()
 
-            #### DDDDDDDDDD
+            # ### DDDDDDDDDD
             global TOTAL, S0, S1, S2
 
             logger.info(f"total: {TOTAL}")
@@ -254,28 +298,23 @@ class QUERY_PROCESSOR:
             logger.info(f"got with delay 1s: {S1}")
             logger.info(f"got with delay 2s: {S2}")
 
-            with open("logs/statistic.log", "a") as writer:
-                writer.write(f"total: {TOTAL}")
-                writer.write(f"got without delay: {S0}")
-                writer.write(f"got with delay 1s: {S1}")
-                writer.write(f"got with delay 2s: {S2}")
-
         # Start the background thread
         stop_scheduler = __run_scheduler()
         atexit.register(__atexit)
 
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-            s.bind((self.SETTINGS['HOST'], self.SETTINGS['PORT']))
+            s.bind((self.config['service']['host'], self.config.getint('service', 'port')))
             s.listen()
-            s.settimeout(self.SETTINGS['SERVER_TIMEOUT'])
+            s.settimeout(self.config.getint('settings', 'timeout'))
 
             socket_thread = threading.current_thread()
-            logger.info(f"Service started at {self.SETTINGS['HOST']}:{self.SETTINGS['PORT']}")
+            logger.info(f"Service started at {self.config['service']['host']}:"
+                        + f"{self.config['service']['port']}")
             logger.info("Start socket listening in thread:" + socket_thread.name)
 
-            if self.SETTINGS['WORKING_TIME'] > 0:
-                schedule.every(self.SETTINGS['WORKING_TIME']).minutes.do(__shutdown, s)
-                logger.info((f"Terminate scheduler set for {self.SETTINGS['WORKING_TIME']} "
+            if self.config.getint('service', 'operating_time') > 0:
+                schedule.every(self.config.getint('service', 'operating_time')).minutes.do(__shutdown, s)
+                logger.info((f"Terminate scheduler set for {self.config['service']['operating_time']} "
                             + f"minutes: {socket_thread.name}"))
             try:
                 conn, addr = s.accept()
@@ -292,7 +331,7 @@ class QUERY_PROCESSOR:
                     logger.debug("Keep alive message send")
 
                     while conn:
-                        data = conn.recv(self.SETTINGS['BUFFER'])
+                        data = conn.recv(self.config.getint('settings', 'buffer'))
                         try:
                             data = data.decode('ISO-8859-1')
                         except Exception as e:
@@ -328,4 +367,5 @@ class QUERY_PROCESSOR:
 
 if __name__ == "__main__":
     query_processor = QUERY_PROCESSOR()
-    query_processor.main()
+    if query_processor.initiated:
+        query_processor.main()
