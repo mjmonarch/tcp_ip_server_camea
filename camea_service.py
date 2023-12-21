@@ -148,7 +148,7 @@ class CameaService:
 
             #### DDD
             s2_response = str(s2.recv(config.getint('settings', 'buffer')), 'ascii')
-            logger.info((f"Received data: '{s2_response}'"
+            logger.info((f"XXXXX: '{s2_response}'"
                          + f"from {config['camea_db']['ip']}:{config['camea_db']['port']}"))
 
 
