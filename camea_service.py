@@ -143,7 +143,7 @@ class CameaService:
                             + id.to_bytes(2, 'little')
                             + bytearray(b'\x00\x00')
                             + len(response_str).to_bytes(4, 'little')
-                            + response_str.encode('UTF-16'))
+                            + response_str.encode('UTF-8'))
             s2.sendall(img_response)
             logger.info(("Send images to CAMEA BD at "
                          + f"{config['camea_db']['ip']}:{config['camea_db']['port']}"))
@@ -157,7 +157,7 @@ class CameaService:
                             + id.to_bytes(2, 'little')
                             + bytearray(b'\x00\x00')
                             + len(response_str).to_bytes(4, 'little')
-                            + response_str.encode('UTF-16'))
+                            + response_str.encode('UTF-8'))
             logger.info(f"Images to Camea DB have been sent: '{img_response}'")
 
             ### DDD
