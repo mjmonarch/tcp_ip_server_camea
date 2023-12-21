@@ -132,15 +132,18 @@ class CameaService:
 
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s2:
             s2.connect((config['camea_db']['ip'], config.getint('camea_db', 'port')))
+
+            # handshake
             s2.sendall(bytearray(b'\x4b\x41\x78\x78\x00\x00\x00\x00\x00\x00\x00\x00'))
             s2_response = str(s2.recv(config.getint('settings', 'buffer')), 'ascii')
             logger.info((f"Received data: '{s2_response}'"
                          + f"from {config['camea_db']['ip']}:{config['camea_db']['port']}"))
+
             img_response = (bytearray(b'\x44\x41\x74\x50')
                             + id.to_bytes(2, 'little')
                             + bytearray(b'\x00\x00')
                             + len(response_str).to_bytes(4, 'little')
-                            + response_str.encode('UTF-8'))
+                            + response_str.encode('UTF-16'))
             s2.sendall(img_response)
             logger.info(("Send images to CAMEA BD at "
                          + f"{config['camea_db']['ip']}:{config['camea_db']['port']}"))
@@ -217,10 +220,13 @@ class CameaService:
 
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s2:
             s2.connect((config['camea_db']['ip'], config.getint('camea_db', 'port')))
+
+            # handshake
             s2.sendall(bytearray(b'\x4b\x41\x78\x78\x00\x00\x00\x00\x00\x00\x00\x00'))
             s2_response = str(s2.recv(config.getint('settings', 'buffer')), 'ascii')
             logger.info((f"Received data: '{s2_response}'"
                          + f"from {config['camea_db']['ip']}:{config['camea_db']['port']}"))
+
             img_response = (bytearray(b'\x44\x41\x74\x50')
                             + id.to_bytes(2, 'little')
                             + bytearray(b'\x00\x00')
