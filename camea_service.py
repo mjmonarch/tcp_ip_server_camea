@@ -147,6 +147,12 @@ class CameaService:
             s2.close()
 
             ### DDD
+            response['LpJpeg'] = response['LpJpeg'][:10]
+            response['FullImage64'] = response['FullImage64'][:10]
+            response_str = '|'.join([f'{key}:{value}' for key, value in response.items()])
+            logger.info(f"Images to Camea DB have been sent: '{response_str}'")
+
+            ### DDD
             with open("logs/test_img.txt", "a") as writer:
                 response = dict()
                 response['msg'] = 'LargeDetection'
