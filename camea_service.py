@@ -153,7 +153,12 @@ class CameaService:
             response['LpJpeg'] = response['LpJpeg'][:10]
             response['FullImage64'] = response['FullImage64'][:10]
             response_str = '|'.join([f'{key}:{value}' for key, value in response.items()])
-            logger.info(f"Images to Camea DB have been sent: '{response_str}'")
+            img_response = (bytearray(b'\x44\x41\x74\x50')
+                            + id.to_bytes(2, 'little')
+                            + bytearray(b'\x00\x00')
+                            + len(response_str).to_bytes(4, 'little')
+                            + response_str.encode('UTF-16'))
+            logger.info(f"Images to Camea DB have been sent: '{img_response}'")
 
             ### DDD
             with open("logs/test_img.txt", "a") as writer:
