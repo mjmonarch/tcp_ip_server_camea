@@ -145,6 +145,13 @@ class CameaService:
                             + len(response_str).to_bytes(4, 'little')
                             + response_str.encode('UTF-8'))
             s2.sendall(img_response)
+
+            #### DDD
+            s2_response = str(s2.recv(config.getint('settings', 'buffer')), 'ascii')
+            logger.info((f"Received data: '{s2_response}'"
+                         + f"from {config['camea_db']['ip']}:{config['camea_db']['port']}"))
+
+
             logger.info(("Send images to CAMEA BD at "
                          + f"{config['camea_db']['ip']}:{config['camea_db']['port']}"))
             s2.close()
