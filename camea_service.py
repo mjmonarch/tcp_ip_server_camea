@@ -114,7 +114,7 @@ class CameaService:
         response['msg'] = 'LargeDetection'
         response['ModuleID'] = (request['RequestedSensor']
                                 if 'RequestedSensor' in request
-                                else congif['service']['module_id'])
+                                else config['service']['module_id'])
         # response['ImageID'] = (settings['Camera_Unit_ID'] + '_'
         response['ImageID'] = (response['ModuleID'] + '_'
                                + datetime.strftime(dt_response, '%Y%m%dT%H%M%S%f')[:-3]
