@@ -38,6 +38,17 @@ class CameaService:
         self.DB_IP = db_ip
         self.DB_PORT = db_port
 
+        ### KKK
+        self.conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.conn.connect((self.DB_IP, self.DB_PORT))
+
+        # handshake
+        self.conn.sendall(bytearray(b'\x4b\x41\x78\x78\x00\x00\x00\x00\x00\x00\x00\x00'))
+        s2_response = str(self.conn.recv(config.getint('settings', 'buffer')), 'ascii')
+        logger.info((f"Received data: '{s2_response}'"
+                    + f"from {config['camea_db']['ip']}:{config['camea_db']['port']}"))
+
+
     def send_image_found_response(self, conn: socket, id: int, dt_response: datetime,
                                   request: dict, config: dict,
                                   lp: str = 'AA1234AA', country: str = 'UA') -> None:
@@ -130,65 +141,80 @@ class CameaService:
 
         response_str = '|'.join([f'{key}:{value}' for key, value in response.items()])
 
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s2:
-            s2.connect((config['camea_db']['ip'], config.getint('camea_db', 'port')))
+        ### KKK
+        img_response = (bytearray(b'\x44\x41\x74\x50')
+                        + id.to_bytes(2, 'little')
+                        + bytearray(b'\x00\x00')
+                        + len(response_str).to_bytes(4, 'little')
+                        + response_str.encode('UTF-8'))
+        self.conn.sendall(img_response)
 
-            # handshake
-            s2.sendall(bytearray(b'\x4b\x41\x78\x78\x00\x00\x00\x00\x00\x00\x00\x00'))
-            s2_response = str(s2.recv(config.getint('settings', 'buffer')), 'ascii')
-            logger.info((f"Received data: '{s2_response}'"
-                         + f"from {config['camea_db']['ip']}:{config['camea_db']['port']}"))
+        s2_response = str(self.conn.recv(config.getint('settings', 'buffer')), 'ascii')
+        logger.info((f"XXXXX: '{s2_response}'"
+                     + f"from {config['camea_db']['ip']}:{config['camea_db']['port']}"))
 
-            img_response = (bytearray(b'\x44\x41\x74\x50')
-                            + id.to_bytes(2, 'little')
-                            + bytearray(b'\x00\x00')
-                            + len(response_str).to_bytes(4, 'little')
-                            + response_str.encode('UTF-8'))
-            s2.sendall(img_response)
+        logger.info(("Send images to CAMEA BD at "
+                     + f"{config['camea_db']['ip']}:{config['camea_db']['port']}"))
 
-            #### DDD
-            s2_response = str(s2.recv(config.getint('settings', 'buffer')), 'ascii')
-            logger.info((f"XXXXX: '{s2_response}'"
-                         + f"from {config['camea_db']['ip']}:{config['camea_db']['port']}"))
+        # with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s2:
+        #     s2.connect((config['camea_db']['ip'], config.getint('camea_db', 'port')))
+
+        #     # handshake
+        #     s2.sendall(bytearray(b'\x4b\x41\x78\x78\x00\x00\x00\x00\x00\x00\x00\x00'))
+        #     s2_response = str(s2.recv(config.getint('settings', 'buffer')), 'ascii')
+        #     logger.info((f"Received data: '{s2_response}'"
+        #                  + f"from {config['camea_db']['ip']}:{config['camea_db']['port']}"))
+
+        #     img_response = (bytearray(b'\x44\x41\x74\x50')
+        #                     + id.to_bytes(2, 'little')
+        #                     + bytearray(b'\x00\x00')
+        #                     + len(response_str).to_bytes(4, 'little')
+        #                     + response_str.encode('UTF-8'))
+        #     s2.sendall(img_response)
+
+        #     #### DDD
+            # s2_response = str(s2.recv(config.getint('settings', 'buffer')), 'ascii')
+            # logger.info((f"XXXXX: '{s2_response}'"
+            #              + f"from {config['camea_db']['ip']}:{config['camea_db']['port']}"))
 
 
-            logger.info(("Send images to CAMEA BD at "
-                         + f"{config['camea_db']['ip']}:{config['camea_db']['port']}"))
-            s2.close()
+            # logger.info(("Send images to CAMEA BD at "
+            #              + f"{config['camea_db']['ip']}:{config['camea_db']['port']}"))
+            # s2.close()
+
+        #     ### DDD
+        response['LpJpeg'] = response['LpJpeg'][:10]
+        response['FullImage64'] = response['FullImage64'][:10]
+        response_str = '|'.join([f'{key}:{value}' for key, value in response.items()])
+        img_response = (bytearray(b'\x44\x41\x74\x50')
+                        + id.to_bytes(2, 'little')
+                        + bytearray(b'\x00\x00')
+                        + len(response_str).to_bytes(4, 'little')
+                        + response_str.encode('UTF-8'))
+        logger.info(f"Images to Camea DB have been sent: '{img_response}'")
 
             ### DDD
-            response['LpJpeg'] = response['LpJpeg'][:10]
-            response['FullImage64'] = response['FullImage64'][:10]
-            response_str = '|'.join([f'{key}:{value}' for key, value in response.items()])
-            img_response = (bytearray(b'\x44\x41\x74\x50')
-                            + id.to_bytes(2, 'little')
-                            + bytearray(b'\x00\x00')
-                            + len(response_str).to_bytes(4, 'little')
-                            + response_str.encode('UTF-8'))
-            logger.info(f"Images to Camea DB have been sent: '{img_response}'")
+            # with open("logs/test_img.txt", "a") as writer:
+            #     response = dict()
+            #     response['msg'] = 'LargeDetection'
+            #     response['ModuleID'] = (request['RequestedSensor']
+            #                             if 'RequestedSensor' in request
+            #                             else config['service']['module_id'])
+            #     response['ImageID'] = (config['settings']['camera_unit_id'] + '_'
+            #                            + datetime.strftime(dt_response, '%Y%m%dT%H%M%S%f')[:-3]
+            #                            + datetime.strftime(dt_response, '%z'))
+            #     response['TimeDet'] = (datetime.strftime(dt_response, '%Y%m%dT%H%M%S%f')[:-3]
+            #                            + datetime.strftime(dt_response, '%z'))
+            #     response['UT'] = dt_response.isoformat(timespec="milliseconds")
+            #     response['ExtraCount'] = 0
+            #     response['LPText'] = 'AA1234AA'
+            #     response['ILPC'] = 'UA'
+            #     response['LpJpeg'] = 'xxx'
+            #     response['FullImage64'] = 'yyy'
 
-            ### DDD
-            with open("logs/test_img.txt", "a") as writer:
-                response = dict()
-                response['msg'] = 'LargeDetection'
-                response['ModuleID'] = (request['RequestedSensor']
-                                        if 'RequestedSensor' in request
-                                        else config['service']['module_id'])
-                response['ImageID'] = (config['settings']['camera_unit_id'] + '_'
-                                       + datetime.strftime(dt_response, '%Y%m%dT%H%M%S%f')[:-3]
-                                       + datetime.strftime(dt_response, '%z'))
-                response['TimeDet'] = (datetime.strftime(dt_response, '%Y%m%dT%H%M%S%f')[:-3]
-                                       + datetime.strftime(dt_response, '%z'))
-                response['UT'] = dt_response.isoformat(timespec="milliseconds")
-                response['ExtraCount'] = 0
-                response['LPText'] = 'AA1234AA'
-                response['ILPC'] = 'UA'
-                response['LpJpeg'] = 'xxx'
-                response['FullImage64'] = 'yyy'
+            #     response_str = '|'.join([f'{key}:{value}' for key, value in response.items()]) + '\n\n\n'
 
-                response_str = '|'.join([f'{key}:{value}' for key, value in response.items()]) + '\n\n\n'
-
-                writer.write(response_str)
+            #     writer.write(response_str)
 
     def send_image_data(self, id: int, dt_response: datetime,
                         request: dict, config: dict, img: dict) -> None:
@@ -230,24 +256,34 @@ class CameaService:
 
         response_str = '|'.join([f'{key}:{value}' for key, value in response.items()])
 
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s2:
-            s2.connect((config['camea_db']['ip'], config.getint('camea_db', 'port')))
+        # with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s2:
+        #     s2.connect((config['camea_db']['ip'], config.getint('camea_db', 'port')))
 
-            # handshake
-            s2.sendall(bytearray(b'\x4b\x41\x78\x78\x00\x00\x00\x00\x00\x00\x00\x00'))
-            s2_response = str(s2.recv(config.getint('settings', 'buffer')), 'ascii')
-            logger.info((f"Received data: '{s2_response}'"
-                         + f"from {config['camea_db']['ip']}:{config['camea_db']['port']}"))
+        #     # handshake
+        #     s2.sendall(bytearray(b'\x4b\x41\x78\x78\x00\x00\x00\x00\x00\x00\x00\x00'))
+        #     s2_response = str(s2.recv(config.getint('settings', 'buffer')), 'ascii')
+        #     logger.info((f"Received data: '{s2_response}'"
+        #                  + f"from {config['camea_db']['ip']}:{config['camea_db']['port']}"))
 
-            img_response = (bytearray(b'\x44\x41\x74\x50')
-                            + id.to_bytes(2, 'little')
-                            + bytearray(b'\x00\x00')
-                            + len(response_str).to_bytes(4, 'little')
-                            + response_str.encode('UTF-8'))
-            s2.sendall(img_response)
-            logger.info(("Send images to CAMEA BD at "
-                         + f"{config['camea_db']['ip']}:{config['camea_db']['port']}"))
-            s2.close()
+        #     img_response = (bytearray(b'\x44\x41\x74\x50')
+        #                     + id.to_bytes(2, 'little')
+        #                     + bytearray(b'\x00\x00')
+        #                     + len(response_str).to_bytes(4, 'little')
+        #                     + response_str.encode('UTF-8'))
+        #     s2.sendall(img_response)
+        #     logger.info(("Send images to CAMEA BD at "
+        #                  + f"{config['camea_db']['ip']}:{config['camea_db']['port']}"))
+        #     s2.close()
+
+        img_response = (bytearray(b'\x44\x41\x74\x50')
+                        + id.to_bytes(2, 'little')
+                        + bytearray(b'\x00\x00')
+                        + len(response_str).to_bytes(4, 'little')
+                        + response_str.encode('UTF-8'))
+        self.conn.sendall(img_response)
+        logger.info(("Send images to CAMEA BD at "
+                        + f"{config['camea_db']['ip']}:{config['camea_db']['port']}")) 
+
 
             # ### DDD
             # with open("logs/test_img.txt", "a") as writer:
