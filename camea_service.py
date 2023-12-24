@@ -37,7 +37,7 @@ class CameaService:
     def __init__(self, db_ip: str, db_port: int, buffer: int):
         self.DB_IP = db_ip
         self.DB_PORT = db_port
-        self.buffer = buffer
+        self.buffer = int(buffer)
 
         ### KKK
         self.conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
