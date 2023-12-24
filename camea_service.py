@@ -6,6 +6,7 @@ import atexit
 import logging
 import schedule
 import socket
+import time
 import threading
 from datetime import datetime
 from image_generator import ImageGenerator
