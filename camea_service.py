@@ -45,7 +45,7 @@ class CameaService:
 
         # handshake
         self.conn.sendall(bytearray(b'\x4b\x41\x78\x78\x00\x00\x00\x00\x00\x00\x00\x00'))
-        s2_response = str(self.conn.recv(self.buffer, 'ascii'))
+        s2_response = str(self.conn.recv(int(self.buffer), 'ascii'))
         logger.info((f"Received data: '{s2_response}'"
                     + f"from {self.DB_IP}:{self.DB_PORT}"))
 
