@@ -2,8 +2,11 @@
 # import sys
 # import xml.etree.ElementTree as ET
 # from datetime import datetime
+import atexit
 import logging
+import schedule
 import socket
+import threading
 from datetime import datetime
 from image_generator import ImageGenerator
 
@@ -48,6 +51,36 @@ class CameaService:
         s2_response = str(self.conn.recv(self.buffer), 'ascii')
         logger.info((f"Received data: '{s2_response}'"
                     + f"from {self.DB_IP}:{self.DB_PORT}"))
+
+        def __run_scheduler(interval=1):
+            scheduler_event = threading.Event()
+
+            class ScheduleThread(threading.Thread):
+                @classmethod
+                def run(cls):
+                    while not scheduler_event.is_set():
+                        schedule.run_pending()
+                        time.sleep(interval)
+
+            continuous_thread = ScheduleThread()
+            continuous_thread.start()
+            return scheduler_event
+
+        def __atexit():
+            stop_scheduler.set()
+
+        def __shutdown(s):
+            self.conn.close()
+            stop_scheduler.set()
+
+        def __send_keep_alive():
+            self.conn.sendall(bytearray(b'\x4b\x41\x78\x78\x00\x00\x00\x00\x00\x00\x00\x00'))
+
+        # Start the background thread
+        stop_scheduler = __run_scheduler()
+        atexit.register(__atexit)
+        # sending keep alive messages every 3 seconds
+        schedule.every(3).seconds.do(__send_keep_alive)
 
     def send_image_found_response(self, conn: socket, id: int, dt_response: datetime,
                                   request: dict, config: dict,
