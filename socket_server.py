@@ -84,8 +84,8 @@ class QUERY_PROCESSOR:
             self.msg_id = self.config.getint('current', 'msg_id')
             self.vidar_service = VidarService(ip=self.config['vidar']['ip'])
             self.camea_service = CameaService(db_ip=self.config['camea_db']['ip'],
-                                              db_port=self.config['camea_db']['port'],
-                                              buffer=self.config['settings']['buffer'])
+                                              db_port=self.config.getint('camea_db', 'port'),
+                                              buffer=self.config.getint('settings', 'buffer'))
 
     @classmethod
     def __check_config(cls, config):

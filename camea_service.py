@@ -34,9 +34,9 @@ class CameaService:
         Sends the received from the Vidar DB image to the Camea Database
     """
 
-    def __init__(self, db_ip, db_port, buffer):
+    def __init__(self, db_ip: str, db_port: int, buffer: int):
         self.DB_IP = db_ip
-        self.DB_PORT = int(db_port)
+        self.DB_PORT = db_port
 
         ### KKK
         self.conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
