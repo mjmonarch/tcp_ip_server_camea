@@ -34,7 +34,7 @@ class CameaService:
         Sends the received from the Vidar DB image to the Camea Database
     """
 
-    def __init__(self, db_ip, db_port):
+    def __init__(self, db_ip, db_port, buffer):
         self.DB_IP = db_ip
         self.DB_PORT = int(db_port)
 
@@ -44,10 +44,9 @@ class CameaService:
 
         # handshake
         self.conn.sendall(bytearray(b'\x4b\x41\x78\x78\x00\x00\x00\x00\x00\x00\x00\x00'))
-        s2_response = str(self.conn.recv(config.getint('settings', 'buffer')), 'ascii')
+        s2_response = str(self.conn.recv(buffer, 'ascii'))
         logger.info((f"Received data: '{s2_response}'"
-                    + f"from {config['camea_db']['ip']}:{config['camea_db']['port']}"))
-
+                    + f"from {self.DB_IP}:{self.DB_PORT}"))
 
     def send_image_found_response(self, conn: socket, id: int, dt_response: datetime,
                                   request: dict, config: dict,
@@ -282,7 +281,7 @@ class CameaService:
                         + response_str.encode('UTF-8'))
         self.conn.sendall(img_response)
         logger.info(("Send images to CAMEA BD at "
-                        + f"{config['camea_db']['ip']}:{config['camea_db']['port']}")) 
+                    + f"{config['camea_db']['ip']}:{config['camea_db']['port']}"))
 
 
             # ### DDD
