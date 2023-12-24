@@ -37,7 +37,7 @@ class CameaService:
     def __init__(self, db_ip: str, db_port: int, buffer: int):
         self.DB_IP = db_ip
         self.DB_PORT = db_port
-        self.buffer = int(buffer)
+        self.buffer = buffer
 
         ### KKK
         self.conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -45,7 +45,7 @@ class CameaService:
 
         # handshake
         self.conn.sendall(bytearray(b'\x4b\x41\x78\x78\x00\x00\x00\x00\x00\x00\x00\x00'))
-        s2_response = str(self.conn.recv(int(self.buffer), 'ascii'))
+        s2_response = str(self.conn.recv(self.buffer), 'ascii')
         logger.info((f"Received data: '{s2_response}'"
                     + f"from {self.DB_IP}:{self.DB_PORT}"))
 
