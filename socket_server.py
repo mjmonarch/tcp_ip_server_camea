@@ -195,6 +195,10 @@ class QUERY_PROCESSOR:
                     # transfer best_fit from timestamp into datetime
                     timezone = zoneinfo.ZoneInfo(self.config['settings']['timezone'])
                     dt_vidar = datetime.fromtimestamp(best_fit, tz=timezone)
+
+                    ### DDDD
+                    logger.debug(f"DDD: chosen VIDAR time: {dt_vidar}")
+
                     # send response to the CAMEA Management Software
                     self.camea_service.send_image_found_response(conn=conn,
                                                                  id=self.msg_id,
