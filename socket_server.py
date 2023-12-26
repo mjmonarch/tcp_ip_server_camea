@@ -197,7 +197,8 @@ class QUERY_PROCESSOR:
                     dt_vidar = datetime.fromtimestamp(best_fit, tz=timezone)
 
                     ### DDDD
-                    logger.debug(f"DDD: chosen VIDAR time: {dt_vidar}")
+                    logger.debug(f"DDD: VIDAR time BEFORE TRANSFORMATION: {best_fit}")
+                    logger.debug(f"DDD: VIDAR time AFTER TRANSFORMATION: {dt_vidar}")
 
                     # send response to the CAMEA Management Software
                     self.camea_service.send_image_found_response(conn=conn,
