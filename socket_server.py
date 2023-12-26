@@ -170,11 +170,16 @@ class QUERY_PROCESSOR:
                 msg = "Missing ID in the DetectionRequest"
                 raise IncorrectCameaQuery(msg)
 
+            # use tolerance from the configfile (if set) or from query (if 0)
+            tolerance = (self.config.getint('vidar', 'tolerance') 
+                         if self.config.getint('vidar', 'tolerance') > 0
+                         else request_data['ToleranceMS'])
+
             # get transit images
             if self.config['service']['mode'] == 'VIDAR':
                 # search for IDs in vidar database with given datetime ± tolerance
                 vidar_ids = self.vidar_service.get_ids(transit_timestamp=dt,
-                                                       tolerance=self.config.getint('vidar', 'tolerance'))
+                                                       tolerance=tolerance)
 
                 if vidar_ids:
                     logger.debug(f"DDD: Received vidar ids keys: {vidar_ids.keys()} from {vidar_ids}")
@@ -190,7 +195,7 @@ class QUERY_PROCESSOR:
                     # transfer best_fit from timestamp into datetime
                     timezone = zoneinfo.ZoneInfo(self.config['settings']['timezone'])
                     dt_vidar = datetime.fromtimestamp(best_fit, tz=timezone)
-                    # send response to the CAMEA DB Management Software
+                    # send response to the CAMEA Management Software
                     self.camea_service.send_image_found_response(conn=conn,
                                                                  id=self.msg_id,
                                                                  dt_response=dt_vidar,
@@ -204,26 +209,26 @@ class QUERY_PROCESSOR:
                                                        config=self.config,
                                                        img=img)
                 else:
-                    # send response to the CAMEA DB Management Software
-                    # tht required image was not found
+                    # send response to the CAMEA DB
+                    # that required image was not found
                     self.camea_service.send_image_not_found_response(conn=conn,
                                                                      id=self.msg_id,
                                                                      request=request_data,
                                                                      config=self.config)
-                self.msg_id += 1
 
             elif self.config['service']['mode'] == 'TEST':
-                # send response to the CAMEA DB Management Software
+                # send response to the CAMEA Management Software
                 self.camea_service.send_image_found_response(conn,
                                                              id=self.msg_id,
                                                              dt_response=dt,
                                                              request=request_data,
                                                              config=self.config)
+                # send response to the CAMEA DB
                 self.camea_service.send_stab_image_data(id=self.msg_id,
                                                         dt_response=dt,
                                                         request=request_data,
                                                         config=self.config)
-                self.msg_id += 1
+            self.msg_id += 1
 
         # detalize exceptions!!!
         except Exception as e:
@@ -276,9 +281,10 @@ class QUERY_PROCESSOR:
                         + f"{self.config['service']['port']}")
             logger.info("Start socket listening in thread:" + socket_thread.name)
 
-            if self.config.getint('service', 'operating_time') > 0:
-                schedule.every(self.config.getint('service', 'operating_time')).minutes.do(__shutdown, s)
-                logger.info((f"Terminate scheduler set for {self.config['service']['operating_time']} "
+            operating_time = self.config.getint('service', 'operating_time')
+            if operating_time > 0:
+                schedule.every(operating_time).minutes.do(__shutdown, s)
+                logger.info((f"Terminate scheduler set for {operating_time} "
                             + f"minutes: {socket_thread.name}"))
             try:
                 conn, addr = s.accept()
