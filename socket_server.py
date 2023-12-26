@@ -194,10 +194,10 @@ class QUERY_PROCESSOR:
                     img = self.vidar_service.get_data(id)
                     # transfer best_fit from timestamp into datetime
                     timezone = zoneinfo.ZoneInfo(self.config['settings']['timezone'])
-                    dt_vidar = datetime.fromtimestamp(best_fit, tz=timezone)
+                    dt_vidar = datetime.fromtimestamp(id, tz=timezone)
 
                     ### DDDD
-                    logger.debug(f"DDD: VIDAR time BEFORE TRANSFORMATION: {best_fit}")
+                    logger.debug(f"DDD: VIDAR time BEFORE TRANSFORMATION: {id}")
                     logger.debug(f"DDD: VIDAR time AFTER TRANSFORMATION: {dt_vidar}")
 
                     # send response to the CAMEA Management Software
