@@ -17,13 +17,6 @@ from vidar_service import VidarService
 from errors import IncorrectCameaQuery
 
 
-# ##  DDD TEMP
-TOTAL = 0
-S0 = 0
-S1 = 0
-S2 = 0
-
-
 # Logger settings
 LOG_FILE = "logs/log.log"
 LOGGING_SETTINGS = {
@@ -81,7 +74,7 @@ class QUERY_PROCESSOR:
 
         self.initiated = QUERY_PROCESSOR.__check_config(self.config)
         if self.initiated:
-            self.msg_id = self.config.getint('current', 'msg_id')
+            self.msg_id = 0
             self.vidar_service = VidarService(ip=self.config['vidar']['ip'])
             self.camea_service = CameaService(db_ip=self.config['camea_db']['ip'],
                                               db_port=self.config.getint('camea_db', 'port'),
@@ -91,8 +84,7 @@ class QUERY_PROCESSOR:
     def __check_config(cls, config):
         # check config structure
         if not {'service', 'settings', 'current', 'vidar', 'camea_db'}.issubset(config.sections()):
-            logger.critical('Configuration file does have appropriate structure')
-            logger.critical(config.sections()) # DDD: REMOVE
+            logger.critical('Configuration file does not have appropriate structure')
             return False
 
         # check service section
@@ -115,16 +107,6 @@ class QUERY_PROCESSOR:
             config.getint('settings', 'timeout')
         except Exception as e:
             logger.critical('Invalid datatype for data in settings section: ' + str(e))
-            return False
-
-        # check current section
-        if 'msg_id' not in config['current']:
-            logger.critical('Configuration file current section: missing values')
-            return False
-        try:
-            config.getint('current', 'msg_id')
-        except Exception as e:
-            logger.critical('Invalid datatype for data in current section: ' + str(e))
             return False
 
         # check vidar section
@@ -194,24 +176,6 @@ class QUERY_PROCESSOR:
                 vidar_ids = self.vidar_service.get_ids(transit_timestamp=dt,
                                                        tolerance=self.config.getint('vidar', 'tolerance'))
 
-                #### DDDDDDDDDD
-                global TOTAL, S0, S1, S2
-                TOTAL += 1
-                if vidar_ids:
-                    S0 += 1
-                else:
-                    time.sleep(1)
-                    vidar_ids = self.vidar_service.get_ids(transit_timestamp=dt,
-                                                           tolerance=self.config.getint('vidar', 'tolerance'))
-                    if vidar_ids:
-                        S1 += 1
-                    else:
-                        time.sleep(1)
-                        vidar_ids = self.vidar_service.get_ids(transit_timestamp=dt,
-                                                               tolerance=self.config.getint('vidar', 'tolerance'))
-                        if vidar_ids:
-                            S2 += 1
-
                 if vidar_ids:
                     logger.debug(f"DDD: Received vidar ids keys: {vidar_ids.keys()} from {vidar_ids}")
                     # search for the image that is the closest to requested timestamp
@@ -241,11 +205,13 @@ class QUERY_PROCESSOR:
                                                        img=img)
                 else:
                     # send response to the CAMEA DB Management Software
-                    # self.camea_service.send_no_image_found_response(conn, request_data, self.SETTINGS)
-                    # TODO: figure out is it needed to send answer to CAMEA DB Management Software
-                    # if no image found
-                    pass
+                    # tht required image was not found
+                    self.camea_service.send_image_not_found_response(conn=conn,
+                                                                     id=self.msg_id,
+                                                                     request=request_data,
+                                                                     config=self.config)
                 self.msg_id += 1
+
             elif self.config['service']['mode'] == 'TEST':
                 # send response to the CAMEA DB Management Software
                 self.camea_service.send_image_found_response(conn,
@@ -290,22 +256,11 @@ class QUERY_PROCESSOR:
 
         def __atexit():
             stop_scheduler.set()
-            self.config.set('current', 'msg_id', str(self.msg_id + 1))
-            with open('config.ini', 'w') as configfile:
-                self.config.write(configfile)
 
         def __shutdown(s):
             logger.info("Server was shutdown because running time expired")
             conn.close()
             stop_scheduler.set()
-
-            # ### DDDDDDDDDD
-            global TOTAL, S0, S1, S2
-
-            logger.info(f"total: {TOTAL}")
-            logger.info(f"got without delay: {S0}")
-            logger.info(f"got with delay 1s: {S1}")
-            logger.info(f"got with delay 2s: {S2}")
 
         # Start the background thread
         stop_scheduler = __run_scheduler()
