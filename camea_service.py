@@ -70,7 +70,7 @@ class CameaService:
         def __send_keep_alive():
             try:
                 self.conn.sendall(bytearray(b'\x4b\x41\x78\x78\x00\x00\x00\x00\x00\x00\x00\x00'))
-            except socket.ConnectionResetError as e:
+            except ConnectionResetError as e:
                 logger.error(f'Connection to Camea DB was reset by the peer: {e}')
                 self.conn = self.__get_connection()
 
@@ -142,7 +142,7 @@ class CameaService:
             self.conn.sendall(response_bytes)
             logger.info("Response to CAMEA DB Management Software has been sent: "
                         + f"{response_bytes}")
-        except socket.ConnectionResetError as e:
+        except ConnectionResetError as e:
             logger.error(f'Connection to Camea DB was reset by the peer: {e}')
             self.conn = self.__get_connection()
 
@@ -189,7 +189,7 @@ class CameaService:
             self.conn.sendall(response_bytes)
             logger.info("Response to CAMEA DB Management Software has been sent: "
                         + f"{response_bytes}")
-        except socket.ConnectionResetError as e:
+        except ConnectionResetError as e:
             logger.error(f'Connection to Camea DB was reset by the peer: {e}')
             self.conn = self.__get_connection()
 
@@ -254,7 +254,7 @@ class CameaService:
                             + len(response_str).to_bytes(4, 'little')
                             + response_str.encode('UTF-8'))
             logger.debug(f"Images to Camea DB have been sent: '{img_response}'")
-        except socket.ConnectionResetError as e:
+        except ConnectionResetError as e:
             logger.error(f'Connection to Camea DB was reset by the peer: {e}')
             self.conn = self.__get_connection()
 
@@ -318,6 +318,6 @@ class CameaService:
                             + len(response_str).to_bytes(4, 'little')
                             + response_str.encode('UTF-8'))
             logger.debug(f"Images to Camea DB have been sent: '{img_response}'")
-        except socket.ConnectionResetError as e:
+        except ConnectionResetError as e:
             logger.error(f'Connection to Camea DB was reset by the peer: {e}')
             self.conn = self.__get_connection()

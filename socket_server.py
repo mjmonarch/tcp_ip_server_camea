@@ -13,8 +13,8 @@ import threading
 import zoneinfo
 from datetime import datetime
 from camea_service import CameaService
-from vidar_service import VidarService
 from errors import IncorrectCameaQuery
+from vidar_service import VidarService
 
 
 # Logger settings
