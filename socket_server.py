@@ -344,7 +344,7 @@ class QUERY_PROCESSOR:
                             except Exception as e:
                                 logger.error(e)
 
-            except KeyboardInterrupt:
+            except (KeyboardInterrupt, TimeoutError):
                 __atexit()
 
 
