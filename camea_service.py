@@ -83,7 +83,7 @@ class CameaService:
     def __atexit(self):
         self.stop_scheduler.set()
 
-    def __shutdown(s):
+    def __shutdown(self, s):
         self.conn.close()
         self.stop_scheduler.set()
 
@@ -248,9 +248,9 @@ class CameaService:
             # log cut message
             s2_response = str(self.conn.recv(config.getint('settings', 'buffer')), 'ascii')
             logger.info(("Send images to CAMEA BD at "
-                        + f"{config['camea_db']['ip']}:{config['camea_db']['port']}"))
+                         + f"{config['camea_db']['ip']}:{config['camea_db']['port']}"))
             logger.debug((f"Camea DB response: '{s2_response}'"
-                        + f"from {config['camea_db']['ip']}:{config['camea_db']['port']}"))
+                          + f"from {config['camea_db']['ip']}:{config['camea_db']['port']}"))
 
             response['LpJpeg'] = response['LpJpeg'][:10]
             response['FullImage64'] = response['FullImage64'][:10]
