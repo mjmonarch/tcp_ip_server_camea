@@ -67,7 +67,7 @@ class CameaService:
         #     self.conn.close()
         #     stop_scheduler.set()
 
-        def __send_keep_alive():
+        def __send_keep_alive_2():
             try:
                 self.conn.sendall(bytearray(b'\x4b\x41\x78\x78\x00\x00\x00\x00\x00\x00\x00\x00'))
             except ConnectionResetError as e:
@@ -78,7 +78,7 @@ class CameaService:
         self.stop_scheduler = __run_scheduler()
         atexit.register(self.__atexit)
         # sending keep alive messages every 3 seconds
-        schedule.every(3).seconds.do(__send_keep_alive)
+        schedule.every(3).seconds.do(__send_keep_alive_2)
 
     def __atexit(self):
         self.stop_scheduler.set()
