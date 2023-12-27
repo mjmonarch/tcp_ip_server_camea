@@ -1,7 +1,3 @@
-# import requests
-# import sys
-# import xml.etree.ElementTree as ET
-# from datetime import datetime
 import atexit
 import logging
 import schedule
@@ -48,14 +44,7 @@ class CameaService:
         self.buffer = buffer
 
         # initiate Camea DB connection
-        self.conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.conn.connect((self.DB_IP, self.DB_PORT))
-
-        # handshake
-        self.conn.sendall(bytearray(b'\x4b\x41\x78\x78\x00\x00\x00\x00\x00\x00\x00\x00'))
-        s2_response = str(self.conn.recv(self.buffer), 'ascii')
-        logger.info((f"Received data: '{s2_response}'"
-                    + f"from {self.DB_IP}:{self.DB_PORT}"))
+        self.conn = self.__get_connection()
 
         def __run_scheduler(interval=1):
             scheduler_event = threading.Event()
@@ -79,13 +68,28 @@ class CameaService:
             stop_scheduler.set()
 
         def __send_keep_alive():
-            self.conn.sendall(bytearray(b'\x4b\x41\x78\x78\x00\x00\x00\x00\x00\x00\x00\x00'))
+            try:
+                self.conn.sendall(bytearray(b'\x4b\x41\x78\x78\x00\x00\x00\x00\x00\x00\x00\x00'))
+            except socket.ConnectionResetError as e:
+                logger.error(f'Connection to Camea DB was reset by the peer: {e}')
+                self.conn = self.__get_connection()
 
         # Start the background thread
         stop_scheduler = __run_scheduler()
         atexit.register(__atexit)
         # sending keep alive messages every 3 seconds
         schedule.every(3).seconds.do(__send_keep_alive)
+
+    def __get_connection(self):
+        conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        logger.info(f'Connecting to Camea DB at {self.DB_IP}: {self.DB_PORT}')
+        conn.connect((self.DB_IP, self.DB_PORT))
+        # handshake
+        conn.sendall(bytearray(b'\x4b\x41\x78\x78\x00\x00\x00\x00\x00\x00\x00\x00'))
+        s2_response = str(self.conn.recv(self.buffer), 'ascii')
+        logger.info((f"Received data: '{s2_response}'"
+                    + f"from {self.DB_IP}:{self.DB_PORT}"))
+        return conn
 
     def send_image_found_response(self, conn: socket, id: int, dt_response: datetime,
                                   request: dict, config: dict,
@@ -134,8 +138,13 @@ class CameaService:
                           + bytearray(b'\x00\x00')
                           + len(response_str).to_bytes(4, 'little')
                           + response_str.encode('UTF-8'))
-        conn.sendall(response_bytes)
-        logger.info(f"Response to CAMEA DB Management Software has been sent: '{response_bytes}'")
+        try:
+            self.conn.sendall(response_bytes)
+            logger.info("Response to CAMEA DB Management Software has been sent: "
+                        + f"{response_bytes}")
+        except socket.ConnectionResetError as e:
+            logger.error(f'Connection to Camea DB was reset by the peer: {e}')
+            self.conn = self.__get_connection()
 
     def send_image_not_found_response(self, conn: socket, id: int,
                                       request: dict, config: dict) -> None:
@@ -176,8 +185,13 @@ class CameaService:
                           + bytearray(b'\x00\x00')
                           + len(response_str).to_bytes(4, 'little')
                           + response_str.encode('UTF-8'))
-        conn.sendall(response_bytes)
-        logger.info(f"Response to CAMEA DB Management Software has been sent: '{response_bytes}'")
+        try:
+            self.conn.sendall(response_bytes)
+            logger.info("Response to CAMEA DB Management Software has been sent: "
+                        + f"{response_bytes}")
+        except socket.ConnectionResetError as e:
+            logger.error(f'Connection to Camea DB was reset by the peer: {e}')
+            self.conn = self.__get_connection()
 
     def send_stab_image_data(self, id: int, dt_response: datetime,
                              request: dict, config: dict) -> None:
@@ -221,24 +235,28 @@ class CameaService:
                         + bytearray(b'\x00\x00')
                         + len(response_str).to_bytes(4, 'little')
                         + response_str.encode('UTF-8'))
-        self.conn.sendall(img_response)
+        try:
+            self.conn.sendall(img_response)
 
-        s2_response = str(self.conn.recv(config.getint('settings', 'buffer')), 'ascii')
+            # log cut message
+            s2_response = str(self.conn.recv(config.getint('settings', 'buffer')), 'ascii')
+            logger.info(("Send images to CAMEA BD at "
+                        + f"{config['camea_db']['ip']}:{config['camea_db']['port']}"))
+            logger.debug((f"Camea DB response: '{s2_response}'"
+                        + f"from {config['camea_db']['ip']}:{config['camea_db']['port']}"))
 
-        logger.info(("Send images to CAMEA BD at "
-                     + f"{config['camea_db']['ip']}:{config['camea_db']['port']}"))
-        logger.debug((f"Camea DB response: '{s2_response}'"
-                     + f"from {config['camea_db']['ip']}:{config['camea_db']['port']}"))
-
-        response['LpJpeg'] = response['LpJpeg'][:10]
-        response['FullImage64'] = response['FullImage64'][:10]
-        response_str = '|'.join([f'{key}:{value}' for key, value in response.items()])
-        img_response = (bytearray(b'\x44\x41\x74\x50')
-                        + id.to_bytes(2, 'little')
-                        + bytearray(b'\x00\x00')
-                        + len(response_str).to_bytes(4, 'little')
-                        + response_str.encode('UTF-8'))
-        logger.debug(f"Images to Camea DB have been sent: '{img_response}'")
+            response['LpJpeg'] = response['LpJpeg'][:10]
+            response['FullImage64'] = response['FullImage64'][:10]
+            response_str = '|'.join([f'{key}:{value}' for key, value in response.items()])
+            img_response = (bytearray(b'\x44\x41\x74\x50')
+                            + id.to_bytes(2, 'little')
+                            + bytearray(b'\x00\x00')
+                            + len(response_str).to_bytes(4, 'little')
+                            + response_str.encode('UTF-8'))
+            logger.debug(f"Images to Camea DB have been sent: '{img_response}'")
+        except socket.ConnectionResetError as e:
+            logger.error(f'Connection to Camea DB was reset by the peer: {e}')
+            self.conn = self.__get_connection()
 
     def send_image_data(self, id: int, dt_response: datetime,
                         request: dict, config: dict, img: dict) -> None:
@@ -283,21 +301,23 @@ class CameaService:
                         + bytearray(b'\x00\x00')
                         + len(response_str).to_bytes(4, 'little')
                         + response_str.encode('UTF-8'))
-        self.conn.sendall(img_response)
+        try:
+            self.conn.sendall(img_response)
+            s2_response = str(self.conn.recv(config.getint('settings', 'buffer')), 'ascii')
+            logger.info(("Send images to CAMEA BD at "
+                         + f"{config['camea_db']['ip']}:{config['camea_db']['port']}"))
+            logger.debug((f"Camea DB response: '{s2_response}'"
+                         + f"from {config['camea_db']['ip']}:{config['camea_db']['port']}"))
 
-        s2_response = str(self.conn.recv(config.getint('settings', 'buffer')), 'ascii')
-
-        logger.info(("Send images to CAMEA BD at "
-                     + f"{config['camea_db']['ip']}:{config['camea_db']['port']}"))
-        logger.debug((f"Camea DB response: '{s2_response}'"
-                     + f"from {config['camea_db']['ip']}:{config['camea_db']['port']}"))
-
-        response['LpJpeg'] = response['LpJpeg'][:10]
-        response['FullImage64'] = response['FullImage64'][:10]
-        response_str = '|'.join([f'{key}:{value}' for key, value in response.items()])
-        img_response = (bytearray(b'\x44\x41\x74\x50')
-                        + id.to_bytes(2, 'little')
-                        + bytearray(b'\x00\x00')
-                        + len(response_str).to_bytes(4, 'little')
-                        + response_str.encode('UTF-8'))
-        logger.debug(f"Images to Camea DB have been sent: '{img_response}'")
+            response['LpJpeg'] = response['LpJpeg'][:10]
+            response['FullImage64'] = response['FullImage64'][:10]
+            response_str = '|'.join([f'{key}:{value}' for key, value in response.items()])
+            img_response = (bytearray(b'\x44\x41\x74\x50')
+                            + id.to_bytes(2, 'little')
+                            + bytearray(b'\x00\x00')
+                            + len(response_str).to_bytes(4, 'little')
+                            + response_str.encode('UTF-8'))
+            logger.debug(f"Images to Camea DB have been sent: '{img_response}'")
+        except socket.ConnectionResetError as e:
+            logger.error(f'Connection to Camea DB was reset by the peer: {e}')
+            self.conn = self.__get_connection()

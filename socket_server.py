@@ -171,7 +171,7 @@ class QUERY_PROCESSOR:
                 raise IncorrectCameaQuery(msg)
 
             # use tolerance from the configfile (if set) or from query (if 0)
-            tolerance = (self.config.getint('vidar', 'tolerance') 
+            tolerance = (self.config.getint('vidar', 'tolerance')
                          if self.config.getint('vidar', 'tolerance') > 0
                          else request_data['ToleranceMS'])
 
