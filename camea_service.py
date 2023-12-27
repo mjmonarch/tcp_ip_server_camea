@@ -87,7 +87,6 @@ class CameaService:
     def __shutdown(self, s):
         self.conn.close()
         self.stop_scheduler.set()
-        logger.info('Connection to Camea DB was closed')
 
     def __get_connection(self):
         conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
