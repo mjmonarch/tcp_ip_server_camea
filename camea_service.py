@@ -60,12 +60,12 @@ class CameaService:
             continuous_thread.start()
             return scheduler_event
 
-        def __atexit():
-            stop_scheduler.set()
+        # def __atexit():
+        #     stop_scheduler.set()
 
-        def __shutdown(s):
-            self.conn.close()
-            stop_scheduler.set()
+        # def __shutdown(s):
+        #     self.conn.close()
+        #     stop_scheduler.set()
 
         def __send_keep_alive():
             try:
@@ -75,10 +75,17 @@ class CameaService:
                 self.conn = self.__get_connection()
 
         # Start the background thread
-        stop_scheduler = __run_scheduler()
-        atexit.register(__atexit)
+        self.stop_scheduler = __run_scheduler()
+        atexit.register(self.__atexit)
         # sending keep alive messages every 3 seconds
         schedule.every(3).seconds.do(__send_keep_alive)
+
+    def __atexit(self):
+        self.stop_scheduler.set()
+
+    def __shutdown(s):
+        self.conn.close()
+        self.stop_scheduler.set()
 
     def __get_connection(self):
         conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -321,3 +328,7 @@ class CameaService:
         except ConnectionResetError as e:
             logger.error(f'Connection to Camea DB was reset by the peer: {e}')
             self.conn = self.__get_connection()
+
+    def reset_connection(self):
+        ### ADD DECRIPTION
+        self.__atexit()

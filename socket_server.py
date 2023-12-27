@@ -270,11 +270,15 @@ class QUERY_PROCESSOR:
 
         def __atexit():
             stop_scheduler.set()
+            ### DDD
+            self.camea_service.reset_connection()
 
         def __shutdown(s):
             logger.info("Server was shutdown because running time expired")
             conn.close()
             stop_scheduler.set()
+            ### DDD
+            self.camea_service.reset_connection()
 
         # Start the background thread
         stop_scheduler = __run_scheduler()
