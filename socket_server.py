@@ -344,7 +344,10 @@ class QUERY_PROCESSOR:
                             except Exception as e:
                                 logger.error(e)
 
-            except (KeyboardInterrupt, TimeoutError):
+            except KeyboardInterrupt:
+                __atexit()
+            except TimeoutError:
+                logger.error('Connection was closed due to timeout')
                 __atexit()
 
 
