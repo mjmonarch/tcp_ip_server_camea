@@ -151,12 +151,11 @@ class CameaService:
                           + len(response_str).to_bytes(4, 'little')
                           + response_str.encode('UTF-8'))
         try:
-            self.conn.sendall(response_bytes)
-            logger.info(f"Response to CAMEA DB Management Software at {conn.getpeername()} has been sent: "
-                        + f"{response_bytes}")
+            conn.sendall(response_bytes)
+            logger.info(f"Response to CAMEA DB Management Software at {conn.getpeername()}"
+                        + f"has been sent: {response_bytes}")
         except ConnectionResetError as e:
-            logger.error(f'Connection to Camea DB was reset by the peer: {e}')
-            self.conn = self.__get_connection()
+            logger.error(f'Connection to Camea DB Management Software was reset by the peer: {e}')
 
     def send_image_not_found_response(self, conn: socket, id: int,
                                       request: dict, config: dict) -> None:
@@ -198,12 +197,11 @@ class CameaService:
                           + len(response_str).to_bytes(4, 'little')
                           + response_str.encode('UTF-8'))
         try:
-            self.conn.sendall(response_bytes)
+            conn.sendall(response_bytes)
             logger.info("Response to CAMEA DB Management Software has been sent: "
                         + f"{response_bytes}")
         except ConnectionResetError as e:
-            logger.error(f'Connection to Camea DB was reset by the peer: {e}')
-            self.conn = self.__get_connection()
+            logger.error(f'Connection to Camea DB Management Software was reset by the peer: {e}')
 
     def send_stab_image_data(self, id: int, dt_response: datetime,
                              request: dict, config: dict) -> None:
@@ -335,5 +333,5 @@ class CameaService:
             self.conn = self.__get_connection()
 
     def reset_connection(self):
-        ### ADD DECRIPTION
+        ### ADD DESCRIPTION
         self.__atexit()
