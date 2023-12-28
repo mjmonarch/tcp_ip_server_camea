@@ -148,7 +148,7 @@ class CameaService:
                           + response_str.encode('UTF-8'))
         try:
             self.conn.sendall(response_bytes)
-            logger.info("Response to CAMEA DB Management Software has been sent: "
+            logger.info(f"Response to CAMEA DB Management Software at {conn.getpeername()} has been sent: "
                         + f"{response_bytes}")
         except ConnectionResetError as e:
             logger.error(f'Connection to Camea DB was reset by the peer: {e}')

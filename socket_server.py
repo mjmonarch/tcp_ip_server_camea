@@ -132,9 +132,13 @@ class QUERY_PROCESSOR:
         return True
 
     def __send_keep_alive(self, conn):
+        ### DDD
+        logger.info(f"Keep alive was sent to {conn.getpeername()}")
         conn.sendall(bytearray(b'\x4b\x41\x78\x78\x00\x00\x00\x00\x00\x00\x00\x00'))
 
     def __send_handshake(self, conn):
+        ### DDD
+        logger.info(f"Handshake was sent to {conn.getpeername()}")
         conn.sendall(bytearray(b'\x48\x53\x78\x78'))
 
     def process_DetectionRequest(self, data, conn):
@@ -276,6 +280,7 @@ class QUERY_PROCESSOR:
         def __shutdown(s):
             logger.info("Server was shutdown because running time expired")
             conn.close()
+            s.close()
             stop_scheduler.set()
             ### DDD
             self.camea_service.reset_connection()
