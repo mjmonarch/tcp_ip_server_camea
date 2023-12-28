@@ -70,6 +70,8 @@ class CameaService:
         def __send_keep_alive_2():
             try:
                 self.conn.sendall(bytearray(b'\x4b\x41\x78\x78\x00\x00\x00\x00\x00\x00\x00\x00'))
+                ### DDD
+                logger.info(f"Keep alive was sent to {self.conn.getpeername()}")
             except ConnectionResetError as e:
                 logger.error(f'Connection to Camea DB was reset by the peer: {e}')
                 self.conn = self.__get_connection()
@@ -94,6 +96,8 @@ class CameaService:
         conn.connect((self.DB_IP, self.DB_PORT))
         # handshake
         conn.sendall(bytearray(b'\x4b\x41\x78\x78\x00\x00\x00\x00\x00\x00\x00\x00'))
+        ### DDD
+        logger.info(f"Handshake was sent to {conn.getpeername()}")
         s2_response = str(conn.recv(self.buffer), 'ascii')
         logger.info((f"Received data: '{s2_response}'"
                     + f"from {self.DB_IP}:{self.DB_PORT}"))
