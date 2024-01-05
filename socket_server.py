@@ -13,7 +13,7 @@ import threading
 import zoneinfo
 from datetime import datetime
 from camea_service import CameaService
-from errors import IncorrectCameaQuery
+from errors import IncorrectCameaQuery, SocketServerStopped
 from vidar_service import VidarService
 
 
@@ -132,14 +132,14 @@ class QUERY_PROCESSOR:
         return True
 
     def __send_keep_alive(self, conn):
+        conn.sendall(bytearray(b'\x4b\x41\x78\x78\x00\x00\x00\x00\x00\x00\x00\x00'))
         ### DDD
         logger.info(f"Keep alive was sent to {conn.getpeername()}")
-        conn.sendall(bytearray(b'\x4b\x41\x78\x78\x00\x00\x00\x00\x00\x00\x00\x00'))
 
     def __send_handshake(self, conn):
+        conn.sendall(bytearray(b'\x48\x53\x78\x78'))
         ### DDD
         logger.info(f"Handshake was sent to {conn.getpeername()}")
-        conn.sendall(bytearray(b'\x48\x53\x78\x78'))
 
     def process_DetectionRequest(self, data, conn):
         """
@@ -196,17 +196,11 @@ class QUERY_PROCESSOR:
                     id = list(vidar_ids.values())[best_fit]
                     bt = int(list(vidar_ids.keys())[best_fit]) / 1000
 
-                    ### DDDD
-                    logger.debug(f"DDD: VIDAR time BEFORE TRANSFORMATION: {bt}")
-
                     # get the image with given ID from the Vidar database
                     img = self.vidar_service.get_data(id)
                     # transfer best_fit from timestamp into datetime
                     timezone = zoneinfo.ZoneInfo(self.config['settings']['timezone'])
                     dt_vidar = datetime.fromtimestamp(bt, tz=timezone)
-
-                    ### DDDD
-                    logger.debug(f"DDD: VIDAR time AFTER TRANSFORMATION: {dt_vidar}")
 
                     # send response to the CAMEA Management Software
                     self.camea_service.send_image_found_response(conn=conn,
@@ -272,54 +266,59 @@ class QUERY_PROCESSOR:
             continuous_thread.start()
             return scheduler_event
 
-        def __atexit():
-            stop_scheduler.set()
-            ### DDD
-            self.camea_service.reset_connection()
-
-        def __shutdown(s):
+        def __stop_server(socket_server):
             logger.info("Server was shutdown because running time expired")
-            conn.close()
-            s.close()
+            socket_server.close()
             stop_scheduler.set()
-            ### DDD
-            self.camea_service.reset_connection()
+            raise SocketServerStopped()
 
         # Start the background thread
         stop_scheduler = __run_scheduler()
-        atexit.register(__atexit)
+        atexit.register(__stop_server)
 
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-            s.bind((self.config['service']['host'], self.config.getint('service', 'port')))
-            s.listen()
-            s.settimeout(self.config.getint('settings', 'timeout'))
+        # Configuring socket server
+        address = (self.config['service']['host'], self.config.getint('service', 'port'))
+        socket_server = socket.create_server(address, family=socket.AF_INET,
+                                             reuse_port=True)
+        socket_server.listen()
+        socket_server.settimeout(None)
+        socket_thread = threading.current_thread()
+        logger.info(f"Service started at {self.config['service']['host']}:"
+                    + f"{self.config['service']['port']}")
+        logger.info("Start socket listening in thread:" + socket_thread.name)
 
-            socket_thread = threading.current_thread()
-            logger.info(f"Service started at {self.config['service']['host']}:"
-                        + f"{self.config['service']['port']}")
-            logger.info("Start socket listening in thread:" + socket_thread.name)
+        # Configure timeout server termination if set
+        operating_time = self.config.getint('service', 'operating_time')
+        if operating_time > 0:
+            schedule.every(operating_time).minutes.do(__stop_server, socket_server)
+            logger.info((f"Terminate scheduler set for {operating_time} "
+                        + f"minutes: {socket_thread.name}"))
 
-            operating_time = self.config.getint('service', 'operating_time')
-            if operating_time > 0:
-                schedule.every(operating_time).minutes.do(__shutdown, s)
-                logger.info((f"Terminate scheduler set for {operating_time} "
-                            + f"minutes: {socket_thread.name}"))
+        # Start the main loop
+        while True:
             try:
-                conn, addr = s.accept()
-                buffer = str()
-                queries = queue.Queue()
+                camea_client, camea_client_address = socket_server.accept()
+                camea_client.settimeout(self.config.getint('settings', 'timeout'))
 
-                with conn:
-                    # sending handshake
-                    self.__send_handshake(conn)
-                    logger.info("Connection established with: " + str(addr))
+                # sending handshake
+                try:
+                    self.__send_handshake(camea_client)
+                    logger.info("Connection established with: " + str(camea_client_address))
+                except ConnectionResetError as e:
+                    logger.error("Failed to establish connection with Camea Management system:"
+                                 + str(e))
+                    continue
 
+                try:
                     # sending keep alive messages every 3 seconds
-                    schedule.every(3).seconds.do(self.__send_keep_alive, conn)
-                    logger.debug("Keep alive message send")
+                    keep_alive_job = schedule.every(3).seconds.do(self.__send_keep_alive,
+                                                                  camea_client)
 
-                    while conn:
-                        data = conn.recv(self.config.getint('settings', 'buffer'))
+                    buffer = str()
+                    queries = queue.Queue()
+
+                    while camea_client:
+                        data = camea_client.recv(self.config.getint('settings', 'buffer'))
                         try:
                             data = data.decode('ISO-8859-1')
                         except Exception as e:
@@ -336,24 +335,34 @@ class QUERY_PROCESSOR:
 
                         while not queries.empty():
                             query = queries.get()
-                            logger.debug(f"Received data: '{query}' from {str(addr)}")
+                            logger.debug(f"Received data: {query} from "
+                                         + f"{str(camea_client_address)}")
 
                             # check if it is request for camera images
                             try:
-                                if "msg:DetectionRequest" in query:
-                                    logger.info(f"Received data: '{query}' from {str(addr)}")
-                                    logger.debug('DetectionRequest catched')
-                                    self.process_DetectionRequest(data=query, conn=conn)
+                                if 'msg:DetectionRequest' in query:
+                                    logger.info(f"Received data: {query} from "
+                                                + str(camea_client_address))
+                                    logger.debug("DetectionRequest catched")
+                                    self.process_DetectionRequest(data=query, conn=camea_client)
                                 else:
                                     logger.debug('not a DetectionRequest')
                             except Exception as e:
                                 logger.error(e)
 
+                except ConnectionResetError as e:
+                    logger.error("Connection with Camea Management system was closed by Camea: "
+                                 + str(e))
+                    schedule.cancel_job(keep_alive_job)
+                except TimeoutError:
+                    logger.error('Connection to Camea Management system was closed due to timeout')
+                    schedule.cancel_job(keep_alive_job)
+                except SocketServerStopped:
+                    logger.error('Service was stopped because running time expires')
+                    break
             except KeyboardInterrupt:
-                __atexit()
-            except TimeoutError:
-                logger.error('Connection was closed due to timeout')
-                __atexit()
+                stop_scheduler.set()
+                break
 
 
 if __name__ == "__main__":
