@@ -270,6 +270,7 @@ class QUERY_PROCESSOR:
             logger.info("Server was shutdown because running time expired")
             socket_server.close()
             stop_scheduler.set()
+            self.camea_service.close_camea_db_connection()
             raise SocketServerStopped()
 
         # Start the background thread
@@ -277,15 +278,20 @@ class QUERY_PROCESSOR:
         atexit.register(__stop_server)
 
         # Configuring socket server
-        address = (self.config['service']['host'], self.config.getint('service', 'port'))
-        socket_server = socket.create_server(address, family=socket.AF_INET,
-                                             reuse_port=True)
-        socket_server.listen()
-        socket_server.settimeout(None)
-        socket_thread = threading.current_thread()
-        logger.info(f"Service started at {self.config['service']['host']}:"
-                    + f"{self.config['service']['port']}")
-        logger.info("Start socket listening in thread:" + socket_thread.name)
+        try:
+            address = (self.config['service']['host'], self.config.getint('service', 'port'))
+            socket_server = socket.create_server(address, family=socket.AF_INET,
+                                                 reuse_port=True)
+            socket_server.listen()
+            socket_server.settimeout(None)
+            socket_thread = threading.current_thread()
+            logger.info(f"Service started at {self.config['service']['host']}:"
+                        + f"{self.config['service']['port']}")
+            logger.info("Start socket listening in thread:" + socket_thread.name)
+        except Exception as e:
+            self.camea_service.close_camea_db_connection()
+            logger.error('An error occured while configuring socket server: ' + str(e))
+            exit(0)
 
         # Configure timeout server termination if set
         operating_time = self.config.getint('service', 'operating_time')
