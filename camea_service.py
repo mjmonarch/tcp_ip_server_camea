@@ -83,10 +83,12 @@ class CameaService:
         schedule.every(3).seconds.do(__send_keep_alive_2)
 
     def __atexit(self):
+        schedule.clear()
         self.stop_scheduler.set()
         logger.info('Connection to Camea DB was closed')
 
     def __shutdown(self):
+        schedule.clear()
         self.stop_scheduler.set()
         self.conn.close()
 
