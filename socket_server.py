@@ -361,12 +361,12 @@ class QUERY_PROCESSOR:
                     logger.error('Service was stopped because running time expires')
                     break
             except KeyboardInterrupt:
-                stop_scheduler.set()   
+                stop_scheduler.set()
                 break
             ### DDD
             except Exception as e:
                 self.camea_service.close_camea_db_connection()
-                logger.error(f'An error occured during runtime: ' + str(e))
+                logger.error('An error occured during runtime: ' + str(e))
                 break
 
 
