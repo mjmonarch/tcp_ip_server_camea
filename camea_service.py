@@ -334,4 +334,5 @@ class CameaService:
 
     def close_camea_db_connection(self):
         ### TODO: ADD DESCRIPTION
+        logger.info("AAAAAAAAAAAAAAAAAAAA")
         self.__shutdown()

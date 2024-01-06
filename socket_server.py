@@ -289,6 +289,7 @@ class QUERY_PROCESSOR:
                         + f"{self.config['service']['port']}")
             logger.info("Start socket listening in thread:" + socket_thread.name)
         except Exception as e:
+            self.camea_service.close_camea_db_connection()
             logger.error('An error occured while configuring socket server: ' + str(e))
             exit(0)
 
