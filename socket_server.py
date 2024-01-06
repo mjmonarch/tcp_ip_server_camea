@@ -293,7 +293,7 @@ class QUERY_PROCESSOR:
         except Exception as e:
             self.camea_service.close_camea_db_connection()
             logger.error('An error occured while configuring socket server: ' + str(e))
-            exit(0)
+            sys.exit(1)
 
         # Configure timeout server termination if set
         operating_time = self.config.getint('service', 'operating_time')

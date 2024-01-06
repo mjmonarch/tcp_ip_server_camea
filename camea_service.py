@@ -2,6 +2,7 @@ import atexit
 import logging
 import schedule
 import socket
+import sys
 import time
 import threading
 from datetime import datetime
@@ -91,7 +92,7 @@ class CameaService:
         schedule.clear()
         self.stop_scheduler.set()
         self.conn.close()
-        exit(0)
+        sys.exit(1)
 
     def __create_connection(self):
         conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
