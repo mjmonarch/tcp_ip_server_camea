@@ -275,10 +275,6 @@ class QUERY_PROCESSOR:
             ### DDD
             logger.info("BBBBBBBBBBBBBBBB")
 
-        # Start the background thread
-        stop_scheduler = __run_scheduler()
-        atexit.register(__stop_server)
-
         # Configuring socket server
         try:
             address = (self.config['service']['host'], self.config.getint('service', 'port'))
@@ -294,6 +290,10 @@ class QUERY_PROCESSOR:
             self.camea_service.close_camea_db_connection()
             logger.error('An error occured while configuring socket server: ' + str(e))
             sys.exit(1)
+
+        # Start the background thread
+        stop_scheduler = __run_scheduler()
+        atexit.register(__stop_server)
 
         # Configure timeout server termination if set
         operating_time = self.config.getint('service', 'operating_time')
