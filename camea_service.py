@@ -44,7 +44,7 @@ class CameaService:
         self.buffer = buffer
 
         # initiate Camea DB connection
-        self.conn = self.__get_connection()
+        self.conn = self.__create_connection()
 
         def __run_scheduler(interval=1):
             scheduler_event = threading.Event()
@@ -74,7 +74,7 @@ class CameaService:
                 logger.info(f"Keep alive was sent to {self.conn.getpeername()}")
             except ConnectionResetError as e:
                 logger.error(f'Connection to Camea DB was reset by the peer: {e}')
-                self.conn = self.__get_connection()
+                self.conn = self.__create_connection()
 
         # Start the background thread
         self.stop_scheduler = __run_scheduler()
@@ -86,11 +86,11 @@ class CameaService:
         self.stop_scheduler.set()
         logger.info('Connection to Camea DB was closed')
 
-    def __shutdown(self, s):
-        self.conn.close()
+    def __shutdown(self):
         self.stop_scheduler.set()
+        self.conn.close()
 
-    def __get_connection(self):
+    def __create_connection(self):
         conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         logger.info(f'Connecting to Camea DB at {self.DB_IP}: {self.DB_PORT}')
         conn.connect((self.DB_IP, self.DB_PORT))
@@ -266,7 +266,7 @@ class CameaService:
             logger.debug(f"Images to Camea DB have been sent: '{img_response}'")
         except ConnectionResetError as e:
             logger.error(f'Connection to Camea DB was reset by the peer: {e}')
-            self.conn = self.__get_connection()
+            self.conn = self.__create_connection()
 
     def send_image_data(self, id: int, dt_response: datetime,
                         request: dict, config: dict, img: dict) -> None:
@@ -330,8 +330,8 @@ class CameaService:
             logger.debug(f"Images to Camea DB have been sent: '{img_response}'")
         except ConnectionResetError as e:
             logger.error(f'Connection to Camea DB was reset by the peer: {e}')
-            self.conn = self.__get_connection()
+            self.conn = self.__create_connection()
 
-    def reset_connection(self):
-        ### ADD DESCRIPTION
-        self.__atexit()
+    def close_camea_db_connection(self):
+        ### TODO: ADD DESCRIPTION
+        self.__shutdown()

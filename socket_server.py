@@ -270,6 +270,7 @@ class QUERY_PROCESSOR:
             logger.info("Server was shutdown because running time expired")
             socket_server.close()
             stop_scheduler.set()
+            self.camea_service.close_camea_db_connection()
             raise SocketServerStopped()
 
         # Start the background thread
