@@ -272,6 +272,8 @@ class QUERY_PROCESSOR:
             stop_scheduler.set()
             self.camea_service.close_camea_db_connection()
             raise SocketServerStopped()
+            ### DDD
+            logger.info("BBBBBBBBBBBBBBBB")
 
         # Start the background thread
         stop_scheduler = __run_scheduler()
