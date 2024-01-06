@@ -91,6 +91,7 @@ class CameaService:
         schedule.clear()
         self.stop_scheduler.set()
         self.conn.close()
+        exit(0)
 
     def __create_connection(self):
         conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
