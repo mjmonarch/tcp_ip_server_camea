@@ -272,14 +272,12 @@ class QUERY_PROCESSOR:
             stop_scheduler.set()
             self.camea_service.close_camea_db_connection()
             raise SocketServerStopped()
-            ### DDD
-            logger.info("BBBBBBBBBBBBBBBB")
 
         # Configuring socket server
         try:
             address = (self.config['service']['host'], self.config.getint('service', 'port'))
-            socket_server = socket.create_server(address, family=socket.AF_INET,
-                                                 reuse_port=True)
+            socket_server = socket.create_server(address, family=socket.AF_INET)
+                                                #  reuse_port=True)
             socket_server.listen()
             socket_server.settimeout(None)
             socket_thread = threading.current_thread()
