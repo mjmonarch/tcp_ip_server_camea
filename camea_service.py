@@ -92,7 +92,10 @@ class CameaService:
         schedule.clear()
         self.stop_scheduler.set()
         self.conn.close()
+        ### DDD
+        logger.info("0000000000000000")
         sys.exit(1)
+        logger.info("1111111111111111")
 
     def __create_connection(self):
         conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
