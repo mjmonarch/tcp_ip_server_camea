@@ -276,8 +276,8 @@ class QUERY_PROCESSOR:
         # Configuring socket server
         try:
             address = (self.config['service']['host'], self.config.getint('service', 'port'))
-            socket_server = socket.create_server(address, family=socket.AF_INET,
-                                                 reuse_port=True)
+            socket_server = socket.create_server(address, family=socket.AF_INET)
+                                                #  reuse_port=True)
             socket_server.listen()
             socket_server.settimeout(None)
             socket_thread = threading.current_thread()
