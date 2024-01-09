@@ -141,6 +141,9 @@ class QUERY_PROCESSOR:
         except socket.error as e:
             logger.error('An error occurred while sending keep alive to : '
                          + f'Camea Management System: {e}')
+        ### DDD
+        except Exception as e:
+            logger.error('XXXXXXXXXXX : ' + str(e))
 
     def __send_handshake(self, conn):
         conn.sendall(bytearray(b'\x48\x53\x78\x78'))
