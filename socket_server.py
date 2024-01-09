@@ -314,6 +314,7 @@ class QUERY_PROCESSOR:
             try:
                 print("WAITING FOR CAMEA CLIENT")
                 camea_client, camea_client_address = socket_server.accept()
+                print("SOCKET ACCEPTED")
                 camea_client.settimeout(self.config.getint('settings', 'timeout'))
 
                 # sending handshake
