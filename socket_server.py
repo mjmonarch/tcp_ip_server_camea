@@ -272,11 +272,12 @@ class QUERY_PROCESSOR:
             continuous_thread.start()
             return scheduler_event
 
-        def __stop_server(socket_server):
+        def __stop_server(socket_server, msg):
+            logger.info(f'Service was terminated: {msg}')
             socket_server.close()
             stop_scheduler.set()
             self.camea_service.close_camea_db_connection()
-            raise SocketServerStopped()
+            exit(0)
 
         # Configuring socket server
         try:
@@ -301,7 +302,7 @@ class QUERY_PROCESSOR:
         # Configure timeout server termination if set
         operating_time = self.config.getint('service', 'operating_time')
         if operating_time > 0:
-            schedule.every(operating_time).minutes.do(__stop_server, socket_server)
+            schedule.every(operating_time).minutes.do(__stop_server, socket_server, 'running time expired')
             logger.info((f"Terminate scheduler set for {operating_time} "
                         + f"minutes: {socket_thread.name}"))
 
@@ -368,12 +369,9 @@ class QUERY_PROCESSOR:
                 except TimeoutError:
                     logger.error('Connection to Camea Management system was closed due to timeout')
                     schedule.cancel_job(keep_alive_job)
-                except SocketServerStopped:
-                    logger.error('Service was stopped because running time expires')
-                    exit(1)
             except KeyboardInterrupt:
                 stop_scheduler.set()
-                __stop_server(socket_server)
+                __stop_server(socket_server, 'keyboard interrupt')
                 exit(0)
             ### DDD
             except Exception as e:
