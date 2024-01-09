@@ -360,12 +360,11 @@ class QUERY_PROCESSOR:
                                     logger.info(f"Received data: {query} from "
                                                 + str(camea_client_address))
                                     logger.debug("DetectionRequest catched")
-                                    self.process_DetectionRequest(data=query, conn=camea_client)
+                                    # self.process_DetectionRequest(data=query, conn=camea_client)
                                 else:
                                     logger.debug('not a DetectionRequest')
                             except Exception as e:
                                 logger.error(e)
-                    print("DDD: OUT OF MAIN")
 
                 except ConnectionResetError as e:
                     logger.error("Connection with Camea Management system was closed by Camea: "
@@ -374,6 +373,7 @@ class QUERY_PROCESSOR:
                 except TimeoutError:
                     logger.error('Connection to Camea Management system was closed due to timeout')
                     schedule.cancel_job(keep_alive_job)
+                print("DDD: OUT OF MAIN")
             except KeyboardInterrupt:
                 stop_scheduler.set()
                 __stop_server(socket_server, 'keyboard interrupt')
@@ -382,7 +382,8 @@ class QUERY_PROCESSOR:
             except Exception as e:
                 self.camea_service.close_camea_db_connection()
                 logger.error('An error occured during runtime: ' + str(e))
-                break
+                # break
+                continue
         
 
 if __name__ == "__main__":

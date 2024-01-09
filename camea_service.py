@@ -78,7 +78,7 @@ class CameaService:
                 self.conn = self.__create_connection()
             except socket.error as e:
                 logger.error('An error occurred while sending keep alive to : '
-                             + f'Camea Management System: {e}')
+                             + f'Camea DB: {e}')
 
         # Start the background thread
         self.stop_scheduler = __run_scheduler()
