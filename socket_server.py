@@ -273,11 +273,12 @@ class QUERY_PROCESSOR:
             return scheduler_event
 
         def __stop_server(socket_server, msg):
-            stop_scheduler.set()
+            # stop_scheduler.set()
+            schedule.clear()
             camea_client.close()
             logger.info('Camea Management System connection was closed by server')
             # socket_server.close()
-            self.camea_service.close_camea_db_connection()
+            # self.camea_service.close_camea_db_connection()
             logger.info(f'Service was terminated: {msg}')
             # exit(0)
 
@@ -311,6 +312,7 @@ class QUERY_PROCESSOR:
 
         # Start the main loop
         while True:
+            
             try:
                 print("WAITING FOR CAMEA CLIENT")
                 camea_client, camea_client_address = socket_server.accept()
