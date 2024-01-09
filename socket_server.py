@@ -273,7 +273,6 @@ class QUERY_PROCESSOR:
             return scheduler_event
 
         def __stop_server(socket_server):
-            logger.info("Server was shutdown because running time expired")
             socket_server.close()
             stop_scheduler.set()
             self.camea_service.close_camea_db_connection()
@@ -371,10 +370,12 @@ class QUERY_PROCESSOR:
                     schedule.cancel_job(keep_alive_job)
                 except SocketServerStopped:
                     logger.error('Service was stopped because running time expires')
-                    break
+                    __stop_server(socket_server)
+                    exit(1)
             except KeyboardInterrupt:
                 stop_scheduler.set()
-                break
+                __stop_server(socket_server)
+                exit(0)
             ### DDD
             except Exception as e:
                 self.camea_service.close_camea_db_connection()
