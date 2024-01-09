@@ -76,6 +76,9 @@ class CameaService:
             except ConnectionResetError as e:
                 logger.error(f'Connection to Camea DB was reset by the peer: {e}')
                 self.conn = self.__create_connection()
+            except socket.error as e:
+                logger.error('An error occurred while sending keep alive to : '
+                             + f'Camea Management System: {e}')
 
         # Start the background thread
         self.stop_scheduler = __run_scheduler()
