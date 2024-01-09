@@ -131,24 +131,19 @@ class QUERY_PROCESSOR:
 
         return True
 
-    def __send_keep_alive(self, conn):
+    def __send_keep_alive(self):
         try:
-            conn.sendall(bytearray(b'\x4b\x41\x78\x78\x00\x00\x00\x00\x00\x00\x00\x00'))
+            self.camea_client.sendall(bytearray(b'\x4b\x41\x78\x78\x00\x00\x00\x00\x00\x00\x00\x00'))
             ### DDD
-            logger.info(f"Keep alive was sent to {conn.getpeername()}")
+            logger.info(f"Keep alive was sent to {self.camea_client.getpeername()}")
         except ConnectionResetError as e:
             logger.error(f'Connection to Camea Management System was reset by the peer: {e}')
         except socket.error as e:
             logger.error('An error occurred while sending keep alive to : '
                          + f'Camea Management System: {e}')
-        ### DDD
-        except Exception as e:
-            logger.error('XXXXXXXXXXX : ' + str(e))
 
-    def __send_handshake(self, conn):
-        conn.sendall(bytearray(b'\x48\x53\x78\x78'))
-        ### DDD
-        logger.info(f"Handshake was sent to {conn.getpeername()}")
+    def __send_handshake(self):
+        self.camea_client.sendall(bytearray(b'\x48\x53\x78\x78'))
 
     def process_DetectionRequest(self, data, conn):
         """
@@ -278,8 +273,9 @@ class QUERY_PROCESSOR:
         def __stop_server(socket_server, msg):
             # stop_scheduler.set()
             schedule.clear()
-            camea_client.shutdown(socket.SHUT_RDWR)
-            camea_client.close()
+            self.camea_client.shutdown(socket.SHUT_RDWR)
+            self.camea_client.close()
+            self.camea_client = None
             logger.info('Camea Management System connection was closed by server')
             # socket_server.close()
             # self.camea_service.close_camea_db_connection()
@@ -318,14 +314,14 @@ class QUERY_PROCESSOR:
         while True:
             try:
                 print("WAITING FOR CAMEA CLIENT")
-                camea_client, camea_client_address = socket_server.accept()
+                self.camea_client, self.camea_client_addr = socket_server.accept()
                 print("SOCKET ACCEPTED")
-                camea_client.settimeout(self.config.getint('settings', 'timeout'))
+                self.camea_client.settimeout(self.config.getint('settings', 'timeout'))
 
-                # sending handshake
+                # sending handshake to Camea Management System
                 try:
-                    self.__send_handshake(camea_client)
-                    logger.info("Connection established with: " + str(camea_client_address))
+                    self.__send_handshake()
+                    logger.info("Connection established with: " + str(self.camea_client_address))
                 except ConnectionResetError as e:
                     logger.error("Failed to establish connection with Camea Management system:"
                                  + str(e))
@@ -333,14 +329,13 @@ class QUERY_PROCESSOR:
 
                 try:
                     # sending keep alive messages every 3 seconds
-                    keep_alive_job = schedule.every(3).seconds.do(self.__send_keep_alive,
-                                                                  camea_client)
+                    keep_alive_job = schedule.every(3).seconds.do(self.__send_keep_alive)
 
                     buffer = str()
                     queries = queue.Queue()
 
-                    while camea_client:
-                        data = camea_client.recv(self.config.getint('settings', 'buffer'))
+                    while self.camea_client:
+                        data = self.camea_client.recv(self.config.getint('settings', 'buffer'))
                         try:
                             data = data.decode('ISO-8859-1')
                         except Exception as e:
@@ -358,13 +353,13 @@ class QUERY_PROCESSOR:
                         while not queries.empty():
                             query = queries.get()
                             logger.debug(f"Received data: {query} from "
-                                         + f"{str(camea_client_address)}")
+                                         + f"{str(self.camea_client_address)}")
 
                             # check if it is request for camera images
                             try:
                                 if 'msg:DetectionRequest' in query:
                                     logger.info(f"Received data: {query} from "
-                                                + str(camea_client_address))
+                                                + str(self.camea_client_address))
                                     logger.debug("DetectionRequest catched")
                                     # self.process_DetectionRequest(data=query, conn=camea_client)
                                 else:
@@ -386,7 +381,7 @@ class QUERY_PROCESSOR:
                 exit(0)
             ### DDD
             except Exception as e:
-                self.camea_service.close_camea_db_connection()
+                # self.camea_service.close_camea_db_connection()
                 logger.error('An error occured during runtime: ' + str(e))
                 # break
                 continue
