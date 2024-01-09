@@ -89,7 +89,7 @@ class CameaService:
         logger.info('Connection to Camea DB was closed')
 
     def __shutdown(self):
-        # schedule.clear()
+        schedule.clear()
         self.stop_scheduler.set()
         self.conn.close()
 
