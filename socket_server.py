@@ -314,7 +314,7 @@ class QUERY_PROCESSOR:
         while True:
             try:
                 print("WAITING FOR CAMEA CLIENT")
-                self.camea_client, self.camea_client_addr = socket_server.accept()
+                self.camea_client, self.camea_client_address = socket_server.accept()
                 print("SOCKET ACCEPTED")
                 self.camea_client.settimeout(self.config.getint('settings', 'timeout'))
 
@@ -376,6 +376,7 @@ class QUERY_PROCESSOR:
                     schedule.cancel_job(keep_alive_job)
                 print("DDD: OUT OF MAIN")
             except KeyboardInterrupt:
+                self.camea_service.close_camea_db_connection()
                 stop_scheduler.set()
                 __stop_server(socket_server, 'keyboard interrupt')
                 exit(0)
