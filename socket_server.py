@@ -133,9 +133,10 @@ class QUERY_PROCESSOR:
 
     def __send_keep_alive(self):
         try:
-            self.camea_client.sendall(bytearray(b'\x4b\x41\x78\x78\x00\x00\x00\x00\x00\x00\x00\x00'))
-            ### DDD
-            logger.info(f"Keep alive was sent to {self.camea_client.getpeername()}")
+            if self.camea_client:
+                self.camea_client.sendall(bytearray(b'\x4b\x41\x78\x78\x00\x00\x00\x00\x00\x00\x00\x00'))
+                ### DDD
+                logger.info(f"Keep alive was sent to {self.camea_client.getpeername()}")
         except ConnectionResetError as e:
             logger.error(f'Connection to Camea Management System was reset by the peer: {e}')
         except socket.error as e:
