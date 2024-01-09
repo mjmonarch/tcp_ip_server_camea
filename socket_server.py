@@ -364,6 +364,7 @@ class QUERY_PROCESSOR:
                                     logger.debug('not a DetectionRequest')
                             except Exception as e:
                                 logger.error(e)
+                        print("DDD: OUT OF MAIN")
 
                 except ConnectionResetError as e:
                     logger.error("Connection with Camea Management system was closed by Camea: "
