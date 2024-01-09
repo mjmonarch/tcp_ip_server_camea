@@ -384,6 +384,7 @@ class QUERY_PROCESSOR:
             except Exception as e:
                 # self.camea_service.close_camea_db_connection()
                 logger.error('An error occured during runtime: ' + str(e))
+                logger.info(f'camea client: {self.camea_client}')
                 # break
                 continue
         
