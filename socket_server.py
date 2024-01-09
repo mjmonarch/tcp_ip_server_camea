@@ -297,7 +297,7 @@ class QUERY_PROCESSOR:
                         + f"{self.config['service']['port']}")
             logger.info("Start socket listening in thread:" + socket_thread.name)
         except Exception as e:
-            # self.camea_service.close_camea_db_connection()
+            self.camea_service.close_camea_db_connection()
             logger.error('An error occured while configuring socket server: ' + str(e))
             sys.exit(1)
 
@@ -344,6 +344,7 @@ class QUERY_PROCESSOR:
                             data = camea_client.recv(self.config.getint('settings', 'buffer'))
                         except socket.error as e:
                             logger.error(f'YYYYYYYYYYYYYYY: {e}')
+                            logger.error(f'WWWWWWWWWWWWWWW: {type(camea_client)}')
                         try:
                             data = data.decode('ISO-8859-1')
                         except Exception as e:
