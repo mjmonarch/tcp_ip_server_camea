@@ -370,7 +370,6 @@ class QUERY_PROCESSOR:
                     schedule.cancel_job(keep_alive_job)
                 except SocketServerStopped:
                     logger.error('Service was stopped because running time expires')
-                    __stop_server(socket_server)
                     exit(1)
             except KeyboardInterrupt:
                 stop_scheduler.set()
