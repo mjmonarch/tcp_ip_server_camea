@@ -280,6 +280,7 @@ class QUERY_PROCESSOR:
             schedule.clear()
             camea_client.shutdown(socket.SHUT_RDWR)
             camea_client.close()
+            camea_client = None
             logger.info('Camea Management System connection was closed by server')
             # socket_server.close()
             # self.camea_service.close_camea_db_connection()
@@ -341,11 +342,7 @@ class QUERY_PROCESSOR:
                     queries = queue.Queue()
 
                     while camea_client:
-                        try:
-                            data = camea_client.recv(self.config.getint('settings', 'buffer'))
-                        except socket.error as e:
-                            logger.error(f'YYYYYYYYYYYYYYY: {e}')
-                            logger.error(f'WWWWWWWWWWWWWWW: {type(camea_client)}')
+                        data = camea_client.recv(self.config.getint('settings', 'buffer'))
                         try:
                             data = data.decode('ISO-8859-1')
                         except Exception as e:
