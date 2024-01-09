@@ -312,6 +312,7 @@ class QUERY_PROCESSOR:
         # Start the main loop
         while True:
             try:
+                print("WAITING FOR CAMEA CLIENT")
                 camea_client, camea_client_address = socket_server.accept()
                 camea_client.settimeout(self.config.getint('settings', 'timeout'))
 
@@ -364,7 +365,7 @@ class QUERY_PROCESSOR:
                                     logger.debug('not a DetectionRequest')
                             except Exception as e:
                                 logger.error(e)
-                        print("DDD: OUT OF MAIN")
+                    print("DDD: OUT OF MAIN")
 
                 except ConnectionResetError as e:
                     logger.error("Connection with Camea Management system was closed by Camea: "
@@ -382,7 +383,7 @@ class QUERY_PROCESSOR:
                 self.camea_service.close_camea_db_connection()
                 logger.error('An error occured during runtime: ' + str(e))
                 break
-
+        
 
 if __name__ == "__main__":
     query_processor = QUERY_PROCESSOR()
