@@ -276,7 +276,7 @@ class QUERY_PROCESSOR:
             stop_scheduler.set()
             camea_client.close()
             logger.info('Camea Management System connection was closed by server')
-            socket_server.close()
+            # socket_server.close()
             self.camea_service.close_camea_db_connection()
             logger.info(f'Service was terminated: {msg}')
             # exit(0)
