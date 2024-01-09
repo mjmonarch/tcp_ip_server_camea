@@ -132,9 +132,15 @@ class QUERY_PROCESSOR:
         return True
 
     def __send_keep_alive(self, conn):
-        conn.sendall(bytearray(b'\x4b\x41\x78\x78\x00\x00\x00\x00\x00\x00\x00\x00'))
-        ### DDD
-        logger.info(f"Keep alive was sent to {conn.getpeername()}")
+        try:
+            conn.sendall(bytearray(b'\x4b\x41\x78\x78\x00\x00\x00\x00\x00\x00\x00\x00'))
+            ### DDD
+            logger.info(f"Keep alive was sent to {conn.getpeername()}")
+        except ConnectionResetError as e:
+            logger.error(f'Connection to Camea Management System was reset by the peer: {e}')
+        except socket.error as e:
+            logger.error('An error occurred while sending keep alive to : '
+                         + f'Camea Management System: {e}')
 
     def __send_handshake(self, conn):
         conn.sendall(bytearray(b'\x48\x53\x78\x78'))
