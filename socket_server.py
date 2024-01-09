@@ -340,7 +340,10 @@ class QUERY_PROCESSOR:
                     queries = queue.Queue()
 
                     while camea_client:
-                        data = camea_client.recv(self.config.getint('settings', 'buffer'))
+                        try:
+                            data = camea_client.recv(self.config.getint('settings', 'buffer'))
+                        except socket.error as e:
+                            logger.error(f'YYYYYYYYYYYYYYY: {e}')
                         try:
                             data = data.decode('ISO-8859-1')
                         except Exception as e:
