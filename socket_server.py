@@ -276,12 +276,10 @@ class QUERY_PROCESSOR:
             return scheduler_event
 
         def __stop_server(socket_server, msg):
-            global camea_client
             # stop_scheduler.set()
             schedule.clear()
-            # camea_client.shutdown(socket.SHUT_RDWR)
+            camea_client.shutdown(socket.SHUT_RDWR)
             camea_client.close()
-            camea_client = None
             logger.info('Camea Management System connection was closed by server')
             # socket_server.close()
             # self.camea_service.close_camea_db_connection()
