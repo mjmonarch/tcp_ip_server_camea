@@ -276,6 +276,7 @@ class QUERY_PROCESSOR:
             return scheduler_event
 
         def __stop_server(socket_server, msg):
+            global camea_client
             # stop_scheduler.set()
             schedule.clear()
             camea_client.shutdown(socket.SHUT_RDWR)
@@ -317,7 +318,6 @@ class QUERY_PROCESSOR:
 
         # Start the main loop
         while True:
-            
             try:
                 print("WAITING FOR CAMEA CLIENT")
                 camea_client, camea_client_address = socket_server.accept()
