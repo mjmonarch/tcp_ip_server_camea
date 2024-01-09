@@ -272,7 +272,7 @@ class QUERY_PROCESSOR:
 
         def __stop_server(socket_server, msg):
             # stop_scheduler.set()
-            schedule.clear()
+            # schedule.clear()
             self.camea_client.shutdown(socket.SHUT_RDWR)
             self.camea_client.close()
             self.camea_client = None
