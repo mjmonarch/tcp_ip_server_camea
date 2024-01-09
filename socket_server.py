@@ -297,7 +297,7 @@ class QUERY_PROCESSOR:
 
         # Start the background thread
         stop_scheduler = __run_scheduler()
-        atexit.register(__stop_server)
+        # atexit.register(__stop_server, socket_server)
 
         # Configure timeout server termination if set
         operating_time = self.config.getint('service', 'operating_time')
