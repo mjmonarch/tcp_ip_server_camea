@@ -361,7 +361,8 @@ class QUERY_PROCESSOR:
                                     logger.info(f"Received data: {query} from "
                                                 + str(self.camea_client_address))
                                     logger.debug("DetectionRequest catched")
-                                    self.process_DetectionRequest(data=query, conn=camea_client)
+                                    self.process_DetectionRequest(data=query,
+                                                                  conn=self.camea_client)
                                 else:
                                     logger.debug('not a DetectionRequest')
                             except Exception as e:
