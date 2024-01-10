@@ -281,8 +281,7 @@ class QUERY_PROCESSOR:
             self.camea_service.close_camea_db_connection()
             print('5')
             logger.info(f'Service was terminated: {msg}')
-            sys.exit(0)
-            print('6')
+            self.running = False
 
         # Configuring socket server
         try:
@@ -324,6 +323,7 @@ class QUERY_PROCESSOR:
                 try:
                     self.__send_handshake()
                     logger.info("Connection established with: " + str(self.camea_client_address))
+                    self.running = True
                 except ConnectionResetError as e:
                     logger.error("Failed to establish connection with Camea Management system:"
                                  + str(e))
@@ -336,7 +336,7 @@ class QUERY_PROCESSOR:
                     buffer = str()
                     queries = queue.Queue()
 
-                    while self.camea_client:
+                    while self.running:
                         try:
                             data = self.camea_client.recv(self.config.getint('settings', 'buffer'))
                         except AttributeError:
