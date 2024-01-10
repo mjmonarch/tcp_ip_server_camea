@@ -312,7 +312,8 @@ class QUERY_PROCESSOR:
                                       'running time expired')
 
         # Start the main loop
-        while True:
+        self.running = True
+        while self.running:
             try:
                 logger.debug('Waiting for Camea Management System to connect')
                 self.camea_client, self.camea_client_address = socket_server.accept()
@@ -336,7 +337,7 @@ class QUERY_PROCESSOR:
                     buffer = str()
                     queries = queue.Queue()
 
-                    while self.running:
+                    while self.camea_client:
                         try:
                             data = self.camea_client.recv(self.config.getint('settings', 'buffer'))
                         except AttributeError:
