@@ -275,7 +275,7 @@ class QUERY_PROCESSOR:
             socket_server.close()
             self.camea_service.close_camea_db_connection()
             logger.info(f'Service was terminated: {msg}')
-            exit(0)
+            sys.exit(0)
 
         # Configuring socket server
         try:
