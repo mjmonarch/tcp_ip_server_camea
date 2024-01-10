@@ -392,8 +392,7 @@ class QUERY_PROCESSOR:
             except Exception as e:
                 logger.error('An error occured during runtime: ' + str(e))
                 logger.info(f'camea client: {self.camea_client}')
-                # continue
-                break
+                continue
 
 
 if __name__ == "__main__":
