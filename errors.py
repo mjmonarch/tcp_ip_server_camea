@@ -2,5 +2,5 @@ class IncorrectCameaQuery(Exception):
     pass
 
 
-class SocketServerStopped(TimeoutError):
+class SocketCorrupted(TimeoutError):
     pass

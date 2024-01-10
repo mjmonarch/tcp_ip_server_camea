@@ -1,4 +1,4 @@
-import atexit
+# import atexit
 import configparser
 import logging
 import logging.config
@@ -13,7 +13,7 @@ import threading
 import zoneinfo
 from datetime import datetime
 from camea_service import CameaService
-from errors import IncorrectCameaQuery, SocketServerStopped
+from errors import IncorrectCameaQuery, SocketCorrupted
 from vidar_service import VidarService
 
 
@@ -134,9 +134,9 @@ class QUERY_PROCESSOR:
     def __send_keep_alive(self):
         try:
             if self.camea_client:
-                self.camea_client.sendall(bytearray(b'\x4b\x41\x78\x78\x00\x00\x00\x00\x00\x00\x00\x00'))
-                ### DDD
-                logger.info(f"Keep alive was sent to {self.camea_client.getpeername()}")
+                msg = bytearray(b'\x4b\x41\x78\x78\x00\x00\x00\x00\x00\x00\x00\x00')
+                self.camea_client.sendall(msg)
+                logger.debug(f"Keep alive was sent to {self.camea_client.getpeername()}")
         except ConnectionResetError as e:
             logger.error(f'Connection to Camea Management System was reset by the peer: {e}')
         except socket.error as e:
@@ -191,13 +191,10 @@ class QUERY_PROCESSOR:
                                                        tolerance=tolerance)
 
                 if vidar_ids:
-                    logger.debug(f"DDD: Received vidar ids keys: {vidar_ids.keys()} from {vidar_ids}")
                     # search for the image that is the closest to requested timestamp
                     dt_ts = int(dt.timestamp()*1_000)
                     vidar_ids_deviation = [abs(dt_ts - int(ts)) for ts in vidar_ids.keys()]
-                    logger.debug(f"DDD: Vidar ids deviation: {vidar_ids_deviation}")
                     best_fit = vidar_ids_deviation.index(min(vidar_ids_deviation))
-                    logger.debug(f"DDD: Vidar ids best fit index: {best_fit}")
                     id = list(vidar_ids.values())[best_fit]
                     bt = int(list(vidar_ids.keys())[best_fit]) / 1000
 
@@ -272,22 +269,18 @@ class QUERY_PROCESSOR:
             return scheduler_event
 
         def __stop_server(socket_server, msg):
-            # stop_scheduler.set()
-            # schedule.clear()
+            stop_scheduler.set()
             self.camea_client.shutdown(socket.SHUT_RDWR)
             self.camea_client.close()
-            self.camea_client = None
-            logger.info('Camea Management System connection was closed by server')
-            # socket_server.close()
-            # self.camea_service.close_camea_db_connection()
+            socket_server.close()
+            self.camea_service.close_camea_db_connection()
             logger.info(f'Service was terminated: {msg}')
-            # exit(0)
+            exit(0)
 
         # Configuring socket server
         try:
             address = (self.config['service']['host'], self.config.getint('service', 'port'))
             socket_server = socket.create_server(address, family=socket.AF_INET)
-                                                #  reuse_port=True)
             socket_server.listen()
             socket_server.settimeout(None)
             socket_thread = threading.current_thread()
@@ -301,7 +294,6 @@ class QUERY_PROCESSOR:
 
         # Start the background thread
         stop_scheduler = __run_scheduler()
-        # atexit.register(__stop_server, socket_server)
 
         # Configure timeout server termination if set
         operating_time = self.config.getint('service', 'operating_time')
@@ -314,9 +306,9 @@ class QUERY_PROCESSOR:
         # Start the main loop
         while True:
             try:
-                print("WAITING FOR CAMEA CLIENT")
+                logger.debug('Waiting for Camea Management System to connect')
                 self.camea_client, self.camea_client_address = socket_server.accept()
-                print("SOCKET ACCEPTED")
+                logger.debug('Get connection request from Camea Management System')
                 self.camea_client.settimeout(self.config.getint('settings', 'timeout'))
 
                 # sending handshake to Camea Management System
@@ -336,7 +328,10 @@ class QUERY_PROCESSOR:
                     queries = queue.Queue()
 
                     while self.camea_client:
-                        data = self.camea_client.recv(self.config.getint('settings', 'buffer'))
+                        try:
+                            data = self.camea_client.recv(self.config.getint('settings', 'buffer'))
+                        except AttributeError:
+                            raise SocketCorrupted("can't read from socket")
                         try:
                             data = data.decode('ISO-8859-1')
                         except Exception as e:
@@ -366,30 +361,29 @@ class QUERY_PROCESSOR:
                                                                   conn=self.camea_client)
                                 else:
                                     logger.debug('not a DetectionRequest')
+                            except IncorrectCameaQuery as e:
+                                logger.error('Incorrect Camea Management System query: ' + str(e))
                             except Exception as e:
                                 logger.error(e)
-
                 except ConnectionResetError as e:
-                    logger.error("Connection with Camea Management system was closed by Camea: "
+                    logger.error('Connection with Camea Management system was closed by Camea: '
                                  + str(e))
                     schedule.cancel_job(keep_alive_job)
                 except TimeoutError:
                     logger.error('Connection to Camea Management system was closed due to timeout')
                     schedule.cancel_job(keep_alive_job)
-                print("DDD: OUT OF MAIN")
+                except SocketCorrupted as e:
+                    logger.error('Connection with Camea Management system was corrupted: '
+                                 + str(e))
+                    schedule.cancel_job(keep_alive_job)
+                    continue
             except KeyboardInterrupt:
-                self.camea_service.close_camea_db_connection()
-                stop_scheduler.set()
                 __stop_server(socket_server, 'keyboard interrupt')
-                exit(0)
-            ### DDD
             except Exception as e:
-                # self.camea_service.close_camea_db_connection()
                 logger.error('An error occured during runtime: ' + str(e))
                 logger.info(f'camea client: {self.camea_client}')
-                # break
                 continue
-        
+
 
 if __name__ == "__main__":
     query_processor = QUERY_PROCESSOR()
