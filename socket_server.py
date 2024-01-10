@@ -269,13 +269,20 @@ class QUERY_PROCESSOR:
             return scheduler_event
 
         def __stop_server(socket_server, msg):
+            print('INSIDE STOP SERVER')
             stop_scheduler.set()
+            print('1')
             self.camea_client.shutdown(socket.SHUT_RDWR)
+            print('2')
             self.camea_client.close()
+            print('3')
             socket_server.close()
+            print('4')
             self.camea_service.close_camea_db_connection()
+            print('5')
             logger.info(f'Service was terminated: {msg}')
             sys.exit(0)
+            print('6')
 
         # Configuring socket server
         try:
@@ -382,7 +389,8 @@ class QUERY_PROCESSOR:
             except Exception as e:
                 logger.error('An error occured during runtime: ' + str(e))
                 logger.info(f'camea client: {self.camea_client}')
-                continue
+                # continue
+                break
 
 
 if __name__ == "__main__":
