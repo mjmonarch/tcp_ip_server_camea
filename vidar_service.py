@@ -59,8 +59,9 @@ class VidarService:
         root = ET.fromstring(r.content)
         for row in root.findall('row'):
             # check if it is appropriate zone
-            if row.find('ZONE_NAME') == zone:
-                result[row.find('FRAMETIMEMS').get('value')] = row.find('ID').get('value')
+            if zone != '0' and row.find('ZONE_NAME') != zone:
+                continue
+            result[row.find('FRAMETIMEMS').get('value')] = row.find('ID').get('value')
         return result
 
     def get_data(self, id: int) -> dict:
