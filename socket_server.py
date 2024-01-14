@@ -385,6 +385,7 @@ class QUERY_PROCESSOR:
             except Exception as e:
                 logger.error('An error occured during runtime: ' + str(e))
                 logger.info(f'camea client: {self.camea_client}')
+                schedule.cancel_job(keep_alive_job)
                 continue
 
 
