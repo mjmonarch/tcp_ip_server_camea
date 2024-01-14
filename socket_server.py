@@ -110,7 +110,7 @@ class QUERY_PROCESSOR:
             return False
 
         # check vidar section
-        if not {'ip', 'tolerance'}.issubset(config['vidar']):
+        if not {'ip', 'tolerance', 'zone'}.issubset(config['vidar']):
             logger.critical('Configuration file vidar section: missing values')
             return False
         try:
@@ -188,7 +188,8 @@ class QUERY_PROCESSOR:
             if self.config['service']['mode'] == 'VIDAR':
                 # search for IDs in vidar database with given datetime ± tolerance
                 vidar_ids = self.vidar_service.get_ids(transit_timestamp=dt,
-                                                       tolerance=tolerance)
+                                                       tolerance=tolerance,
+                                                       zone=self.config['vidar']['zone'])
 
                 if vidar_ids:
                     # search for the image that is the closest to requested timestamp

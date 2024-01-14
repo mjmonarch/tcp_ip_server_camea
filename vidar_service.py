@@ -23,7 +23,7 @@ class VidarService:
     Methods:
     get_ids(transit_timestamp: datetime string, tolerance: ms) --> dict
         Returns dict of image timestamps in int format (since 1970) along
-        with IDs from the range
+        with IDs from the range with appropriate zone
         (transit_timestamp - tolerance; transit_timestamp + tolerance)
     get_data(id: str) --> dict
         Returns dictionary with vehicle image in base64 format,
@@ -33,10 +33,11 @@ class VidarService:
     def __init__(self, ip):
         self.IP = ip
 
-    def get_ids(self, transit_timestamp, tolerance: int) -> list:
+    def get_ids(self, transit_timestamp, tolerance: int, zone: str) -> list:
         """
         Returns list of IDs along with image time in int format (since 1970)
         from the range (transit_timestamp - tolerance; timestamp + tolerance)
+        with appropriate zone
 
         Parameters:
         -----------
@@ -57,7 +58,9 @@ class VidarService:
         r = requests.get(url)
         root = ET.fromstring(r.content)
         for row in root.findall('row'):
-            result[row.find('FRAMETIMEMS').get('value')] = row.find('ID').get('value')
+            # check if it is appropriate zone
+            if row.find('ZONE_NAME') == zone:
+                result[row.find('FRAMETIMEMS').get('value')] = row.find('ID').get('value')
         return result
 
     def get_data(self, id: int) -> dict:
@@ -81,7 +84,7 @@ class VidarService:
         """
         result = dict()
         url = 'http://' + self.IP + f'/lpr/cff?cmd=getdata&id={id}'
-        print(url)
+        # print(url)
         r = requests.get(url)
         root = ET.fromstring(r.content)
         # logger.debug(f"DDD: Vidar get ID content: {r.content}")
