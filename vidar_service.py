@@ -81,10 +81,10 @@ class VidarService:
         """
         result = dict()
         url = 'http://' + self.IP + f'/lpr/cff?cmd=getdata&id={id}'
-        # print(url)
+        print(url)
         r = requests.get(url)
         root = ET.fromstring(r.content)
-        logger.debug(f"DDD: Vidar get ID content: {r.content}")
+        # logger.debug(f"DDD: Vidar get ID content: {r.content}")
         if root.find('ID').get('value'):
             result['timestamp'] = root.find('capture').find('frametimems').get('value')
 
