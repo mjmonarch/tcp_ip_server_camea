@@ -21,6 +21,9 @@ class VidarService:
     -----------
 
     Methods:
+    send_software_trigger() --> None
+        Sends software trigger to vidar
+        Software trigger needs to be configured at vidar
     get_ids(transit_timestamp: datetime string, tolerance: ms) --> dict
         Returns dict of image timestamps in int format (since 1970) along
         with IDs from the range with appropriate zone
@@ -32,6 +35,24 @@ class VidarService:
 
     def __init__(self, ip):
         self.IP = ip
+
+    def send_software_trigger(self) -> None:
+        """
+        Sends software trigger to vidar
+        Software trigger needs to be configured at vidar
+        
+        Parameters:
+        -----------
+        
+        Output:
+        -----------
+        """
+        url = 'http://' + self.IP + '/cam_ip/trigger/swtrigger?wfilter=1&sendtrigger=1'
+        r = requests.get(url)
+        if r.status_code == 200:
+            logger.info("Software trigger sending was successfull")
+        else:
+            logger.info("Software trigger sending was unsuccessfull")
 
     def get_ids(self, transit_timestamp, tolerance: int, zone: str) -> list:
         """

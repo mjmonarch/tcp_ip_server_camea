@@ -361,6 +361,9 @@ class QUERY_PROCESSOR:
                                     logger.info(f"Received data: {query} from "
                                                 + str(self.camea_client_address))
                                     logger.debug("DetectionRequest catched")
+                                    # send software trigger to vidar 
+                                    self.vidar_service.send_software_trigger()
+                                    # postpone detection request processing
                                     schedule.every(3).seconds.do(self.process_DetectionRequest(
                                                                  data=query,
                                                                  conn=self.camea_client)).tag("detection")
@@ -374,6 +377,7 @@ class QUERY_PROCESSOR:
                     logger.error('Connection with Camea Management system was closed by Camea: '
                                  + str(e))
                     schedule.cancel_job(keep_alive_job)
+                    schedule.clear("detection")
                 except TimeoutError:
                     logger.error('Connection to Camea Management system was closed due to timeout')
                     schedule.cancel_job(keep_alive_job)
@@ -381,6 +385,7 @@ class QUERY_PROCESSOR:
                     logger.error('Connection with Camea Management system was corrupted: '
                                  + str(e))
                     schedule.cancel_job(keep_alive_job)
+                    schedule.clear("detection")
                     continue
             except KeyboardInterrupt:
                 __stop_server(socket_server, 'keyboard interrupt')
@@ -388,6 +393,7 @@ class QUERY_PROCESSOR:
                 logger.error('An error occured during runtime: ' + str(e))
                 logger.info(f'camea client: {self.camea_client}')
                 schedule.cancel_job(keep_alive_job)
+                schedule.clear("detection")
                 continue
 
 
