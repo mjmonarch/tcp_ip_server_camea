@@ -166,6 +166,7 @@ class QUERY_PROCESSOR:
         """
 
         data = data.rstrip('\x00')
+        time.sleep(3)
         try:
             request_data = {item.split(':')[0]: ''.join(item.split(':')[1:])
                             for item in data.split('|')}
@@ -361,7 +362,7 @@ class QUERY_PROCESSOR:
                                     logger.info(f"Received data: {query} from "
                                                 + str(self.camea_client_address))
                                     logger.debug("DetectionRequest catched")
-                                    # send software trigger to vidar 
+                                    # send software trigger to vidar
                                     self.vidar_service.send_software_trigger()
                                     # postpone detection request processing
                                     schedule.every(3).seconds.do(self.process_DetectionRequest(
