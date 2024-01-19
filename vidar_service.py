@@ -47,7 +47,7 @@ class VidarService:
         Output:
         -----------
         """
-        url = 'http://' + self.IP + '/cam_ip/trigger/swtrigger?wfilter=1&sendtrigger=1'
+        url = 'http://' + self.IP + '/trigger/swtrigger?wfilter=1&sendtrigger=1'
         r = requests.get(url)
         if r.status_code == 200:
             logger.info("Software trigger sending was successfull")
