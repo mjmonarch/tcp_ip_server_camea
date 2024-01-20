@@ -166,7 +166,6 @@ class QUERY_PROCESSOR:
         """
 
         data = data.rstrip('\x00')
-        time.sleep(3)
         try:
             request_data = {item.split(':')[0]: ''.join(item.split(':')[1:])
                             for item in data.split('|')}
