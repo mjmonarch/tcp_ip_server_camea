@@ -192,7 +192,7 @@ class QUERY_PROCESSOR:
                 if self.config['vidar']['zone'] != '0':
                     zones = self.config['vidar']['zone'].split(',')
                 else:
-                    zones = zone
+                    zones = self.config['vidar']['zone']
                 vidar_ids = self.vidar_service.get_ids(transit_timestamp=dt,
                                                        tolerance=tolerance,
                                                        zone=zones)
