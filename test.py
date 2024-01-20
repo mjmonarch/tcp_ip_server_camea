@@ -50,11 +50,11 @@ if __name__ == "__main__":
     logger.info(f'Connecting to Camea XXX at {HOST}: {PORT}')
     conn.connect((HOST, PORT))
     # handshake
-    conn.sendall(bytearray(b'\x4b\x41\x78\x78\x00\x00\x00\x00\x00\x00\x00\x00'))
-    logger.info(f"Handshake was sent to {conn.getpeername()}")
-    s2_response = str(conn.recv(1024), 'ascii')
-    logger.info((f"Received data: '{s2_response}'"
-                 + f"from {HOST}:{PORT}"))
+    # conn.sendall(bytearray(b'\x4b\x41\x78\x78\x00\x00\x00\x00\x00\x00\x00\x00'))
+    # logger.info(f"Handshake was sent to {conn.getpeername()}")
+    # s2_response = str(conn.recv(1024), 'ascii')
+    # logger.info((f"Received data: '{s2_response}'"
+    #              + f"from {HOST}:{PORT}"))
 
     while conn:
         try:
