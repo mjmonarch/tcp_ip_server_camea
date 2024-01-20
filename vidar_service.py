@@ -40,10 +40,10 @@ class VidarService:
         """
         Sends software trigger to vidar
         Software trigger needs to be configured at vidar
-        
+
         Parameters:
         -----------
-        
+
         Output:
         -----------
         """
