@@ -34,7 +34,7 @@ stream_handler = logging.StreamHandler(stream=sys.stdout)
 LOGGING_SETTINGS["handlers"].append(stream_handler)
 
 logging.basicConfig(**LOGGING_SETTINGS)
-logging.Formatter.default_msec_format = '%s.%03d'
+# logging.Formatter.default_msec_format = '%s.%03d'
 logger = logging.getLogger(__name__)
 
 
