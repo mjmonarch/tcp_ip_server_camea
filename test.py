@@ -14,10 +14,11 @@ from errors import SocketCorrupted
 LOG_FILE = "logs/log.log"
 LOGGING_SETTINGS = {
     "handlers": [],
-    "format": "%(asctime).(msecs:0<3.0f)s - %(name)s - %(levelname)s - %(message)s",
+    "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     "datefmt": "%d.%m.%Y %H:%M:%S,uuu",
     "level": logging.DEBUG,
 }
+
 
 file_handler = logging.handlers.RotatingFileHandler(
     filename=os.path.join(os.getcwd(), LOG_FILE),
@@ -33,6 +34,7 @@ stream_handler = logging.StreamHandler(stream=sys.stdout)
 LOGGING_SETTINGS["handlers"].append(stream_handler)
 
 logging.basicConfig(**LOGGING_SETTINGS)
+logging.Formatter.default_msec_format = '%s.%03d'
 logger = logging.getLogger(__name__)
 
 
