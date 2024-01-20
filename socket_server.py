@@ -191,6 +191,8 @@ class QUERY_PROCESSOR:
                 # search for IDs in vidar database with given datetime ± tolerance
                 if self.config['vidar']['zone'] != '0':
                     zones = self.config['vidar']['zone'].split(',')
+                else:
+                    zones = zone
                 vidar_ids = self.vidar_service.get_ids(transit_timestamp=dt,
                                                        tolerance=tolerance,
                                                        zone=zones)
