@@ -362,7 +362,7 @@ class QUERY_PROCESSOR:
                                                 + str(self.camea_client_address))
                                     logger.debug("DetectionRequest catched")
                                     # send software trigger to vidar
-                                    # self.vidar_service.send_software_trigger()
+                                    self.vidar_service.send_software_trigger()
                                     # postpone detection request processing
                                     schedule.every(3).seconds.do(self.process_DetectionRequest(
                                                                  data=query,
