@@ -21,7 +21,7 @@ from vidar_service import VidarService
 LOG_FILE = "logs/log.log"
 LOGGING_SETTINGS = {
     "handlers": [],
-    "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    "format": "%(asctime)s.%(msecs)03d - %(name)s - %(levelname)s - %(message)s",
     "datefmt": "%d.%m.%Y %H:%M:%S",
     "level": logging.DEBUG,
 }
@@ -110,11 +110,12 @@ class QUERY_PROCESSOR:
             return False
 
         # check vidar section
-        if not {'ip', 'tolerance', 'zone'}.issubset(config['vidar']):
+        if not {'ip', 'tolerance', 'zone', 'timeout'}.issubset(config['vidar']):
             logger.critical('Configuration file vidar section: missing values')
             return False
         try:
             config.getint('vidar', 'tolerance')
+            config.getint('vidar', 'timeout')
         except Exception as e:
             logger.critical('Invalid datatype for data in vidar section: ' + str(e))
             return False
@@ -166,7 +167,7 @@ class QUERY_PROCESSOR:
         """
 
         data = data.rstrip('\x00')
-        time.sleep(3)
+        time.sleep(self.config.getint('vidar', 'timeout'))
         try:
             request_data = {item.split(':')[0]: ''.join(item.split(':')[1:])
                             for item in data.split('|')}
@@ -188,9 +189,11 @@ class QUERY_PROCESSOR:
             # get transit images
             if self.config['service']['mode'] == 'VIDAR':
                 # search for IDs in vidar database with given datetime ± tolerance
+                if self.config['vidar']['zone'] != '0':
+                    zones = self.config['vidar']['zone'].split(',')
                 vidar_ids = self.vidar_service.get_ids(transit_timestamp=dt,
                                                        tolerance=tolerance,
-                                                       zone=self.config['vidar']['zone'])
+                                                       zone=zones)
 
                 if vidar_ids:
                     # search for the image that is the closest to requested timestamp

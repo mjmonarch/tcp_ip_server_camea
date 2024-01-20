@@ -64,8 +64,10 @@ class VidarService:
         -----------
         transit_timestamp: str
             Datetime object
+        tolerance: int
             Tolerance in ms to define the search range
-
+        zone: list
+            List of appropriate zones to compare to
         Output:
         -----------
         Dictionary:
@@ -80,7 +82,7 @@ class VidarService:
         root = ET.fromstring(r.content)
         for row in root.findall('row'):
             # check if it is appropriate zone
-            if zone != '0' and row.find('ZONE_NAME').get('value') != zone:
+            if zone != '0' and row.find('ZONE_NAME').get('value') not in zone:
                 continue
             result[row.find('FRAMETIMEMS').get('value')] = row.find('ID').get('value')
         return result
