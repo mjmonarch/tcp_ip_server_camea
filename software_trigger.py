@@ -131,11 +131,13 @@ class SoftwareTrigger:
                 request_data = {item.split(':')[0]: ''.join(item.split(':')[1:])
                                 for item in data.split('|')}
 
-                if 'msg' not in request_data or 'ChangedTo' not in request_data:
-                    logger.error('Incorrect format of input message')
+                if 'msg' not in request_data or request_data['msg'] != 'LoopStateChanged':
+                    logger.info('Not LoopStateChanged message')
                 else:
-                    if (request_data['msg'] == 'LoopStateChanged' and
-                        request_data['ChangedTo'] == self.config['software_trigger']['loop_state_changed']):
+                    #DDD
+                    print(request_data['ChangedTo'])
+                    print(self.config['software_trigger']['loop_state_changed'])
+                    if request_data['ChangedTo'] == self.config['software_trigger']['loop_state_changed']:
                         self.vidar_service.send_software_trigger()
 
             except ConnectionResetError as e:
