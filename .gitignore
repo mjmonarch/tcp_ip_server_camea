@@ -2,3 +2,4 @@ logs/
 test/
 ve_tcp_server/
 config.ini
+software_trigger.py
