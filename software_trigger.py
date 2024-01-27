@@ -63,6 +63,7 @@ class SoftwareTrigger:
         self.initiated = SoftwareTrigger.__check_config(self.config)
         if self.initiated:
             self.vidar_service = VidarService(ip=self.config['vidar']['ip'])
+            self.state = self.config['software_trigger']['loop_state_changed']
 
     @classmethod
     def __check_config(cls, config):
@@ -135,17 +136,19 @@ class SoftwareTrigger:
                     logger.info('Not LoopStateChanged message')
                 else:
                     #DDD
-                    print(request_data['ChangedTo'])
-                    print(len(request_data['ChangedTo']))
-                    print(self.config['software_trigger']['loop_state_changed'])
-                    print(len(self.config['software_trigger']['loop_state_changed']))
-                    print(request_data['ChangedTo'] == self.config['software_trigger']['loop_state_changed'])
-                    # a = request_data['ChangedTo'].strip(' \n')
-                    a = ''.join(filter(str.isalnum, request_data['ChangedTo']))
-                    print(len(a))
-                    print(a == self.config['software_trigger']['loop_state_changed'])
-                    if request_data['ChangedTo'] == self.config['software_trigger']['loop_state_changed']:
-                        print('trying to send software trigger')
+                    # print(request_data['ChangedTo'])
+                    # print(len(request_data['ChangedTo']))
+                    # print(self.config['software_trigger']['loop_state_changed'])
+                    # print(len(self.config['software_trigger']['loop_state_changed']))
+                    # print(request_data['ChangedTo'] == self.config['software_trigger']['loop_state_changed'])
+                    # # a = request_data['ChangedTo'].strip(' \n')
+                    # a = ''.join(filter(str.isalnum, request_data['ChangedTo']))
+                    # print(len(a))
+                    # print(a == self.config['software_trigger']['loop_state_changed'])
+                    request_state = ''.join(filter(str.isalnum, request_data['ChangedTo']))
+
+                    if request_state == self.state:
+                        # print('trying to send software trigger')
                         self.vidar_service.send_software_trigger()
 
             except ConnectionResetError as e:
