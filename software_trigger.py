@@ -81,7 +81,7 @@ class SoftwareTrigger:
             logger.critical('Configuration file software__trigger section: missing values')
             return False
         try:
-            config.getint('camea_push', 'port')
+            config.getint('software_trigger', 'port')
         except Exception as e:
             logger.critical('Invalid datatype for data in software_trigger section: ' + str(e))
             return False
