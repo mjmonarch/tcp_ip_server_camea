@@ -140,7 +140,8 @@ class SoftwareTrigger:
                     print(self.config['software_trigger']['loop_state_changed'])
                     print(len(self.config['software_trigger']['loop_state_changed']))
                     print(request_data['ChangedTo'] == self.config['software_trigger']['loop_state_changed'])
-                    a = request_data['ChangedTo'].strip(' \n')
+                    # a = request_data['ChangedTo'].strip(' \n')
+                    a = ''.join(filter(str.isalnum, request_data['ChangedTo']))
                     print(len(a))
                     print(a == self.config['software_trigger']['loop_state_changed'])
                     if request_data['ChangedTo'] == self.config['software_trigger']['loop_state_changed']:
