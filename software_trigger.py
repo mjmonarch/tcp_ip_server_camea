@@ -149,7 +149,7 @@ class SoftwareTrigger:
                 logger.error('Connection to Camea Push System was closed due to timeout')
                 client = self.__create_connection()
             except KeyboardInterrupt:
-                logger.error('Connection to Camea Push System was closed due to timeout')
+                logger.error('Connection to Camea Push System was closed due to keyboard interrupt')
                 sys.exit(1)
             except Exception as e:
                 logger.error('An error occured during runtime: ' + str(e))
