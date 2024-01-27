@@ -138,6 +138,7 @@ class SoftwareTrigger:
                     print(request_data['ChangedTo'])
                     print(self.config['software_trigger']['loop_state_changed'])
                     if request_data['ChangedTo'] == self.config['software_trigger']['loop_state_changed']:
+                        print('trying to send software trigger')
                         self.vidar_service.send_software_trigger()
 
             except ConnectionResetError as e:
