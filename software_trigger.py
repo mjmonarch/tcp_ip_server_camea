@@ -136,7 +136,9 @@ class SoftwareTrigger:
                 else:
                     #DDD
                     print(request_data['ChangedTo'])
+                    print(len(request_data['ChangedTo']))
                     print(self.config['software_trigger']['loop_state_changed'])
+                    print(len(self.config['software_trigger']['loop_state_changed']))
                     print(request_data['ChangedTo'] == self.config['software_trigger']['loop_state_changed'])
                     a = request_data['ChangedTo'].strip('\n')
                     print(a == self.config['software_trigger']['loop_state_changed'])
