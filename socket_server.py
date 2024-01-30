@@ -167,6 +167,7 @@ class QUERY_PROCESSOR:
         """
 
         data = data.rstrip('\x00')
+        # delay processing for the chosen timeout
         time.sleep(self.config.getint('vidar', 'timeout'))
         try:
             request_data = {item.split(':')[0]: ''.join(item.split(':')[1:])
@@ -338,6 +339,8 @@ class QUERY_PROCESSOR:
                     queries = queue.Queue()
 
                     while self.camea_client:
+
+                        # split the input socket stream into the buffer
                         try:
                             data = self.camea_client.recv(self.config.getint('settings', 'buffer'))
                         except AttributeError:
@@ -349,13 +352,16 @@ class QUERY_PROCESSOR:
                         buffer = buffer + data
                         data = ''
 
+                        # split the buffer into the list of requests
                         splitted_buffer = re.findall(r'.+?(?=DAtP|Hsxx|KAxx|$)',
                                                      buffer, flags=re.DOTALL)
                         if len(splitted_buffer) > 1:
                             for i in range(len(splitted_buffer) - 1):
                                 queries.put(splitted_buffer[i])
+                            # left in the buffer last part (may be not full request)
                             buffer = splitted_buffer[-1]
 
+                        # proceed through the buffer, process the queries one by one
                         while not queries.empty():
                             query = queries.get()
                             logger.debug(f"Received data: {query} from "
@@ -367,9 +373,7 @@ class QUERY_PROCESSOR:
                                     logger.info(f"Received data: {query} from "
                                                 + str(self.camea_client_address))
                                     logger.debug("DetectionRequest catched")
-                                    # send software trigger to vidar
-                                    # self.vidar_service.send_software_trigger()
-                                    # postpone detection request processing
+                                    # process the message in separate thread with delay
                                     schedule.every(3).seconds.do(self.process_DetectionRequest(
                                                                  data=query,
                                                                  conn=self.camea_client)).tag("detection")

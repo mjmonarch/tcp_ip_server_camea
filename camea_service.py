@@ -2,7 +2,6 @@ import atexit
 import logging
 import schedule
 import socket
-# import sys
 import time
 import threading
 from datetime import datetime
@@ -104,6 +103,38 @@ class CameaService:
                     + f"from {self.DB_IP}:{self.DB_PORT}"))
         return conn
 
+    def __large_detection_template(self, moduleId: str, dt_response: datetime) -> dict:
+        response = dict()
+        response['msg'] = 'LargeDetection'
+        response['ModuleID'] = moduleId
+        response_time = (datetime.strftime(dt_response, '%Y%m%dT%H%M%S%f')[:-3]
+                         + datetime.strftime(dt_response, '%z'))
+        response['ImageID'] = (response['ModuleID'] + '_' + response_time)
+        response['TimeDet'] = response_time
+        response['UT'] = dt_response.isoformat(timespec="milliseconds")
+        response['ExtraCount'] = 0
+        return response
+    
+    def __detection_request_template(self, moduleId: str, requestId: str,
+                                     dt_response: datetime) -> dict:
+        response = dict()
+        response['msg'] = 'DetectionRequestRepeat'
+        response['ModuleID'] = moduleId
+        response['RequestID'] = requestId
+        response_time = (datetime.strftime(dt_response, '%Y%m%dT%H%M%S%f')[:-3]
+                         + datetime.strftime(dt_response, '%z'))
+        response['ImageID'] = (response['ModuleID'] + '_' + response_time)
+        response['TimeDet'] = response_time
+        return response
+
+    def __camea_format(id: int, response_str: str):
+        img_response = (bytearray(b'\x44\x41\x74\x50')
+                        + id.to_bytes(2, 'little')
+                        + bytearray(b'\x00\x00')
+                        + len(response_str).to_bytes(4, 'little')
+                        + response_str.encode('UTF-8'))
+        return img_response
+
     def send_image_found_response(self, conn: socket, id: int, dt_response: datetime,
                                   request: dict, config: dict,
                                   lp: str = 'AA1234AA', country: str = 'UA') -> None:
@@ -131,26 +162,16 @@ class CameaService:
         Output:
         -----------
         """
-        response = dict()
-        response['msg'] = 'DetectionRequestRepeat'
-        response['ModuleID'] = config['service']['module_id']
-        response['RequestID'] = request['RequestID']
-        response['ImageID'] = (response['ModuleID'] + '_'
-                               + datetime.strftime(dt_response, '%Y%m%dT%H%M%S%f')[:-3]
-                               + datetime.strftime(dt_response, '%z'))
-        response['TimeDet'] = (datetime.strftime(dt_response, '%Y%m%dT%H%M%S%f')[:-3]
-                               + datetime.strftime(dt_response, '%z'))
+        response = self.__detection_request_template(moduleID=config['service']['module_id'],
+                                                     requestId=request['RequestID'],
+                                                     dt_response=dt_response)
         response['LP'] = lp
         response['ILPC'] = country
         response['IsDetection'] = 1 if lp else 0
 
         response_str = '|'.join([f'{key}:{value}' for key, value in response.items()])
+        response_bytes = self.__camea_format(id=id, response_str=response_str)
 
-        response_bytes = (bytearray(b'\x44\x41\x74\x50')
-                          + id.to_bytes(2, 'little')
-                          + bytearray(b'\x00\x00')
-                          + len(response_str).to_bytes(4, 'little')
-                          + response_str.encode('UTF-8'))
         try:
             conn.sendall(response_bytes)
             logger.info(f"Response to CAMEA DB Management Software at {conn.getpeername()}"
@@ -193,12 +214,8 @@ class CameaService:
         response['ImageID'] = 'NULL'
 
         response_str = '|'.join([f'{key}:{value}' for key, value in response.items()])
+        response_bytes = self.__camea_format(id=id, response_str=response_str)
 
-        response_bytes = (bytearray(b'\x44\x41\x74\x50')
-                          + id.to_bytes(2, 'little')
-                          + bytearray(b'\x00\x00')
-                          + len(response_str).to_bytes(4, 'little')
-                          + response_str.encode('UTF-8'))
         try:
             conn.sendall(response_bytes)
             logger.info("Response to CAMEA DB Management Software has been sent: "
@@ -228,50 +245,13 @@ class CameaService:
         -----------
         """
         image_generator = ImageGenerator('AA 1234 AA')
-        response = dict()
-        response['msg'] = 'LargeDetection'
-        response['ModuleID'] = config['service']['module_id']
-        response['ImageID'] = (response['ModuleID'] + '_'
-                               + datetime.strftime(dt_response, '%Y%m%dT%H%M%S%f')[:-3]
-                               + datetime.strftime(dt_response, '%z'))
-        response['TimeDet'] = (datetime.strftime(dt_response, '%Y%m%dT%H%M%S%f')[:-3]
-                               + datetime.strftime(dt_response, '%z'))
-        response['UT'] = dt_response.isoformat(timespec="milliseconds")
-        response['ExtraCount'] = 0
-        response['LPText'] = 'AA1234AA'
-        response['ILPC'] = 'UA'
-        response['LpJpeg'] = image_generator.generate_lpr_image_base64()
-        response['FullImage64'] = image_generator.generate_image_base64()
-
-        response_str = '|'.join([f'{key}:{value}' for key, value in response.items()])
-
-        img_response = (bytearray(b'\x44\x41\x74\x50')
-                        + id.to_bytes(2, 'little')
-                        + bytearray(b'\x00\x00')
-                        + len(response_str).to_bytes(4, 'little')
-                        + response_str.encode('UTF-8'))
-        try:
-            self.conn.sendall(img_response)
-
-            # log cut message
-            s2_response = str(self.conn.recv(config.getint('settings', 'buffer')), 'ascii')
-            logger.info(("Send images to CAMEA BD at "
-                         + f"{config['camea_db']['ip']}:{config['camea_db']['port']}"))
-            logger.debug((f"Camea DB response: '{s2_response}'"
-                          + f"from {config['camea_db']['ip']}:{config['camea_db']['port']}"))
-
-            response['LpJpeg'] = response['LpJpeg'][:10]
-            response['FullImage64'] = response['FullImage64'][:10]
-            response_str = '|'.join([f'{key}:{value}' for key, value in response.items()])
-            img_response = (bytearray(b'\x44\x41\x74\x50')
-                            + id.to_bytes(2, 'little')
-                            + bytearray(b'\x00\x00')
-                            + len(response_str).to_bytes(4, 'little')
-                            + response_str.encode('UTF-8'))
-            logger.debug(f"Images to Camea DB have been sent: '{img_response}'")
-        except ConnectionResetError as e:
-            logger.error(f'Connection to Camea DB was reset by the peer: {e}')
-            self.conn = self.__create_connection()
+        img = dict()
+        img['LP'] = 'AA1234AA'
+        img['ILPC'] = 'UA'
+        img['LpJpeg'] = image_generator.generate_lpr_image_base64()
+        img['FullImage64'] = image_generator.generate_image_base64()
+        self.send_image_data(id=id, dt_response=dt_response, request=request,
+                             config=config, img=img)
 
     def send_image_data(self, id: int, dt_response: datetime,
                         request: dict, config: dict, img: dict) -> None:
@@ -293,29 +273,17 @@ class CameaService:
 
         Output:
         -----------
-        """
-        response = dict()
-        response['msg'] = 'LargeDetection'
-        response['ModuleID'] = config['service']['module_id']
-        response['ImageID'] = (response['ModuleID'] + '_'
-                               + datetime.strftime(dt_response, '%Y%m%dT%H%M%S%f')[:-3]
-                               + datetime.strftime(dt_response, '%z'))
-        response['TimeDet'] = (datetime.strftime(dt_response, '%Y%m%dT%H%M%S%f')[:-3]
-                               + datetime.strftime(dt_response, '%z'))
-        response['UT'] = dt_response.isoformat(timespec="milliseconds")
-        response['ExtraCount'] = 0
+        # """
+        response = self.__large_detection_template(moduleID=config['service']['module_id'],
+                                                   dt_response=dt_response)
         response['LPText'] = img['LP']
         response['ILPC'] = img['ILPC']
         response['LpJpeg'] = img['LpJpeg']
         response['FullImage64'] = img['FullImage64']
 
         response_str = '|'.join([f'{key}:{value}' for key, value in response.items()])
+        img_response = self.__camea_format(id=id, response_str=response_str)
 
-        img_response = (bytearray(b'\x44\x41\x74\x50')
-                        + id.to_bytes(2, 'little')
-                        + bytearray(b'\x00\x00')
-                        + len(response_str).to_bytes(4, 'little')
-                        + response_str.encode('UTF-8'))
         try:
             self.conn.sendall(img_response)
             s2_response = str(self.conn.recv(config.getint('settings', 'buffer')), 'ascii')
@@ -323,16 +291,6 @@ class CameaService:
                          + f"{config['camea_db']['ip']}:{config['camea_db']['port']}"))
             logger.debug((f"Camea DB response: '{s2_response}'"
                          + f"from {config['camea_db']['ip']}:{config['camea_db']['port']}"))
-
-            response['LpJpeg'] = response['LpJpeg'][:10]
-            response['FullImage64'] = response['FullImage64'][:10]
-            response_str = '|'.join([f'{key}:{value}' for key, value in response.items()])
-            img_response = (bytearray(b'\x44\x41\x74\x50')
-                            + id.to_bytes(2, 'little')
-                            + bytearray(b'\x00\x00')
-                            + len(response_str).to_bytes(4, 'little')
-                            + response_str.encode('UTF-8'))
-            logger.debug(f"Images to Camea DB have been sent: '{img_response}'")
         except ConnectionResetError as e:
             logger.error(f'Connection to Camea DB was reset by the peer: {e}')
             self.conn = self.__create_connection()

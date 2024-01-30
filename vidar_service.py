@@ -4,7 +4,6 @@ import sys
 import xml.etree.ElementTree as ET
 from datetime import datetime
 
-# TODO: add try ... except blocks!!!!
 
 # set logger
 logger = logging.getLogger(__name__)
@@ -108,16 +107,10 @@ class VidarService:
         """
         result = dict()
         url = 'http://' + self.IP + f'/lpr/cff?cmd=getdata&id={id}'
-        # print(url)
         r = requests.get(url)
         root = ET.fromstring(r.content)
-        # logger.debug(f"DDD: Vidar get ID content: {r.content}")
         if root.find('ID').get('value'):
             result['timestamp'] = root.find('capture').find('frametimems').get('value')
-
-            ### DDDD
-            logger.debug(f"DDD: Vidar frametimems: {result['timestamp']}")
-            
             result['LP'] = root.find('anpr').find('text').get('value')
             result['ILPC'] = root.find('anpr').find('country').get('value')
             result['LpJpeg'] = root.find('images').find('lp_img').get('value')
@@ -126,6 +119,7 @@ class VidarService:
 
 
 if __name__ == '__main__':
+    # in test purposes
     #  python vidar_service.py 192.168.6.161 "2023-12-06 13:00:00.000" 60000
     if len(sys.argv) != 4:
         msg = ("Invalid arguments quantity - provide IP, "
