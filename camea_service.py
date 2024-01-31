@@ -287,7 +287,7 @@ class CameaService:
         try:
             self.conn.sendall(img_response)
             s2_response = str(self.conn.recv(config.getint('settings', 'buffer')), 'ascii')
-            logger.info(("Send images to CAMEA BD at "
+            logger.info(("Send images to CAMEA DB at "
                          + f"{config['camea_db']['ip']}:{config['camea_db']['port']}"))
             logger.debug((f"Camea DB response: '{s2_response}'"
                          + f"from {config['camea_db']['ip']}:{config['camea_db']['port']}"))
