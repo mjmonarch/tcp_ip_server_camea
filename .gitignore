@@ -2,5 +2,4 @@ __pycache__/
 logs/
 test/
 ve_tcp_server/
-config.ini
 .DS_Store
