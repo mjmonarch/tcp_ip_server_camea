@@ -274,7 +274,7 @@ class CameaService:
         Output:
         -----------
         # """
-        response = self.__large_detection_template(moduleID=config['service']['module_id'],
+        response = self.__large_detection_template(moduleId=config['service']['module_id'],
                                                    dt_response=dt_response)
         response['LPText'] = img['LP']
         response['ILPC'] = img['ILPC']
