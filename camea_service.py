@@ -162,7 +162,7 @@ class CameaService:
         Output:
         -----------
         """
-        response = self.__detection_request_template(moduleID=config['service']['module_id'],
+        response = self.__detection_request_template(moduleId=config['service']['module_id'],
                                                      requestId=request['RequestID'],
                                                      dt_response=dt_response)
         response['LP'] = lp
