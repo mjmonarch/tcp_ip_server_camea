@@ -128,6 +128,7 @@ class CameaService:
         return response
 
     def __camea_format(id: int, response_str: str):
+        print(id)
         img_response = (bytearray(b'\x44\x41\x74\x50')
                         + id.to_bytes(2, 'little')
                         + bytearray(b'\x00\x00')
