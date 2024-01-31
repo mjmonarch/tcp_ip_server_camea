@@ -114,7 +114,7 @@ class CameaService:
         response['UT'] = dt_response.isoformat(timespec="milliseconds")
         response['ExtraCount'] = 0
         return response
-    
+
     def __detection_request_template(self, moduleId: str, requestId: str,
                                      dt_response: datetime) -> dict:
         response = dict()
